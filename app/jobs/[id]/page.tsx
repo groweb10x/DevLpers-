@@ -11,9 +11,15 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
   const [bidAmount, setBidAmount] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    const fetchJob = async () => {
+    const fetchData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) setIsLoggedIn(true);
+      setAuthChecked(true);
+
       const { data, error } = await supabase
         .from('jobs')
         .select('*')
@@ -22,7 +28,7 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
       if (!error && data) setJob(data);
       setLoading(false);
     };
-    fetchJob();
+    fetchData();
   }, [id]);
 
   const handleSubmit = async () => {
@@ -33,7 +39,6 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
     setSubmitting(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert('Please login first!');
       window.location.href = '/login';
       return;
     }
@@ -90,7 +95,7 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
       }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
           <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.4rem', color: 'var(--accent)' }}>
-            Dev<span style={{ color: 'var(--text)' }}>Market</span>
+            Dev<span style={{ color: 'var(--text)' }}>Lpers</span>
           </span>
         </Link>
         <Link href="/jobs">
@@ -146,7 +151,7 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
               </div>
             </div>
 
-            {/* PROPOSAL FORM */}
+            {/* PROPOSAL SECTION */}
             <div style={{
               background: 'var(--card)', border: '1px solid var(--border)',
               borderRadius: '16px', padding: '2rem',
@@ -155,7 +160,43 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
                 📨 Submit Your Proposal
               </h2>
 
-              {submitted ? (
+              {/* NOT LOGGED IN */}
+              {authChecked && !isLoggedIn && (
+                <div style={{
+                  textAlign: 'center', padding: '2rem',
+                  background: 'rgba(108,99,255,0.08)',
+                  border: '1px solid rgba(108,99,255,0.2)',
+                  borderRadius: '12px',
+                }}>
+                  <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔐</div>
+                  <h3 style={{ fontFamily: 'Syne', fontWeight: 700, marginBottom: '0.75rem' }}>
+                    Login Required
+                  </h3>
+                  <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                    You need an account to submit proposals and use bids. Join free today!
+                  </p>
+                  <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <Link href="/login">
+                      <button style={{
+                        background: 'var(--accent)', color: '#fff',
+                        border: 'none', padding: '12px 28px',
+                        borderRadius: '8px', cursor: 'pointer',
+                        fontFamily: 'Syne', fontWeight: 600, fontSize: '0.95rem',
+                      }}>Login</button>
+                    </Link>
+                    <Link href="/signup">
+                      <button style={{
+                        background: 'transparent', color: 'var(--text)',
+                        border: '1px solid var(--border)', padding: '12px 28px',
+                        borderRadius: '8px', cursor: 'pointer', fontSize: '0.95rem',
+                      }}>Sign Up Free</button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* LOGGED IN - SUBMITTED */}
+              {authChecked && isLoggedIn && submitted && (
                 <div style={{
                   textAlign: 'center', padding: '2rem',
                   background: 'rgba(0,212,170,0.08)',
@@ -187,7 +228,10 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
                     </Link>
                   </div>
                 </div>
-              ) : (
+              )}
+
+              {/* LOGGED IN - FORM */}
+              {authChecked && isLoggedIn && !submitted && (
                 <>
                   <div style={{ marginBottom: '1rem' }}>
                     <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>
@@ -269,17 +313,17 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
                 </div>
               ))}
 
-              <div style={{ marginTop: '1.5rem' }}>
-                <Link href="/login">
+              {!isLoggedIn && (
+                <Link href="/signup" style={{ textDecoration: 'none' }}>
                   <button style={{
-                    width: '100%', padding: '12px',
+                    width: '100%', padding: '12px', marginTop: '1.5rem',
                     background: 'var(--accent)', border: 'none',
                     borderRadius: '10px', color: '#fff',
                     fontFamily: 'Syne', fontWeight: 600,
                     cursor: 'pointer', fontSize: '0.9rem',
-                  }}>Login to Apply</button>
+                  }}>Sign Up to Apply →</button>
                 </Link>
-              </div>
+              )}
             </div>
           </div>
         </div>

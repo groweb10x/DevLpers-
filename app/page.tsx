@@ -87,28 +87,36 @@ export default function Home() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         height: '64px',
       }}>
-        <div style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.4rem', color: 'var(--accent)' }}>
-          Dev<span style={{ color: 'var(--text)' }}>Market</span>
-        </div>
+       <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <div style={{
+    width: '32px', height: '32px', borderRadius: '8px',
+    background: 'linear-gradient(135deg, var(--accent), var(--accent2))',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontFamily: 'Syne', fontWeight: 800, fontSize: '1rem', color: '#fff',
+  }}>D</div>
+  <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.4rem', color: 'var(--accent)' }}>
+    Dev<span style={{ color: 'var(--text)' }}>Lpers</span>
+  </span>
+</Link>
 
 <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-          {[
-            { label: 'Browse Devs', href: '/developers' },
-            { label: 'Find Jobs', href: '/jobs' },
-            { label: 'How it Works', href: '#' },
-            { label: 'Pricing', href: '/pricing' },
-          ].map(item => (
-            <Link key={item.label} href={item.href} style={{ textDecoration: 'none' }}>
-              <span style={{
-                color: 'var(--muted)', fontSize: '0.9rem',
-                transition: 'color 0.2s', cursor: 'pointer',
-              }}
-                onMouseEnter={e => (e.target as HTMLElement).style.color = 'var(--text)'}
-                onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--muted)'}
-              >{item.label}</span>
-            </Link>
-          ))}
-        </div>
+  {[
+    { label: 'Browse Devs', href: '/developers' },
+    { label: 'Find Jobs', href: '/jobs' },
+    { label: 'How it Works', href: '#how-it-works' },
+    { label: 'Pricing', href: '/pricing' },
+  ].map(item => (
+    <Link key={item.label} href={item.href} style={{ textDecoration: 'none' }}>
+      <span style={{
+        color: 'var(--muted)', fontSize: '0.9rem',
+        transition: 'color 0.2s', cursor: 'pointer',
+      }}
+        onMouseEnter={e => (e.target as HTMLElement).style.color = 'var(--text)'}
+        onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--muted)'}
+      >{item.label}</span>
+    </Link>
+  ))}
+</div>
 
         <div style={{ display: 'flex', gap: '1rem' }}>
           {user ? (
@@ -299,7 +307,7 @@ export default function Home() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section style={{ padding: '80px 5%', borderTop: '1px solid var(--border)' }}>
+      <section id="how-it-works" style={{ padding: '80px 5%', borderTop: '1px solid var(--border)' }}>
         <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', marginBottom: '0.75rem' }}>How It Works</h2>
         <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '4rem' }}>Get started in 3 simple steps</p>
         <div style={{

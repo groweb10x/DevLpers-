@@ -1,4 +1,11 @@
 'use client';
+export const metadata = {
+  title: 'Pricing Plans — DevLpers',
+  description: 'Choose the right plan for you. Free, Weekly Pro, and Monthly Elite plans available. Unlimited bids and featured listings.',
+  alternates: {
+    canonical: 'https://develpers.com/pricing',
+  },
+};
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';

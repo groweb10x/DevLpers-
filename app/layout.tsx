@@ -4,8 +4,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'DevLpers — The Global Developer Marketplace',
   description: 'Hire top developers or get hired on DevLpers. Post jobs, submit proposals, and work with the best global talent. The future of developer hiring is here.',
-  keywords: 'hire developers, freelance developers, developer marketplace, post jobs, find developers, web development, mobile apps, AI developers, remote developers, tech talent',
-  openGraph: {
+keywords: 'hire developers, freelance developers, developer marketplace, post jobs, find developers, web development, mobile apps, AI developers, remote developers, tech talent, hire AI developers, machine learning engineers, blockchain developers, Web3 developers, remote tech talent, best developer marketplace, Upwork alternative, Fiverr alternative, developer jobs online, hire full stack developer, React developer for hire, Node.js developer, Flutter developer, Python developer, DevLpers, develpers.com, global developer marketplace, tech freelancers, software engineers for hire, hire programmers online, affordable developers, top rated developers, verified developers, escrow payment developers, developer bidding platform, project based hiring, hourly developer hiring, startup developers, enterprise developers',  openGraph: {
     title: 'DevLpers — The Global Developer Marketplace',
     description: 'Hire top developers or get hired. Post jobs, submit proposals, and work with the best talent worldwide.',
     url: 'https://develpers.com',

@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     canonical: 'https://develpers.com',
   },
   verification: {
-    google: 'add-your-google-verification-code-here',
+    google: 'Zugs9Aqmh_Y-u0QTBAujd5loH2jT7TgSd0xPiKjYl7Y',
   },
 };
 

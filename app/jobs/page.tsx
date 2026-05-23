@@ -1,11 +1,5 @@
 'use client';
-export const metadata = {
-  title: 'Browse Developer Jobs — DevLpers',
-  description: 'Find freelance developer jobs worldwide. Apply to web development, mobile apps, AI, and more. Get hired on DevLpers today!',
-  alternates: {
-    canonical: 'https://develpers.com/jobs',
-  },
-};
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';

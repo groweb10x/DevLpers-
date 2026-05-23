@@ -1,11 +1,5 @@
 'use client';
-export const metadata = {
-  title: 'Join DevLpers — Sign Up Free',
-  description: 'Create your free DevLpers account. Join as a developer to get hired or as a buyer to find top talent worldwide.',
-  alternates: {
-    canonical: 'https://develpers.com/signup',
-  },
-};
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';

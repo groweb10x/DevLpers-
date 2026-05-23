@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
@@ -8,6 +8,7 @@ const skillOptions = ['React', 'Next.js', 'Node.js', 'Python', 'Flutter', 'Larav
 export default function PostJob() {
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const [form, setForm] = useState({
     title: '',
     category: '',
@@ -20,35 +21,18 @@ export default function PostJob() {
     duration: '',
     level: '',
   });
-  const handlePostJob = async () => {
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  if (!user) {
-    alert('Please login first!');
-    window.location.href = '/login';
-    return;
-  }
 
-  const { error } = await supabase.from('jobs').insert({
-    buyer_id: user.id,
-    title: form.title,
-    description: form.desc,
-    category: form.category,
-    skills: form.skills,
-    budget_type: form.budgetType,
-    budget_min: form.budgetType === 'Fixed' ? Number(form.budgetMin) : Number(form.hourlyRate),
-    budget_max: form.budgetType === 'Fixed' ? Number(form.budgetMax) : null,
-    level: form.level,
-    duration: form.duration,
-    status: 'Open',
-  });
-
-  if (error) {
-    alert('Error: ' + error.message);
-  } else {
-    setSubmitted(true);
-  }
-};
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        window.location.href = '/login';
+      } else {
+        setAuthChecked(true);
+      }
+    };
+    checkAuth();
+  }, []);
 
   const toggleSkill = (skill: string) => {
     setForm(prev => ({
@@ -63,7 +47,42 @@ export default function PostJob() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handlePostJob = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      window.location.href = '/login';
+      return;
+    }
+    const { error } = await supabase.from('jobs').insert({
+      buyer_id: user.id,
+      title: form.title,
+      description: form.desc,
+      category: form.category,
+      skills: form.skills,
+      budget_type: form.budgetType,
+      budget_min: form.budgetType === 'Fixed' ? Number(form.budgetMin) : Number(form.hourlyRate),
+      budget_max: form.budgetType === 'Fixed' ? Number(form.budgetMax) : null,
+      level: form.level,
+      duration: form.duration,
+      status: 'Open',
+    });
+    if (error) {
+      alert('Error: ' + error.message);
+    } else {
+      setSubmitted(true);
+    }
+  };
+
   const totalSteps = 3;
+
+  if (!authChecked) return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ textAlign: 'center', color: 'var(--muted)' }}>
+        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
+        <p>Checking authentication...</p>
+      </div>
+    </div>
+  );
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
@@ -80,7 +99,7 @@ export default function PostJob() {
       }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
           <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.4rem', color: 'var(--accent)' }}>
-            Dev<span style={{ color: 'var(--text)' }}>Market</span>
+            Dev<span style={{ color: 'var(--text)' }}>Lpers</span>
           </span>
         </Link>
         <Link href="/buyer-dashboard">
@@ -95,7 +114,6 @@ export default function PostJob() {
       <div style={{ paddingTop: '80px', padding: '80px 5% 3rem' }}>
         <div style={{ maxWidth: '700px', margin: '0 auto' }}>
 
-          {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
             <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem' }}>
               Post a Job 📋
@@ -117,10 +135,7 @@ export default function PostJob() {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '0.75rem', fontWeight: 700, color: '#fff',
                     }}>{step > i + 1 ? '✓' : i + 1}</div>
-                    <span style={{
-                      fontSize: '0.82rem',
-                      color: step === i + 1 ? 'var(--text)' : 'var(--muted)',
-                    }}>{label}</span>
+                    <span style={{ fontSize: '0.82rem', color: step === i + 1 ? 'var(--text)' : 'var(--muted)' }}>{label}</span>
                   </div>
                 ))}
               </div>
@@ -134,7 +149,6 @@ export default function PostJob() {
             </div>
           )}
 
-          {/* Card */}
           <div style={{
             background: 'var(--card)', border: '1px solid var(--border)',
             borderRadius: '20px', padding: '2rem',
@@ -168,45 +182,24 @@ export default function PostJob() {
               </div>
             )}
 
-            {/* STEP 1 - Job Details */}
+            {/* STEP 1 */}
             {!submitted && step === 1 && (
               <>
-                <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>
-                  Job Details
-                </h2>
+                <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>Job Details</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-
                   <div>
-                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>
-                      Job Title *
-                    </label>
-                    <input
-                      name="title" value={form.title} onChange={handleInput}
+                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>Job Title *</label>
+                    <input name="title" value={form.title} onChange={handleInput}
                       placeholder="e.g. Full Stack Developer for E-commerce Website"
-                      style={{
-                        width: '100%', padding: '12px 14px',
-                        background: 'var(--bg)', border: '1px solid var(--border)',
-                        borderRadius: '8px', color: 'var(--text)',
-                        fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box',
-                      }}
+                      style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}
                       onFocus={e => (e.target as HTMLElement).style.borderColor = 'var(--accent)'}
                       onBlur={e => (e.target as HTMLElement).style.borderColor = 'var(--border)'}
                     />
                   </div>
-
                   <div>
-                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>
-                      Category *
-                    </label>
-                    <select
-                      name="category" value={form.category} onChange={handleInput}
-                      style={{
-                        width: '100%', padding: '12px 14px',
-                        background: 'var(--bg)', border: '1px solid var(--border)',
-                        borderRadius: '8px', color: form.category ? 'var(--text)' : 'var(--muted)',
-                        fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box',
-                      }}
-                    >
+                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>Category *</label>
+                    <select name="category" value={form.category} onChange={handleInput}
+                      style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', color: form.category ? 'var(--text)' : 'var(--muted)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}>
                       <option value="">Select a category</option>
                       <option>Web Development</option>
                       <option>Mobile Apps</option>
@@ -216,139 +209,88 @@ export default function PostJob() {
                       <option>Cloud & DevOps</option>
                     </select>
                   </div>
-
                   <div>
-                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>
-                      Job Description *
-                    </label>
-                    <textarea
-                      name="desc" value={form.desc} onChange={handleInput}
-                      placeholder="Describe your project in detail. What do you need? What are the goals? Any specific requirements?"
+                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>Job Description *</label>
+                    <textarea name="desc" value={form.desc} onChange={handleInput}
+                      placeholder="Describe your project in detail..."
                       rows={6}
-                      style={{
-                        width: '100%', padding: '12px 14px',
-                        background: 'var(--bg)', border: '1px solid var(--border)',
-                        borderRadius: '8px', color: 'var(--text)',
-                        fontSize: '0.9rem', outline: 'none',
-                        resize: 'vertical', fontFamily: 'DM Sans',
-                        boxSizing: 'border-box',
-                      }}
+                      style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.9rem', outline: 'none', resize: 'vertical', fontFamily: 'DM Sans', boxSizing: 'border-box' }}
                       onFocus={e => (e.target as HTMLElement).style.borderColor = 'var(--accent)'}
                       onBlur={e => (e.target as HTMLElement).style.borderColor = 'var(--border)'}
                     />
                   </div>
-
                   <div>
-                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>
-                      Experience Level *
-                    </label>
+                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>Experience Level *</label>
                     <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                       {['Entry', 'Intermediate', 'Expert'].map(l => (
                         <button key={l} onClick={() => setForm({ ...form, level: l })} style={{
                           padding: '8px 20px',
                           background: form.level === l ? 'rgba(108,99,255,0.15)' : 'transparent',
                           border: `1px solid ${form.level === l ? 'var(--accent)' : 'var(--border)'}`,
-                          borderRadius: '8px',
-                          color: form.level === l ? 'var(--accent)' : 'var(--muted)',
+                          borderRadius: '8px', color: form.level === l ? 'var(--accent)' : 'var(--muted)',
                           cursor: 'pointer', fontSize: '0.85rem', transition: 'all 0.2s',
                         }}>{l}</button>
                       ))}
                     </div>
                   </div>
                 </div>
-
-                <button
-                  onClick={() => form.title && form.category && form.desc && form.level && setStep(2)}
-                  style={{
-                    width: '100%', padding: '14px', marginTop: '2rem',
-                    background: form.title && form.category && form.desc && form.level ? 'var(--accent)' : 'var(--border)',
-                    border: 'none', borderRadius: '10px', color: '#fff',
-                    fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem',
-                    cursor: form.title && form.category && form.desc && form.level ? 'pointer' : 'not-allowed',
-                  }}>
-                  Next: Skills & Budget →
-                </button>
+                <button onClick={() => form.title && form.category && form.desc && form.level && setStep(2)} style={{
+                  width: '100%', padding: '14px', marginTop: '2rem',
+                  background: form.title && form.category && form.desc && form.level ? 'var(--accent)' : 'var(--border)',
+                  border: 'none', borderRadius: '10px', color: '#fff',
+                  fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem',
+                  cursor: form.title && form.category && form.desc && form.level ? 'pointer' : 'not-allowed',
+                }}>Next: Skills & Budget →</button>
               </>
             )}
 
-            {/* STEP 2 - Skills & Budget */}
+            {/* STEP 2 */}
             {!submitted && step === 2 && (
               <>
-                <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>
-                  Skills & Budget
-                </h2>
+                <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>Skills & Budget</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-
-                  {/* Skills */}
                   <div>
-                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.75rem' }}>
-                      Required Skills * ({form.skills.length} selected)
-                    </label>
+                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.75rem' }}>Required Skills * ({form.skills.length} selected)</label>
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                       {skillOptions.map(skill => (
                         <button key={skill} onClick={() => toggleSkill(skill)} style={{
                           padding: '6px 14px',
                           background: form.skills.includes(skill) ? 'rgba(108,99,255,0.15)' : 'transparent',
                           border: `1px solid ${form.skills.includes(skill) ? 'var(--accent)' : 'var(--border)'}`,
-                          borderRadius: '100px',
-                          color: form.skills.includes(skill) ? 'var(--accent)' : 'var(--muted)',
+                          borderRadius: '100px', color: form.skills.includes(skill) ? 'var(--accent)' : 'var(--muted)',
                           cursor: 'pointer', fontSize: '0.82rem', transition: 'all 0.2s',
                         }}>{skill}</button>
                       ))}
                     </div>
                   </div>
-
-                  {/* Budget Type */}
                   <div>
-                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.75rem' }}>
-                      Budget Type *
-                    </label>
+                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.75rem' }}>Budget Type *</label>
                     <div style={{ display: 'flex', gap: '0.75rem' }}>
                       {['Fixed', 'Hourly'].map(t => (
                         <button key={t} onClick={() => setForm({ ...form, budgetType: t })} style={{
                           flex: 1, padding: '10px',
                           background: form.budgetType === t ? 'rgba(108,99,255,0.15)' : 'transparent',
                           border: `1px solid ${form.budgetType === t ? 'var(--accent)' : 'var(--border)'}`,
-                          borderRadius: '8px',
-                          color: form.budgetType === t ? 'var(--accent)' : 'var(--muted)',
-                          cursor: 'pointer', fontFamily: 'Syne', fontWeight: 600,
-                          transition: 'all 0.2s',
-                        }}>
-                          {t === 'Fixed' ? '💰 Fixed Price' : '⏱️ Hourly Rate'}
-                        </button>
+                          borderRadius: '8px', color: form.budgetType === t ? 'var(--accent)' : 'var(--muted)',
+                          cursor: 'pointer', fontFamily: 'Syne', fontWeight: 600, transition: 'all 0.2s',
+                        }}>{t === 'Fixed' ? '💰 Fixed Price' : '⏱️ Hourly Rate'}</button>
                       ))}
                     </div>
                   </div>
-
-                  {/* Budget Amount */}
                   {form.budgetType === 'Fixed' ? (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                       <div>
                         <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>Min Budget ($)</label>
-                        <input
-                          name="budgetMin" value={form.budgetMin} onChange={handleInput}
-                          type="number" placeholder="e.g. 500"
-                          style={{
-                            width: '100%', padding: '12px 14px',
-                            background: 'var(--bg)', border: '1px solid var(--border)',
-                            borderRadius: '8px', color: 'var(--text)',
-                            fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box',
-                          }}
+                        <input name="budgetMin" value={form.budgetMin} onChange={handleInput} type="number" placeholder="e.g. 500"
+                          style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}
                           onFocus={e => (e.target as HTMLElement).style.borderColor = 'var(--accent)'}
                           onBlur={e => (e.target as HTMLElement).style.borderColor = 'var(--border)'}
                         />
                       </div>
                       <div>
                         <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>Max Budget ($)</label>
-                        <input
-                          name="budgetMax" value={form.budgetMax} onChange={handleInput}
-                          type="number" placeholder="e.g. 1000"
-                          style={{
-                            width: '100%', padding: '12px 14px',
-                            background: 'var(--bg)', border: '1px solid var(--border)',
-                            borderRadius: '8px', color: 'var(--text)',
-                            fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box',
-                          }}
+                        <input name="budgetMax" value={form.budgetMax} onChange={handleInput} type="number" placeholder="e.g. 1000"
+                          style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}
                           onFocus={e => (e.target as HTMLElement).style.borderColor = 'var(--accent)'}
                           onBlur={e => (e.target as HTMLElement).style.borderColor = 'var(--border)'}
                         />
@@ -357,70 +299,45 @@ export default function PostJob() {
                   ) : (
                     <div>
                       <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>Hourly Rate ($/hr)</label>
-                      <input
-                        name="hourlyRate" value={form.hourlyRate} onChange={handleInput}
-                        type="number" placeholder="e.g. 35"
-                        style={{
-                          width: '100%', padding: '12px 14px',
-                          background: 'var(--bg)', border: '1px solid var(--border)',
-                          borderRadius: '8px', color: 'var(--text)',
-                          fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box',
-                        }}
+                      <input name="hourlyRate" value={form.hourlyRate} onChange={handleInput} type="number" placeholder="e.g. 35"
+                        style={{ width: '100%', padding: '12px 14px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }}
                         onFocus={e => (e.target as HTMLElement).style.borderColor = 'var(--accent)'}
                         onBlur={e => (e.target as HTMLElement).style.borderColor = 'var(--border)'}
                       />
                     </div>
                   )}
-
-                  {/* Duration */}
                   <div>
-                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.75rem' }}>
-                      Project Duration *
-                    </label>
+                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.75rem' }}>Project Duration *</label>
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                       {['< 1 week', '1-2 weeks', '1 month', '1-3 months', '3-6 months', 'Ongoing'].map(d => (
                         <button key={d} onClick={() => setForm({ ...form, duration: d })} style={{
                           padding: '7px 14px',
                           background: form.duration === d ? 'rgba(0,212,170,0.1)' : 'transparent',
                           border: `1px solid ${form.duration === d ? 'var(--green)' : 'var(--border)'}`,
-                          borderRadius: '100px',
-                          color: form.duration === d ? 'var(--green)' : 'var(--muted)',
+                          borderRadius: '100px', color: form.duration === d ? 'var(--green)' : 'var(--muted)',
                           cursor: 'pointer', fontSize: '0.82rem', transition: 'all 0.2s',
                         }}>{d}</button>
                       ))}
                     </div>
                   </div>
                 </div>
-
                 <div style={{ display: 'flex', gap: '0.75rem', marginTop: '2rem' }}>
-                  <button onClick={() => setStep(1)} style={{
-                    padding: '14px 24px',
-                    background: 'transparent', border: '1px solid var(--border)',
-                    borderRadius: '10px', color: 'var(--muted)',
-                    cursor: 'pointer', fontSize: '0.9rem',
-                  }}>← Back</button>
-                  <button
-                    onClick={() => form.skills.length > 0 && form.duration && setStep(3)}
-                    style={{
-                      flex: 1, padding: '14px',
-                      background: form.skills.length > 0 && form.duration ? 'var(--accent)' : 'var(--border)',
-                      border: 'none', borderRadius: '10px', color: '#fff',
-                      fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem',
-                      cursor: form.skills.length > 0 && form.duration ? 'pointer' : 'not-allowed',
-                    }}>
-                    Next: Review →
-                  </button>
+                  <button onClick={() => setStep(1)} style={{ padding: '14px 24px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--muted)', cursor: 'pointer', fontSize: '0.9rem' }}>← Back</button>
+                  <button onClick={() => form.skills.length > 0 && form.duration && setStep(3)} style={{
+                    flex: 1, padding: '14px',
+                    background: form.skills.length > 0 && form.duration ? 'var(--accent)' : 'var(--border)',
+                    border: 'none', borderRadius: '10px', color: '#fff',
+                    fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem',
+                    cursor: form.skills.length > 0 && form.duration ? 'pointer' : 'not-allowed',
+                  }}>Next: Review →</button>
                 </div>
               </>
             )}
 
-            {/* STEP 3 - Review */}
+            {/* STEP 3 */}
             {!submitted && step === 3 && (
               <>
-                <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>
-                  Review Your Job Post
-                </h2>
-
+                <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>Review Your Job Post</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
                   {[
                     { label: 'Job Title', value: form.title },
@@ -430,54 +347,35 @@ export default function PostJob() {
                     { label: 'Budget', value: form.budgetType === 'Fixed' ? `$${form.budgetMin} - $${form.budgetMax}` : `$${form.hourlyRate}/hr` },
                     { label: 'Duration', value: form.duration },
                   ].map(item => (
-                    <div key={item.label} style={{
-                      display: 'flex', justifyContent: 'space-between',
-                      padding: '0.75rem', background: 'var(--bg)',
-                      borderRadius: '8px', border: '1px solid var(--border)',
-                    }}>
+                    <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem', background: 'var(--bg)', borderRadius: '8px', border: '1px solid var(--border)' }}>
                       <span style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>{item.label}</span>
                       <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{item.value}</span>
                     </div>
                   ))}
-
                   <div style={{ padding: '0.75rem', background: 'var(--bg)', borderRadius: '8px', border: '1px solid var(--border)' }}>
                     <div style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Skills</div>
                     <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                       {form.skills.map(s => (
-                        <span key={s} style={{
-                          background: 'rgba(108,99,255,0.1)',
-                          border: '1px solid rgba(108,99,255,0.2)',
-                          borderRadius: '6px', padding: '3px 10px',
-                          fontSize: '0.78rem', color: 'var(--accent)',
-                        }}>{s}</span>
+                        <span key={s} style={{ background: 'rgba(108,99,255,0.1)', border: '1px solid rgba(108,99,255,0.2)', borderRadius: '6px', padding: '3px 10px', fontSize: '0.78rem', color: 'var(--accent)' }}>{s}</span>
                       ))}
                     </div>
                   </div>
-
                   <div style={{ padding: '0.75rem', background: 'var(--bg)', borderRadius: '8px', border: '1px solid var(--border)' }}>
                     <div style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Description</div>
                     <p style={{ color: 'var(--text)', fontSize: '0.85rem', lineHeight: 1.6 }}>{form.desc}</p>
                   </div>
                 </div>
-
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
-                  <button onClick={() => setStep(2)} style={{
-                    padding: '14px 24px',
-                    background: 'transparent', border: '1px solid var(--border)',
-                    borderRadius: '10px', color: 'var(--muted)',
-                    cursor: 'pointer', fontSize: '0.9rem',
-                  }}>← Back</button>
+                  <button onClick={() => setStep(2)} style={{ padding: '14px 24px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--muted)', cursor: 'pointer', fontSize: '0.9rem' }}>← Back</button>
                   <button onClick={handlePostJob} style={{
                     flex: 1, padding: '14px',
                     background: 'var(--accent2)', border: 'none',
                     borderRadius: '10px', color: '#fff',
-                    fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem',
-                    cursor: 'pointer',
+                    fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem', cursor: 'pointer',
                   }}>🚀 Post Job Now</button>
                 </div>
               </>
             )}
-
           </div>
         </div>
       </div>

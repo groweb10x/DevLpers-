@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Macan:wght@400;700&display=swap');
 
 * {
   margin: 0;
@@ -7,42 +7,82 @@
 }
 
 :root {
-  --bg: #0a0a0f;
-  --bg2: #111118;
-  --card: #16161f;
-  --border: #2a2a3a;
-  --accent: #6c63ff;
-  --accent2: #ff6584;
-  --text: #f0f0ff;
-  --muted: #8888aa;
-  --green: #00d4aa;
+  --bg: #ffffff;
+  --bg2: #f5f5f5;
+  --card: #ffffff;
+  --border: #e4e5e7;
+  --accent: #1dbf73;
+  --accent-dark: #19a463;
+  --accent2: #ff6b35;
+  --text: #404145;
+  --text2: #62646a;
+  --muted: #95979d;
+  --green: #1dbf73;
+  --blue: #0d6efd;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
 }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   overflow-x: hidden;
+  line-height: 1.6;
 }
 
 h1, h2, h3, h4 {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg2);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* Mobile Responsive */
+.desktop-sidebar {
+  display: flex !important;
+}
+.mobile-header {
+  display: none !important;
+}
+.desktop-nav {
+  display: flex !important;
+}
+.mobile-nav {
+  display: none !important;
 }
 
 @media (max-width: 768px) {
+  .desktop-sidebar {
+    display: none !important;
+  }
+  .mobile-header {
+    display: flex !important;
+  }
   .desktop-nav {
     display: none !important;
   }
   .mobile-nav {
     display: block !important;
   }
+  .dashboard-main {
+    margin-left: 0 !important;
+    padding-top: 70px !important;
+  }
 }
 
-@media (max-width: 768px) {
-  .desktop-nav {
-    display: none !important;
-  }
-  .mobile-nav {
-    display: block !important;
+@media (min-width: 769px) {
+  .dashboard-main {
+    margin-left: 240px;
   }
 }

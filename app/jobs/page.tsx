@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -14,9 +13,13 @@ export default function JobsFeed() {
   const [saved, setSaved] = useState<string[]>([]);
   const [dbJobs, setDbJobs] = useState<any[]>([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const fetchJobs = async () => {
+    const fetchData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+
       const { data, error } = await supabase
         .from('jobs')
         .select('*')
@@ -24,7 +27,7 @@ export default function JobsFeed() {
       if (!error && data) setDbJobs(data);
       setLoadingJobs(false);
     };
-    fetchJobs();
+    fetchData();
   }, []);
 
   const toggleSave = (id: string) => {
@@ -43,6 +46,7 @@ export default function JobsFeed() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
 
+      {/* NAVBAR */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         background: 'rgba(10,10,15,0.9)',
@@ -54,28 +58,51 @@ export default function JobsFeed() {
       }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
           <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.4rem', color: 'var(--accent)' }}>
-            Dev<span style={{ color: 'var(--text)' }}>Market</span>
+            Dev<span style={{ color: 'var(--text)' }}>Lpers</span>
           </span>
         </Link>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <Link href="/dashboard">
-            <button style={{
-              background: 'transparent', border: '1px solid var(--border)',
-              color: 'var(--text)', padding: '8px 18px',
-              borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem',
-            }}>Dashboard</button>
-          </Link>
-          <Link href="/post-job">
-            <button style={{
-              background: 'var(--accent)', border: 'none',
-              color: '#fff', padding: '8px 18px',
-              borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem',
-            }}>Post a Job</button>
-          </Link>
+          {user ? (
+            <>
+              <Link href={user.user_metadata?.role === 'developer' ? '/dashboard' : '/buyer-dashboard'}>
+                <button style={{
+                  background: 'transparent', border: '1px solid var(--border)',
+                  color: 'var(--text)', padding: '8px 18px',
+                  borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem',
+                }}>Dashboard</button>
+              </Link>
+              <Link href="/post-job">
+                <button style={{
+                  background: 'var(--accent)', border: 'none',
+                  color: '#fff', padding: '8px 18px',
+                  borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem',
+                }}>Post a Job</button>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/login">
+                <button style={{
+                  background: 'transparent', border: '1px solid var(--border)',
+                  color: 'var(--text)', padding: '8px 18px',
+                  borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem',
+                }}>Log In</button>
+              </Link>
+              <Link href="/signup">
+                <button style={{
+                  background: 'var(--accent)', border: 'none',
+                  color: '#fff', padding: '8px 18px',
+                  borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem',
+                }}>Sign Up Free</button>
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
       <div style={{ paddingTop: '80px' }}>
+
+        {/* HERO SEARCH */}
         <div style={{
           background: 'var(--card)',
           borderBottom: '1px solid var(--border)',
@@ -141,6 +168,7 @@ export default function JobsFeed() {
           </div>
         </div>
 
+        {/* JOBS LIST */}
         <div style={{ padding: '2rem 5%' }}>
           <p style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
             {loadingJobs ? 'Loading...' : `${filtered.length} jobs found`}
@@ -210,14 +238,25 @@ export default function JobsFeed() {
                       <span style={{ fontFamily: 'Syne', fontWeight: 700, color: 'var(--green)', fontSize: '1rem' }}>
                         ${job.budget_min}{job.budget_max ? ` - $${job.budget_max}` : '/hr'}
                       </span>
-                      <Link href={`/jobs/${job.id}`}>
-                        <button style={{
-                          background: 'var(--accent)', color: '#fff',
-                          border: 'none', padding: '8px 20px',
-                          borderRadius: '8px', cursor: 'pointer',
-                          fontFamily: 'Syne', fontWeight: 600, fontSize: '0.85rem',
-                        }}>Apply Now</button>
-                      </Link>
+                      {user ? (
+                        <Link href={`/jobs/${job.id}`}>
+                          <button style={{
+                            background: 'var(--accent)', color: '#fff',
+                            border: 'none', padding: '8px 20px',
+                            borderRadius: '8px', cursor: 'pointer',
+                            fontFamily: 'Syne', fontWeight: 600, fontSize: '0.85rem',
+                          }}>Apply Now</button>
+                        </Link>
+                      ) : (
+                        <Link href="/login">
+                          <button style={{
+                            background: 'var(--accent)', color: '#fff',
+                            border: 'none', padding: '8px 20px',
+                            borderRadius: '8px', cursor: 'pointer',
+                            fontFamily: 'Syne', fontWeight: 600, fontSize: '0.85rem',
+                          }}>Login to Apply</button>
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -227,14 +266,16 @@ export default function JobsFeed() {
                 <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--muted)' }}>
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
                   <p>No jobs found</p>
-                  <Link href="/post-job">
-                    <button style={{
-                      marginTop: '1rem', background: 'var(--accent)',
-                      color: '#fff', border: 'none', padding: '10px 24px',
-                      borderRadius: '8px', cursor: 'pointer',
-                      fontFamily: 'Syne', fontWeight: 600,
-                    }}>Post a Job</button>
-                  </Link>
+                  {user && (
+                    <Link href="/post-job">
+                      <button style={{
+                        marginTop: '1rem', background: 'var(--accent)',
+                        color: '#fff', border: 'none', padding: '10px 24px',
+                        borderRadius: '8px', cursor: 'pointer',
+                        fontFamily: 'Syne', fontWeight: 600,
+                      }}>Post a Job</button>
+                    </Link>
+                  )}
                 </div>
               )}
             </div>

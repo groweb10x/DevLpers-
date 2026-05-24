@@ -1,4 +1,5 @@
 'use client';
+import Navbar from '../components/Navbar';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -88,28 +89,7 @@ export default function PostJob() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
 
       {/* NAVBAR */}
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        background: 'rgba(10,10,15,0.9)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid var(--border)',
-        padding: '0 5%',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        height: '64px',
-      }}>
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.4rem', color: 'var(--accent)' }}>
-            Dev<span style={{ color: 'var(--text)' }}>Lpers</span>
-          </span>
-        </Link>
-        <Link href="/buyer-dashboard">
-          <button style={{
-            background: 'transparent', border: '1px solid var(--border)',
-            color: 'var(--text)', padding: '8px 18px',
-            borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem',
-          }}>← Dashboard</button>
-        </Link>
-      </nav>
+     <Navbar />
 
       <div style={{ paddingTop: '80px', padding: '80px 5% 3rem' }}>
         <div style={{ maxWidth: '700px', margin: '0 auto' }}>

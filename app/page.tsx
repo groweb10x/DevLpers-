@@ -76,86 +76,11 @@ export default function Home() {
   };
 
   return (
+    
     <main style={{ minHeight: '100vh' }}>
 <Navbar />
       {/* NAVBAR */}
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        background: 'rgba(10,10,15,0.85)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid var(--border)',
-        padding: '0 5%',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        height: '64px',
-      }}>
-       <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-  <div style={{
-    width: '32px', height: '32px', borderRadius: '8px',
-    background: 'linear-gradient(135deg, var(--accent), var(--accent2))',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontFamily: 'Syne', fontWeight: 800, fontSize: '1rem', color: '#fff',
-  }}>D</div>
-  <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.4rem', color: 'var(--accent)' }}>
-    Dev<span style={{ color: 'var(--text)' }}>Lpers</span>
-  </span>
-</Link>
-
-<div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-  {[
-    { label: 'Browse Devs', href: '/developers' },
-    { label: 'Find Jobs', href: '/jobs' },
-    { label: 'How it Works', href: '#how-it-works' },
-    { label: 'Pricing', href: '/pricing' },
-  ].map(item => (
-    <Link key={item.label} href={item.href} style={{ textDecoration: 'none' }}>
-      <span style={{
-        color: 'var(--muted)', fontSize: '0.9rem',
-        transition: 'color 0.2s', cursor: 'pointer',
-      }}
-        onMouseEnter={e => (e.target as HTMLElement).style.color = 'var(--text)'}
-        onMouseLeave={e => (e.target as HTMLElement).style.color = 'var(--muted)'}
-      >{item.label}</span>
-    </Link>
-  ))}
-</div>
-
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          {user ? (
-            <>
-              <Link href={user.user_metadata?.role === 'developer' ? '/dashboard' : '/buyer-dashboard'}>
-                <button style={{
-                  background: 'transparent', border: '1px solid var(--border)',
-                  color: 'var(--text)', padding: '8px 20px', borderRadius: '8px',
-                  cursor: 'pointer', fontSize: '0.9rem'
-                }}>Dashboard</button>
-              </Link>
-              <button onClick={handleLogout} style={{
-                background: 'var(--accent2)', border: 'none',
-                color: '#fff', padding: '8px 20px', borderRadius: '8px',
-                cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500
-              }}>Log Out</button>
-            </>
-          ) : (
-            <>
-              <Link href="/login">
-                <button style={{
-                  background: 'transparent', border: '1px solid var(--border)',
-                  color: 'var(--text)', padding: '8px 20px', borderRadius: '8px',
-                  cursor: 'pointer', fontSize: '0.9rem'
-                }}>Log In</button>
-              </Link>
-              <Link href="/signup">
-                <button style={{
-                  background: 'var(--accent)', border: 'none',
-                  color: '#fff', padding: '8px 20px', borderRadius: '8px',
-                  cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500
-                }}>Sign Up Free</button>
-              </Link>
-            </>
-          )}
-        </div>
-      </nav>
-
+      
       {/* HERO */}
       <section style={{
         minHeight: '100vh',

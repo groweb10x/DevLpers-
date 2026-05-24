@@ -1,4 +1,5 @@
 'use client';
+import Navbar from './components/Navbar';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -76,7 +77,7 @@ export default function Home() {
 
   return (
     <main style={{ minHeight: '100vh' }}>
-
+<Navbar />
       {/* NAVBAR */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
@@ -537,6 +538,8 @@ export default function Home() {
           ))}
         </div>
       </footer>
+
+
 
     </main>
   );

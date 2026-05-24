@@ -28,3 +28,12 @@ body {
 h1, h2, h3, h4 {
   font-family: 'Syne', sans-serif;
 }
+
+@media (max-width: 768px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  .mobile-nav {
+    display: block !important;
+  }
+}

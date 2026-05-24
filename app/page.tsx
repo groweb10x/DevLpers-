@@ -199,7 +199,7 @@ export default function Home() {
           color: 'var(--muted)', fontSize: 'clamp(1rem, 2vw, 1.2rem)',
           maxWidth: '560px', lineHeight: 1.7, marginBottom: '2.5rem',
         }}>
-          Connect with verified Pakistani developers or post your project and get proposals within hours.
+          Connect with verified Global developers or post your project and get proposals within hours.
         </p>
 
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '4rem' }}>
@@ -308,8 +308,7 @@ export default function Home() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section id="how-it-works" style={{ padding: '80px 5%', borderTop: '1px solid var(--border)' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', marginBottom: '0.75rem' }}>How It Works</h2>
+<section id="how-it-works" style={{ padding: '80px 5%', borderTop: '1px solid var(--border)' }}>        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', marginBottom: '0.75rem' }}>How It Works</h2>
         <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '4rem' }}>Get started in 3 simple steps</p>
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',

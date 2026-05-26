@@ -1,18 +1,11 @@
 'use client';
-import Navbar from './components/Navbar';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-
-const stats = [
-  { value: '12K+', label: 'Developers' },
-  { value: '8K+', label: 'Buyers' },
-  { value: '95%', label: 'Success Rate' },
-  { value: '$2M+', label: 'Paid Out' },
-];
+import Navbar from './components/Navbar';
 
 const categories = [
-  { icon: '⚡', name: 'Web Development', count: '2.4k devs' },
+  { icon: '💻', name: 'Web Development', count: '2.4k devs' },
   { icon: '📱', name: 'Mobile Apps', count: '1.8k devs' },
   { icon: '🤖', name: 'AI & ML', count: '900 devs' },
   { icon: '🎨', name: 'UI/UX Design', count: '1.2k devs' },
@@ -21,383 +14,299 @@ const categories = [
 ];
 
 const developers = [
-  { name: 'Ali Hassan', skill: 'Full Stack Dev', rate: '$45/hr', rating: '4.9', jobs: 87, tag: 'React · Node · PostgreSQL' },
-  { name: 'Sara Khan', skill: 'Mobile Developer', rate: '$38/hr', rating: '5.0', jobs: 64, tag: 'Flutter · Firebase · iOS' },
-  { name: 'Usman Malik', skill: 'AI Engineer', rate: '$65/hr', rating: '4.8', jobs: 42, tag: 'Python · TensorFlow · LLMs' },
-];
-
-const aiTools = [
-  { icon: '🎙️', name: 'Voice Cloner', category: 'Audio AI', desc: 'Clone any voice with just 10 seconds of sample audio', tag: 'Popular' },
-  { icon: '🗣️', name: 'Speech to Text', category: 'Audio AI', desc: 'Convert spoken words to accurate text in real-time', tag: 'Hot' },
-  { icon: '🌐', name: 'Text Translator', category: 'Language AI', desc: 'Translate between Urdu, English and 50+ languages instantly', tag: '' },
-  { icon: '🔇', name: 'Noise Remover', category: 'Audio AI', desc: 'Remove background noise and enhance audio quality', tag: '' },
-  { icon: '💬', name: 'Sentiment Checker', category: 'Text AI', desc: 'Analyze reviews as positive, negative or neutral', tag: 'New' },
-  { icon: '🖼️', name: 'Image Analyzer', category: 'Vision AI', desc: 'Detect objects, faces and text inside any photo', tag: '' },
-  { icon: '🤖', name: 'AI Chatbot', category: 'Text AI', desc: 'Deploy a smart customer support bot in minutes', tag: 'Hot' },
-  { icon: '👤', name: 'Face Detector', category: 'Vision AI', desc: 'Real-time face detection for security systems', tag: '' },
-  { icon: '📄', name: 'Document Scanner', category: 'Business AI', desc: 'Extract text and data from any document or invoice', tag: 'New' },
-  { icon: '🎵', name: 'Music Generation', category: 'Audio AI', desc: 'Generate original music tracks using AI prompts', tag: 'New' },
-  { icon: '🎨', name: 'Image Generation', category: 'Vision AI', desc: 'Create stunning images from text descriptions', tag: 'Hot' },
-  { icon: '📊', name: 'Review Analyzer', category: 'Business AI', desc: 'Turn customer feedback into actionable insights', tag: '' },
-];
-
-const jobs = [
-  { title: 'Full Stack Developer Needed', budget: '$500-1000', skills: 'React · Node.js', time: '2 hrs ago', proposals: 12, type: 'Fixed' },
-  { title: 'Mobile App for Food Delivery', budget: '$800-1500', skills: 'Flutter · Firebase', time: '5 hrs ago', proposals: 8, type: 'Fixed' },
-  { title: 'AI Chatbot Integration', budget: '$40/hr', skills: 'Python · OpenAI API', time: '1 day ago', proposals: 5, type: 'Hourly' },
-  { title: 'E-commerce Website Redesign', budget: '$300-600', skills: 'Next.js · Tailwind', time: '3 hrs ago', proposals: 19, type: 'Fixed' },
-  { title: 'WordPress Speed Optimization', budget: '$100-200', skills: 'WordPress · PHP', time: '6 hrs ago', proposals: 7, type: 'Fixed' },
-  { title: 'React Native Developer', budget: '$35/hr', skills: 'React Native · Redux', time: '2 days ago', proposals: 3, type: 'Hourly' },
+  { name: 'Ali Hassan', skill: 'Full Stack Dev', rate: '$45/hr', rating: '4.9', jobs: 87, tag: 'React · Node · PostgreSQL', level: '🥇' },
+  { name: 'Sara Khan', skill: 'Mobile Developer', rate: '$38/hr', rating: '5.0', jobs: 64, tag: 'Flutter · Firebase · iOS', level: '🥈' },
+  { name: 'Usman Malik', skill: 'AI Engineer', rate: '$65/hr', rating: '4.8', jobs: 42, tag: 'Python · TensorFlow · LLMs', level: '🥇' },
 ];
 
 const faqs = [
-  { q: 'How do I hire a developer?', a: 'Simply browse developer profiles or post a job. Developers will send proposals and you can chat, review portfolios, and hire directly.' },
-  { q: 'Is DevMarket free to join?', a: 'Yes! Creating an account is 100% free for both developers and buyers. We only charge a small commission on successful projects.' },
+  { q: 'How do I hire a developer?', a: 'Browse developer profiles or post a job. Developers will send proposals and you can chat, review portfolios, and hire directly.' },
+  { q: 'Is DevLpers free to join?', a: 'Yes! Creating an account is 100% free for both developers and buyers. We only charge a small commission on successful projects.' },
   { q: 'How does payment work?', a: 'We use an escrow system. You deposit funds which are held safely and released to the developer only when you approve the work.' },
-  { q: 'Can I hire Pakistani developers only?', a: 'DevMarket is focused on Pakistani talent but developers from all over can join. Our goal is to showcase top local developers globally.' },
+  { q: 'Can I hire developers globally?', a: 'DevLpers is a global marketplace. Developers and buyers from all over the world can join and collaborate.' },
   { q: 'What if I am not satisfied with the work?', a: 'We have a dispute resolution system. If issues arise, our team steps in to mediate and ensure a fair outcome for both parties.' },
+];
+
+const howItWorks = [
+  { step: '01', icon: '👤', title: 'Create Your Account', desc: 'Sign up as a Developer or Buyer in under 2 minutes.' },
+  { step: '02', icon: '🔍', title: 'Browse or Post', desc: 'Buyers post jobs or browse developer profiles. Developers apply to jobs.' },
+  { step: '03', icon: '🚀', title: 'Work & Get Paid', desc: 'Payment is held in escrow and released when you approve the delivery.' },
 ];
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
-  }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-  };
+  const [search, setSearch] = useState('');
 
   return (
-    
-    <main style={{ minHeight: '100vh' }}>
-<Navbar />
-      {/* NAVBAR */}
-      
+    <main style={{ minHeight: '100vh', background: '#fff' }}>
+      <Navbar />
+
       {/* HERO */}
       <section style={{
-        minHeight: '100vh',
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        textAlign: 'center',
+        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+        paddingTop: '120px', paddingBottom: '80px',
         padding: '120px 5% 80px',
+        textAlign: 'center',
         position: 'relative', overflow: 'hidden',
       }}>
+        {/* Background circles */}
         <div style={{
-          position: 'absolute', top: '20%', left: '50%',
-          transform: 'translateX(-50%)',
-          width: '600px', height: '400px',
-          background: 'radial-gradient(ellipse, rgba(108,99,255,0.15) 0%, transparent 70%)',
-          pointerEvents: 'none',
+          position: 'absolute', top: '-100px', right: '-100px',
+          width: '400px', height: '400px', borderRadius: '50%',
+          background: 'rgba(29,191,115,0.1)', pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '-50px', left: '-50px',
+          width: '300px', height: '300px', borderRadius: '50%',
+          background: 'rgba(29,191,115,0.08)', pointerEvents: 'none',
         }} />
 
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: '8px',
-          background: 'rgba(108,99,255,0.1)',
-          border: '1px solid rgba(108,99,255,0.3)',
+          background: 'rgba(29,191,115,0.15)',
+          border: '1px solid rgba(29,191,115,0.3)',
           borderRadius: '100px', padding: '6px 16px',
-          fontSize: '0.8rem', color: 'var(--accent)',
-          marginBottom: '2rem',
+          fontSize: '0.8rem', color: '#1dbf73',
+          marginBottom: '1.5rem',
         }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--green)', display: 'inline-block' }} />
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#1dbf73', display: 'inline-block' }} />
           The Global Developer Marketplace
         </div>
 
         <h1 style={{
-          fontFamily: 'Syne', fontWeight: 800,
-          fontSize: 'clamp(2.5rem, 6vw, 5rem)',
-          lineHeight: 1.1, marginBottom: '1.5rem', maxWidth: '800px',
+          fontFamily: 'Inter', fontWeight: 800,
+          fontSize: 'clamp(2rem, 5vw, 4rem)',
+          lineHeight: 1.15, marginBottom: '1.25rem',
+          color: '#ffffff', maxWidth: '800px', margin: '0 auto 1.25rem',
         }}>
-          Hire Top Developers.<br />
-          <span style={{ color: 'var(--accent)' }}>Build Faster.</span>{' '}
-          <span style={{ color: 'var(--accent2)' }}>Ship Better.</span>
+          Find the Perfect Developer
+          <span style={{ color: '#1dbf73', display: 'block' }}>for Any Project</span>
         </h1>
 
         <p style={{
-          color: 'var(--muted)', fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-          maxWidth: '560px', lineHeight: 1.7, marginBottom: '2.5rem',
+          color: 'rgba(255,255,255,0.7)', fontSize: 'clamp(1rem, 2vw, 1.15rem)',
+          maxWidth: '560px', lineHeight: 1.7, margin: '0 auto 2.5rem',
         }}>
-          Connect with verified Global developers or post your project and get proposals within hours.
+          Connect with verified developers worldwide. Post jobs, submit proposals, and build amazing products together.
         </p>
 
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '4rem' }}>
-          <Link href="/jobs">
+        {/* Search Bar */}
+        <div style={{
+          maxWidth: '600px', margin: '0 auto 3rem',
+          display: 'flex', gap: '0', borderRadius: '6px',
+          overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+        }}>
+          <input
+            type="text"
+            placeholder='Try "React Developer" or "Mobile App"'
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              flex: 1, padding: '16px 20px',
+              border: 'none', outline: 'none',
+              fontSize: '1rem', background: '#fff',
+              color: '#404145',
+            }}
+          />
+          <Link href={`/jobs?search=${search}`}>
             <button style={{
-              background: 'var(--accent)', color: '#fff',
-              border: 'none', padding: '14px 32px',
-              borderRadius: '10px', fontSize: '1rem', fontWeight: 600, cursor: 'pointer',
-            }}>Find a Developer →</button>
-          </Link>
-          <Link href="/post-job">
-            <button style={{
-              background: 'transparent', color: 'var(--text)',
-              border: '1px solid var(--border)', padding: '14px 32px',
-              borderRadius: '10px', fontSize: '1rem', cursor: 'pointer',
-            }}>Post a Job</button>
+              padding: '16px 28px',
+              background: '#1dbf73', border: 'none',
+              color: '#fff', fontWeight: 700,
+              fontSize: '1rem', cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}>Search</button>
           </Link>
         </div>
 
-        <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          {stats.map(s => (
+        {/* Stats */}
+        <div style={{
+          display: 'flex', gap: '3rem', flexWrap: 'wrap',
+          justifyContent: 'center',
+        }}>
+          {[
+            { value: '12K+', label: 'Developers' },
+            { value: '8K+', label: 'Clients' },
+            { value: '95%', label: 'Success Rate' },
+            { value: '$2M+', label: 'Paid Out' },
+          ].map(s => (
             <div key={s.label} style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '2rem', color: 'var(--accent)' }}>{s.value}</div>
-              <div style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>{s.label}</div>
+              <div style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.8rem', color: '#1dbf73' }}>{s.value}</div>
+              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* CATEGORIES */}
-      <section style={{ padding: '80px 5%', borderTop: '1px solid var(--border)' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', marginBottom: '0.75rem' }}>Browse by Category</h2>
-        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '3rem' }}>Find the exact skill you need</p>
+      <section style={{ padding: '60px 5%', background: '#f5f5f5' }}>
+        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem', color: 'var(--text)', fontWeight: 700 }}>
+          Browse by Category
+        </h2>
+        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '2.5rem' }}>
+          Find the exact skill you need
+        </p>
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
           gap: '1rem', maxWidth: '1100px', margin: '0 auto',
         }}>
           {categories.map(cat => (
-            <div key={cat.name} style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: '12px', padding: '1.5rem', cursor: 'pointer',
-              transition: 'border-color 0.2s, transform 0.2s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-            >
-              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{cat.icon}</div>
-              <div style={{ fontFamily: 'Syne', fontWeight: 600, marginBottom: '0.25rem' }}>{cat.name}</div>
-              <div style={{ color: 'var(--accent)', fontSize: '0.8rem' }}>{cat.count}</div>
+            <Link key={cat.name} href={`/developers?skill=${cat.name}`} style={{ textDecoration: 'none' }}>
+              <div style={{
+                background: '#fff', border: '1px solid var(--border)',
+                borderRadius: '8px', padding: '1.5rem',
+                cursor: 'pointer', transition: 'all 0.2s',
+                textAlign: 'center',
+                boxShadow: 'var(--shadow)',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'var(--shadow)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              >
+                <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{cat.icon}</div>
+                <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text)', marginBottom: '0.25rem' }}>{cat.name}</div>
+                <div style={{ color: 'var(--accent)', fontSize: '0.78rem', fontWeight: 500 }}>{cat.count}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section id="how-it-works" style={{ padding: '60px 5%', background: '#fff' }}>
+        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem', fontWeight: 700 }}>
+          How It Works
+        </h2>
+        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '3rem' }}>
+          Get started in 3 simple steps
+        </p>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '2rem', maxWidth: '900px', margin: '0 auto',
+        }}>
+          {howItWorks.map((item, i) => (
+            <div key={i} style={{
+              textAlign: 'center', padding: '2rem',
+              background: '#fff', border: '1px solid var(--border)',
+              borderRadius: '8px', position: 'relative',
+              boxShadow: 'var(--shadow)',
+            }}>
+              <div style={{
+                width: '56px', height: '56px', borderRadius: '50%',
+                background: 'rgba(29,191,115,0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '1.5rem', margin: '0 auto 1rem',
+              }}>{item.icon}</div>
+              <div style={{
+                position: 'absolute', top: '1rem', right: '1rem',
+                fontWeight: 800, fontSize: '2.5rem',
+                color: 'rgba(29,191,115,0.08)',
+              }}>{item.step}</div>
+              <h3 style={{ fontWeight: 700, marginBottom: '0.5rem', fontSize: '1rem' }}>{item.title}</h3>
+              <p style={{ color: 'var(--muted)', fontSize: '0.88rem', lineHeight: 1.6 }}>{item.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* TOP DEVELOPERS */}
-      <section style={{ padding: '80px 5%', borderTop: '1px solid var(--border)' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', marginBottom: '0.75rem' }}>Top Developers</h2>
-        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '3rem' }}>Verified, reviewed, and ready to work</p>
+      <section style={{ padding: '60px 5%', background: '#f5f5f5' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1100px', margin: '0 auto 2rem', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 700, marginBottom: '0.25rem' }}>Top Developers</h2>
+            <p style={{ color: 'var(--muted)' }}>Verified, reviewed, and ready to work</p>
+          </div>
+          <Link href="/developers">
+            <button style={{
+              background: 'transparent', border: '1px solid var(--accent)',
+              color: 'var(--accent)', padding: '10px 22px',
+              borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600,
+            }}>View All →</button>
+          </Link>
+        </div>
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '1.5rem', maxWidth: '1100px', margin: '0 auto',
         }}>
           {developers.map(dev => (
             <div key={dev.name} style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: '16px', padding: '1.75rem',
-              transition: 'border-color 0.2s, transform 0.2s', cursor: 'pointer',
+              background: '#fff', border: '1px solid var(--border)',
+              borderRadius: '8px', padding: '1.5rem',
+              transition: 'all 0.2s', cursor: 'pointer',
+              boxShadow: 'var(--shadow)',
             }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow)'; e.currentTarget.style.transform = 'translateY(0)'; }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                 <div style={{
                   width: '52px', height: '52px', borderRadius: '50%',
-                  background: 'linear-gradient(135deg, var(--accent), var(--accent2))',
+                  background: 'linear-gradient(135deg, #1dbf73, #0d6efd)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'Syne', fontWeight: 700, fontSize: '1.2rem',
+                  fontFamily: 'Inter', fontWeight: 700, fontSize: '1.2rem', color: '#fff',
                 }}>{dev.name[0]}</div>
                 <div>
-                  <div style={{ fontFamily: 'Syne', fontWeight: 700 }}>{dev.name}</div>
+                  <div style={{ fontWeight: 700, color: 'var(--text)' }}>{dev.name}</div>
                   <div style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>{dev.skill}</div>
                 </div>
+                <div style={{ marginLeft: 'auto', fontSize: '1.2rem' }}>{dev.level}</div>
               </div>
+
               <div style={{
-                background: 'rgba(108,99,255,0.08)', border: '1px solid rgba(108,99,255,0.2)',
-                borderRadius: '6px', padding: '6px 12px',
-                fontSize: '0.78rem', color: 'var(--accent)',
-                marginBottom: '1rem', display: 'inline-block',
+                background: '#f5f5f5', borderRadius: '4px',
+                padding: '6px 12px', fontSize: '0.78rem',
+                color: 'var(--text2)', marginBottom: '1rem', display: 'inline-block',
               }}>{dev.tag}</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'var(--green)', fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem' }}>{dev.rate}</span>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <span style={{ color: '#1dbf73', fontWeight: 700, fontSize: '1rem' }}>{dev.rate}</span>
                 <span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>⭐ {dev.rating} · {dev.jobs} jobs</span>
               </div>
-              <button style={{
-                marginTop: '1.25rem', width: '100%',
-                background: 'transparent', border: '1px solid var(--border)',
-                color: 'var(--text)', padding: '10px', borderRadius: '8px',
-                cursor: 'pointer', fontSize: '0.9rem', transition: 'background 0.2s',
-              }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(108,99,255,0.1)'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
-              >View Profile</button>
-            </div>
-          ))}
-        </div>
-      </section>
 
-      {/* HOW IT WORKS */}
-<section id="how-it-works" style={{ padding: '80px 5%', borderTop: '1px solid var(--border)' }}>        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', marginBottom: '0.75rem' }}>How It Works</h2>
-        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '4rem' }}>Get started in 3 simple steps</p>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '2rem', maxWidth: '1000px', margin: '0 auto',
-        }}>
-          {[
-            { step: '01', icon: '👤', title: 'Create Your Account', desc: 'Sign up as a Developer or Buyer in under 2 minutes. Set up your profile with skills, portfolio, or project needs.' },
-            { step: '02', icon: '🔍', title: 'Browse or Post', desc: 'Buyers post jobs or browse developer profiles. Developers apply to jobs or get contacted directly by buyers.' },
-            { step: '03', icon: '🚀', title: 'Work & Get Paid', desc: 'Chat, agree on terms, work together. Payment is held in escrow and released when you approve the delivery.' },
-          ].map((item, i) => (
-            <div key={i} style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: '16px', padding: '2rem', position: 'relative', overflow: 'hidden',
-            }}>
-              <div style={{
-                position: 'absolute', top: '1rem', right: '1.25rem',
-                fontFamily: 'Syne', fontWeight: 800, fontSize: '3.5rem',
-                color: 'rgba(108,99,255,0.08)', lineHeight: 1,
-              }}>{item.step}</div>
-              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{item.icon}</div>
-              <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.75rem' }}>{item.title}</h3>
-              <p style={{ color: 'var(--muted)', lineHeight: 1.7, fontSize: '0.9rem' }}>{item.desc}</p>
+              <Link href="/developers">
+                <button style={{
+                  width: '100%', padding: '10px',
+                  background: 'transparent', border: '1px solid var(--border)',
+                  color: 'var(--text)', borderRadius: '4px',
+                  cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500,
+                  transition: 'all 0.2s',
+                }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#1dbf73'; (e.currentTarget as HTMLElement).style.color = '#fff'; (e.currentTarget as HTMLElement).style.borderColor = '#1dbf73'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = 'var(--text)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
+                >View Profile</button>
+              </Link>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* POPULAR JOBS */}
-      <section style={{ padding: '80px 5%', borderTop: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1100px', margin: '0 auto 2.5rem' }}>
-          <div>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', marginBottom: '0.4rem' }}>Popular Jobs</h2>
-            <p style={{ color: 'var(--muted)' }}>Latest projects posted by buyers</p>
-          </div>
-          <Link href="/jobs">
-            <button style={{
-              background: 'transparent', border: '1px solid var(--border)',
-              color: 'var(--accent)', padding: '10px 22px',
-              borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem',
-            }}>View All Jobs →</button>
-          </Link>
-        </div>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1rem', maxWidth: '1100px', margin: '0 auto',
-        }}>
-          {jobs.map((job, i) => (
-            <div key={i} style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: '14px', padding: '1.5rem', cursor: 'pointer',
-              transition: 'border-color 0.2s, transform 0.2s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1rem', maxWidth: '75%' }}>{job.title}</h3>
-                <span style={{
-                  background: job.type === 'Hourly' ? 'rgba(0,212,170,0.1)' : 'rgba(108,99,255,0.1)',
-                  color: job.type === 'Hourly' ? 'var(--green)' : 'var(--accent)',
-                  border: `1px solid ${job.type === 'Hourly' ? 'rgba(0,212,170,0.3)' : 'rgba(108,99,255,0.3)'}`,
-                  borderRadius: '6px', padding: '3px 10px', fontSize: '0.75rem',
-                }}>{job.type}</span>
-              </div>
-              <div style={{ color: 'var(--muted)', fontSize: '0.82rem', marginBottom: '1rem' }}>🏷️ {job.skills}</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontFamily: 'Syne', fontWeight: 700, color: 'var(--green)', fontSize: '1rem' }}>{job.budget}</span>
-                <div style={{ color: 'var(--muted)', fontSize: '0.8rem', display: 'flex', gap: '1rem' }}>
-                  <span>🕐 {job.time}</span>
-                  <span>📨 {job.proposals}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* AI TOOLS */}
-      <section style={{ padding: '80px 5%', borderTop: '1px solid var(--border)' }}>
-        <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: '8px',
-            background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.3)',
-            borderRadius: '100px', padding: '6px 16px',
-            fontSize: '0.8rem', color: 'var(--green)', marginBottom: '1rem',
-          }}>⚡ AI-Powered Tools</div>
-        </div>
-        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', marginBottom: '0.75rem' }}>
-          Popular AI Tools on DevMarket
-        </h2>
-        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '3rem', maxWidth: '560px', margin: '0 auto 3rem' }}>
-          Developers build and sell these AI-powered tools.
-        </p>
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '1rem', maxWidth: '1200px', margin: '0 auto',
-        }}>
-          {aiTools.map((tool, i) => (
-            <div key={i} style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: '14px', padding: '1.5rem', cursor: 'pointer',
-              transition: 'border-color 0.2s, transform 0.2s', position: 'relative',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--green)'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-            >
-              {tool.tag && (
-                <span style={{
-                  position: 'absolute', top: '1rem', right: '1rem',
-                  background: tool.tag === 'Hot' ? 'rgba(255,101,132,0.15)' : tool.tag === 'New' ? 'rgba(0,212,170,0.15)' : 'rgba(108,99,255,0.15)',
-                  color: tool.tag === 'Hot' ? 'var(--accent2)' : tool.tag === 'New' ? 'var(--green)' : 'var(--accent)',
-                  border: `1px solid ${tool.tag === 'Hot' ? 'rgba(255,101,132,0.3)' : tool.tag === 'New' ? 'rgba(0,212,170,0.3)' : 'rgba(108,99,255,0.3)'}`,
-                  borderRadius: '6px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 600,
-                }}>{tool.tag}</span>
-              )}
-              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{tool.icon}</div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--green)', marginBottom: '0.4rem', fontWeight: 500, textTransform: 'uppercase' }}>{tool.category}</div>
-              <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1rem', marginBottom: '0.5rem' }}>{tool.name}</h3>
-              <p style={{ color: 'var(--muted)', fontSize: '0.83rem', lineHeight: 1.6 }}>{tool.desc}</p>
-              <button style={{
-                marginTop: '1rem', width: '100%',
-                background: 'transparent', border: '1px solid var(--border)',
-                color: 'var(--text)', padding: '8px', borderRadius: '8px',
-                cursor: 'pointer', fontSize: '0.85rem', transition: 'all 0.2s',
-              }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(0,212,170,0.1)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--green)'; (e.currentTarget as HTMLElement).style.color = 'var(--green)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLElement).style.color = 'var(--text)'; }}
-              >Explore Tool →</button>
-            </div>
-          ))}
-        </div>
-        <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-          <button style={{
-            background: 'linear-gradient(135deg, var(--accent), var(--green))',
-            color: '#fff', border: 'none', padding: '14px 36px',
-            borderRadius: '10px', fontSize: '1rem', fontWeight: 600,
-            cursor: 'pointer', fontFamily: 'Syne',
-          }}>Browse All AI Tools →</button>
         </div>
       </section>
 
       {/* FAQ */}
-      <section style={{ padding: '80px 5%', borderTop: '1px solid var(--border)' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.8rem, 3vw, 2.5rem)', marginBottom: '0.75rem' }}>Frequently Asked Questions</h2>
+      <section style={{ padding: '60px 5%', background: '#fff' }}>
+        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem', fontWeight: 700 }}>
+          Frequently Asked Questions
+        </h2>
         <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '3rem' }}>Everything you need to know</p>
-        <div style={{ maxWidth: '720px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ maxWidth: '720px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {faqs.map((faq, i) => (
             <div key={i} style={{
-              background: 'var(--card)',
-              border: `1px solid ${openFaq === i ? 'var(--accent)' : 'var(--border)'}`,
-              borderRadius: '12px', overflow: 'hidden', transition: 'border-color 0.2s',
+              border: '1px solid var(--border)', borderRadius: '8px',
+              overflow: 'hidden', transition: 'border-color 0.2s',
+              background: '#fff',
             }}>
               <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{
                 width: '100%', background: 'transparent', border: 'none',
                 padding: '1.25rem 1.5rem',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 cursor: 'pointer', color: 'var(--text)',
-                fontFamily: 'Syne', fontWeight: 600, fontSize: '0.95rem', textAlign: 'left',
+                fontFamily: 'Inter', fontWeight: 600, fontSize: '0.95rem', textAlign: 'left',
               }}>
                 {faq.q}
                 <span style={{
                   color: 'var(--accent)', fontSize: '1.2rem',
                   transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0)',
-                  transition: 'transform 0.2s', display: 'inline-block',
+                  transition: 'transform 0.2s', display: 'inline-block', flexShrink: 0,
                 }}>+</span>
               </button>
               {openFaq === i && (
@@ -412,58 +321,62 @@ export default function Home() {
 
       {/* CTA */}
       <section style={{
-        padding: '100px 5%', borderTop: '1px solid var(--border)',
-        textAlign: 'center', position: 'relative', overflow: 'hidden',
+        padding: '80px 5%',
+        background: 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)',
+        textAlign: 'center',
       }}>
-        <div style={{
-          position: 'absolute', top: '50%', left: '50%',
-          transform: 'translate(-50%,-50%)',
-          width: '500px', height: '300px',
-          background: 'radial-gradient(ellipse, rgba(255,101,132,0.1) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-        <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', marginBottom: '1rem' }}>Ready to Get Started?</h2>
-        <p style={{ color: 'var(--muted)', maxWidth: '480px', margin: '0 auto 2.5rem', lineHeight: 1.7 }}>
-          Join thousands of developers and buyers already using DevMarket.
+        <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', marginBottom: '1rem', color: '#fff', fontWeight: 800 }}>
+          Ready to Get Started?
+        </h2>
+        <p style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '480px', margin: '0 auto 2.5rem', lineHeight: 1.7 }}>
+          Join thousands of developers and clients already using DevLpers.
         </p>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link href="/signup">
             <button style={{
-              background: 'var(--accent)', color: '#fff', border: 'none',
-              padding: '14px 36px', borderRadius: '10px',
-              fontSize: '1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'Syne',
-            }}>Join as Developer</button>
+              background: '#1dbf73', color: '#fff', border: 'none',
+              padding: '14px 36px', borderRadius: '4px',
+              fontSize: '1rem', fontWeight: 700, cursor: 'pointer',
+              transition: 'background 0.2s',
+            }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#19a463'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = '#1dbf73'}
+            >Join as Developer</button>
           </Link>
-          <Link href="/signup">
+          <Link href="/post-job">
             <button style={{
-              background: 'var(--accent2)', color: '#fff', border: 'none',
-              padding: '14px 36px', borderRadius: '10px',
-              fontSize: '1rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'Syne',
-            }}>Hire a Developer</button>
+              background: 'transparent', color: '#fff',
+              border: '2px solid rgba(255,255,255,0.5)', padding: '14px 36px',
+              borderRadius: '4px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#fff'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.5)'; }}
+            >Hire a Developer</button>
           </Link>
         </div>
       </section>
 
       {/* FOOTER */}
       <footer style={{
-        borderTop: '1px solid var(--border)',
+        background: '#1a1a2e',
         padding: '2rem 5%',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         flexWrap: 'wrap', gap: '1rem',
-        color: 'var(--muted)', fontSize: '0.85rem',
+        borderTop: '1px solid rgba(255,255,255,0.1)',
       }}>
-        <div style={{ fontFamily: 'Syne', fontWeight: 700, color: 'var(--accent)' }}>
-          Dev<span style={{ color: 'var(--text)' }}>Market</span>
+        <div style={{ fontFamily: 'Inter', fontWeight: 800, color: '#1dbf73', fontSize: '1.2rem' }}>
+          Dev<span style={{ color: '#fff' }}>Lpers</span>
         </div>
-        <div>© 2026 DevMarket. All rights reserved.</div>
+        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+          © 2026 DevLpers. All rights reserved.
+        </div>
         <div style={{ display: 'flex', gap: '1.5rem' }}>
-          {['Privacy', 'Terms', 'Contact'].map(l => (
-            <a key={l} href="#" style={{ color: 'var(--muted)', textDecoration: 'none' }}>{l}</a>
+          {['Privacy', 'Terms', 'Support'].map(l => (
+            <Link key={l} href={l === 'Support' ? '/support' : '#'} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: '0.85rem' }}>{l}</Link>
           ))}
         </div>
       </footer>
-
-
 
     </main>
   );

@@ -1,22 +1,10 @@
 'use client';
-import Navbar from '../components/Navbar';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import Navbar from '../components/Navbar';
 
 const skillsList = ['All', 'React', 'Flutter', 'Python', 'Node.js', 'Laravel', 'WordPress', 'Figma', 'React Native', 'TypeScript', 'AWS', 'Docker'];
-
-const levelColors: Record<number, string> = {
-  1: '#cd7f32',
-  2: '#c0c0c0',
-  3: '#ffd700',
-};
-
-const levelIcons: Record<number, string> = {
-  1: '🥉',
-  2: '🥈',
-  3: '🥇',
-};
 
 export default function DevelopersFeed() {
   const [search, setSearch] = useState('');
@@ -46,78 +34,80 @@ export default function DevelopersFeed() {
     return matchSearch && matchSkill && matchLevel;
   });
 
-  return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+  const levelLabels: Record<number, string> = { 1: 'Level 1', 2: 'Level 2', 3: 'Level 3' };
+  const levelColors: Record<number, string> = { 1: '#92400e', 2: '#4b5563', 3: '#78350f' };
+  const levelBg: Record<number, string> = { 1: '#fef3c7', 2: '#f3f4f6', 3: '#fef9c3' };
 
-      {/* NAVBAR */}
+  return (
+    <div style={{ minHeight: '100vh', background: '#fafafa' }}>
       <Navbar />
 
-      <div style={{ paddingTop: '80px' }}>
+      <div style={{ paddingTop: '64px' }}>
 
-        {/* HERO SEARCH */}
+        {/* HEADER */}
         <div style={{
-          background: 'var(--card)',
-          borderBottom: '1px solid var(--border)',
-          padding: '2.5rem 5%',
+          background: '#fff', borderBottom: '1px solid var(--border)',
+          padding: '2rem 5%',
         }}>
-          <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem' }}>
-            Browse Top Developers 👨‍💻
-          </h1>
-          <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-            Find verified developers for your next project
-          </p>
+          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+            <h1 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', marginBottom: '0.5rem', color: 'var(--text)' }}>
+              Browse Top Developers
+            </h1>
+            <p style={{ color: 'var(--text2)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
+              Find verified developers for your next project
+            </p>
 
-          {/* Search */}
-          <div style={{ position: 'relative', maxWidth: '600px', marginBottom: '1.5rem' }}>
-            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }}>🔍</span>
-            <input
-              type="text"
-              placeholder="Search by name, skill or title..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{
-                width: '100%', padding: '12px 14px 12px 40px',
-                background: 'var(--bg)', border: '1px solid var(--border)',
-                borderRadius: '10px', color: 'var(--text)',
-                fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box',
-              }}
-              onFocus={e => (e.target as HTMLElement).style.borderColor = 'var(--accent)'}
-              onBlur={e => (e.target as HTMLElement).style.borderColor = 'var(--border)'}
-            />
-          </div>
+            {/* Search */}
+            <div style={{ display: 'flex', gap: '0', maxWidth: '500px', marginBottom: '1rem', border: '1px solid var(--border)', borderRadius: '6px', overflow: 'hidden', background: '#fff' }}>
+              <span style={{ padding: '0 14px', display: 'flex', alignItems: 'center', color: 'var(--muted)' }}>🔍</span>
+              <input
+                type="text"
+                placeholder="Search by name, skill or title..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                style={{
+                  flex: 1, padding: '11px 0',
+                  border: 'none', outline: 'none',
+                  fontSize: '0.9rem', color: 'var(--text)', background: '#fff',
+                }}
+              />
+            </div>
 
-          {/* Level Filter */}
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-            {['All', '1', '2', '3'].map(l => (
-              <button key={l} onClick={() => setSelectedLevel(l)} style={{
-                padding: '6px 16px',
-                background: selectedLevel === l ? 'rgba(108,99,255,0.15)' : 'transparent',
-                border: `1px solid ${selectedLevel === l ? 'var(--accent)' : 'var(--border)'}`,
-                borderRadius: '100px', color: selectedLevel === l ? 'var(--accent)' : 'var(--muted)',
-                cursor: 'pointer', fontSize: '0.82rem', transition: 'all 0.2s',
-              }}>
-                {l === 'All' ? 'All Levels' : l === '1' ? '🥉 Level 1' : l === '2' ? '🥈 Level 2' : '🥇 Level 3'}
-              </button>
-            ))}
-          </div>
+            {/* Level Filter */}
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
+              {['All', '1', '2', '3'].map(l => (
+                <button key={l} onClick={() => setSelectedLevel(l)} style={{
+                  padding: '5px 14px',
+                  background: selectedLevel === l ? 'var(--accent)' : '#fff',
+                  border: `1px solid ${selectedLevel === l ? 'var(--accent)' : 'var(--border)'}`,
+                  borderRadius: '100px',
+                  color: selectedLevel === l ? '#fff' : 'var(--text2)',
+                  cursor: 'pointer', fontSize: '0.82rem', fontWeight: 500,
+                }}>
+                  {l === 'All' ? 'All Levels' : l === '1' ? '🥉 Level 1' : l === '2' ? '🥈 Level 2' : '🥇 Level 3'}
+                </button>
+              ))}
+            </div>
 
-          {/* Skills Filter */}
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {skillsList.map(skill => (
-              <button key={skill} onClick={() => setSelectedSkill(skill)} style={{
-                padding: '5px 14px',
-                background: selectedSkill === skill ? 'rgba(108,99,255,0.15)' : 'transparent',
-                border: `1px solid ${selectedSkill === skill ? 'var(--accent)' : 'var(--border)'}`,
-                borderRadius: '100px', color: selectedSkill === skill ? 'var(--accent)' : 'var(--muted)',
-                cursor: 'pointer', fontSize: '0.8rem', transition: 'all 0.2s',
-              }}>{skill}</button>
-            ))}
+            {/* Skills */}
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+              {skillsList.map(skill => (
+                <button key={skill} onClick={() => setSelectedSkill(skill)} style={{
+                  padding: '4px 12px',
+                  background: selectedSkill === skill ? '#e8fdf2' : '#fff',
+                  border: `1px solid ${selectedSkill === skill ? 'var(--accent)' : 'var(--border)'}`,
+                  borderRadius: '100px',
+                  color: selectedSkill === skill ? 'var(--accent)' : 'var(--text2)',
+                  cursor: 'pointer', fontSize: '0.78rem', fontWeight: 500,
+                }}>{skill}</button>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* DEVELOPERS LIST */}
-        <div style={{ padding: '2rem 5%' }}>
-          <p style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+        {/* DEVELOPERS */}
+        <div style={{ padding: '1.5rem 5%', maxWidth: '1100px', margin: '0 auto' }}>
+          <p style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
             {loading ? 'Loading...' : `${filtered.length} developers found`}
           </p>
 
@@ -127,65 +117,74 @@ export default function DevelopersFeed() {
               <p>Loading developers...</p>
             </div>
           ) : filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--muted)' }}>
+            <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--muted)', background: '#fff', borderRadius: '8px', border: '1px solid var(--border)' }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👨‍💻</div>
-              <p style={{ marginBottom: '1rem' }}>No developers found</p>
+              <p style={{ marginBottom: '1rem', fontWeight: 500 }}>No developers found</p>
               <Link href="/signup">
                 <button style={{
                   background: 'var(--accent)', color: '#fff',
                   border: 'none', padding: '10px 24px',
-                  borderRadius: '8px', cursor: 'pointer',
-                  fontFamily: 'Syne', fontWeight: 600,
+                  borderRadius: '4px', cursor: 'pointer', fontWeight: 600,
                 }}>Join as Developer →</button>
               </Link>
             </div>
           ) : (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '1.5rem',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '1rem',
             }}>
               {filtered.map((dev, i) => (
                 <div key={i} style={{
-                  background: 'var(--card)', border: '1px solid var(--border)',
-                  borderRadius: '16px', padding: '1.75rem',
-                  transition: 'border-color 0.2s, transform 0.2s', cursor: 'pointer',
+                  background: '#fff', border: '1px solid var(--border)',
+                  borderRadius: '8px', padding: '1.5rem',
+                  transition: 'all 0.2s', cursor: 'pointer',
                   position: 'relative',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(29,191,115,0.1)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                 >
-                  {/* DevMarket Choice Badge */}
+                  {/* DevLpers Choice Badge */}
                   {dev.seller_levels?.is_devmarket_choice && (
                     <div style={{
                       position: 'absolute', top: '1rem', right: '1rem',
-                      background: 'rgba(108,99,255,0.15)',
-                      border: '1px solid rgba(108,99,255,0.3)',
-                      borderRadius: '6px', padding: '2px 8px',
-                      fontSize: '0.72rem', color: 'var(--accent)', fontWeight: 600,
+                      background: '#fef9c3', color: '#78350f',
+                      border: '1px solid #fde68a',
+                      borderRadius: '4px', padding: '2px 8px',
+                      fontSize: '0.7rem', fontWeight: 600,
                     }}>⭐ DevLpers Choice</div>
                   )}
 
-                  {/* Avatar */}
+                  {/* Avatar + Info */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                    <div style={{
-                      width: '56px', height: '56px', borderRadius: '50%',
-                      background: 'linear-gradient(135deg, var(--accent), var(--accent2))',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: 'Syne', fontWeight: 700, fontSize: '1.3rem', color: '#fff',
-                      flexShrink: 0,
-                    }}>{dev.full_name?.[0]?.toUpperCase() || '?'}</div>
+                    {dev.avatar_url ? (
+                      <img src={dev.avatar_url} alt={dev.full_name}
+                        style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--border)', flexShrink: 0 }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: '52px', height: '52px', borderRadius: '50%',
+                        background: 'var(--accent)', color: '#fff',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontWeight: 700, fontSize: '1.2rem', flexShrink: 0,
+                      }}>{dev.full_name?.[0]?.toUpperCase() || '?'}</div>
+                    )}
                     <div>
-                      <div style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1rem' }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text)', marginBottom: '0.2rem' }}>
                         {dev.full_name || 'Developer'}
                       </div>
-                      <div style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>{dev.title || 'Developer'}</div>
-                      <div style={{
-                        color: levelColors[dev.seller_levels?.level || 1],
-                        fontSize: '0.75rem', fontWeight: 600,
-                      }}>
-                        {levelIcons[dev.seller_levels?.level || 1]} Level {dev.seller_levels?.level || 1}
+                      <div style={{ color: 'var(--text2)', fontSize: '0.82rem', marginBottom: '0.3rem' }}>
+                        {dev.title || 'Developer'}
                       </div>
+                      <span style={{
+                        background: levelBg[dev.seller_levels?.level || 1],
+                        color: levelColors[dev.seller_levels?.level || 1],
+                        fontSize: '0.7rem', fontWeight: 600,
+                        padding: '2px 8px', borderRadius: '4px',
+                      }}>
+                        {dev.seller_levels?.level === 1 ? '🥉' : dev.seller_levels?.level === 2 ? '🥈' : '🥇'} {levelLabels[dev.seller_levels?.level || 1]}
+                      </span>
                     </div>
                   </div>
 
@@ -193,27 +192,30 @@ export default function DevelopersFeed() {
                   <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
                     {(dev.skills || []).slice(0, 4).map((skill: string) => (
                       <span key={skill} style={{
-                        background: 'rgba(108,99,255,0.08)',
-                        border: '1px solid rgba(108,99,255,0.2)',
-                        borderRadius: '6px', padding: '3px 10px',
-                        fontSize: '0.75rem', color: 'var(--accent)',
+                        background: '#f5f5f5', color: 'var(--text2)',
+                        borderRadius: '4px', padding: '3px 8px', fontSize: '0.75rem',
                       }}>{skill}</span>
                     ))}
+                    {(dev.skills || []).length > 4 && (
+                      <span style={{ background: '#f0fdf4', color: 'var(--accent)', borderRadius: '4px', padding: '3px 8px', fontSize: '0.75rem', fontWeight: 600 }}>
+                        +{dev.skills.length - 4}
+                      </span>
+                    )}
                   </div>
 
                   {/* Bio */}
                   {dev.bio && (
-                    <p style={{ color: 'var(--muted)', fontSize: '0.83rem', lineHeight: 1.6, marginBottom: '1rem' }}>
-                      {dev.bio.slice(0, 100)}{dev.bio.length > 100 ? '...' : ''}
+                    <p style={{ color: 'var(--text2)', fontSize: '0.82rem', lineHeight: 1.6, marginBottom: '1rem' }}>
+                      {dev.bio.slice(0, 90)}{dev.bio.length > 90 ? '...' : ''}
                     </p>
                   )}
 
-                  {/* Stats */}
+                  {/* Rate + Location + Availability */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <div style={{ fontFamily: 'Syne', fontWeight: 700, color: 'var(--green)', fontSize: '1rem' }}>
+                    <div style={{ fontWeight: 700, color: 'var(--accent)', fontSize: '1rem' }}>
                       {dev.hourly_rate ? `$${dev.hourly_rate}/hr` : 'Rate: TBD'}
                     </div>
-                    <div style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>
+                    <div style={{ color: 'var(--muted)', fontSize: '0.78rem' }}>
                       📍 {dev.location || 'Remote'}
                     </div>
                   </div>
@@ -221,10 +223,10 @@ export default function DevelopersFeed() {
                   {/* Availability */}
                   <div style={{ marginBottom: '1rem' }}>
                     <span style={{
-                      background: dev.availability === 'available' ? 'rgba(0,212,170,0.1)' : 'rgba(255,101,132,0.1)',
-                      color: dev.availability === 'available' ? 'var(--green)' : 'var(--accent2)',
-                      border: `1px solid ${dev.availability === 'available' ? 'rgba(0,212,170,0.3)' : 'rgba(255,101,132,0.3)'}`,
-                      borderRadius: '6px', padding: '3px 10px', fontSize: '0.75rem', fontWeight: 600,
+                      background: dev.availability === 'available' ? '#f0fdf4' : '#fef2f2',
+                      color: dev.availability === 'available' ? 'var(--accent)' : '#dc2626',
+                      border: `1px solid ${dev.availability === 'available' ? '#bbf7d0' : '#fecaca'}`,
+                      borderRadius: '100px', padding: '3px 10px', fontSize: '0.75rem', fontWeight: 600,
                     }}>
                       {dev.availability === 'available' ? '● Available' : '● Busy'}
                     </span>
@@ -233,13 +235,14 @@ export default function DevelopersFeed() {
                   <Link href={`/developers/${dev.user_id}`} style={{ textDecoration: 'none' }}>
                     <button style={{
                       width: '100%', padding: '10px',
-                      background: 'transparent', border: '1px solid var(--border)',
-                      color: 'var(--text)', borderRadius: '8px',
-                      cursor: 'pointer', fontSize: '0.9rem', transition: 'all 0.2s',
+                      background: '#fff', border: '1px solid var(--accent)',
+                      color: 'var(--accent)', borderRadius: '4px',
+                      cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600,
+                      transition: 'all 0.2s',
                     }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--accent)'; (e.currentTarget as HTMLElement).style.color = '#fff'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)'; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = 'var(--text)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
-                    >View Profile →</button>
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--accent)'; (e.currentTarget as HTMLElement).style.color = '#fff'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#fff'; (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
+                    >View Profile</button>
                   </Link>
                 </div>
               ))}

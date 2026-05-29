@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [myProposals, setMyProposals] = useState<any[]>([]);
   const [subscription, setSubscription] = useState<any>(null);
@@ -14,68 +15,36 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        window.location.href = '/login';
-        return;
-      }
+      if (!user) { window.location.href = '/login'; return; }
       setUser(user);
 
-      // Fetch proposals
       const { data: proposals } = await supabase
-        .from('proposals')
-        .select('*, jobs(*)')
+        .from('proposals').select('*, jobs(*)')
         .eq('developer_id', user.id)
         .order('created_at', { ascending: false });
       if (proposals) setMyProposals(proposals);
 
-      // Fetch subscription
       const { data: sub } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
+        .from('subscriptions').select('*')
+        .eq('user_id', user.id).single();
       if (!sub) {
         const { data: newSub } = await supabase
           .from('subscriptions')
-          .insert({
-            user_id: user.id,
-            plan: 'free',
-            bids_remaining: 5,
-            bids_total: 5,
-            expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-          })
-          .select()
-          .single();
+          .insert({ user_id: user.id, plan: 'free', bids_remaining: 5, bids_total: 5, expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() })
+          .select().single();
         if (newSub) setSubscription(newSub);
-      } else {
-        setSubscription(sub);
-      }
+      } else { setSubscription(sub); }
 
-      // Fetch seller level
       const { data: level } = await supabase
-        .from('seller_levels')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
+        .from('seller_levels').select('*')
+        .eq('user_id', user.id).single();
       if (!level) {
         const { data: newLevel } = await supabase
           .from('seller_levels')
-          .insert({
-            user_id: user.id,
-            level: 1,
-            total_jobs: 0,
-            total_earnings: 0,
-            rating: 0,
-            is_devmarket_choice: false,
-          })
-          .select()
-          .single();
+          .insert({ user_id: user.id, level: 1, total_jobs: 0, total_earnings: 0, rating: 0, is_devmarket_choice: false })
+          .select().single();
         if (newLevel) setSellerLevel(newLevel);
-      } else {
-        setSellerLevel(level);
-      }
+      } else { setSellerLevel(level); }
 
       setLoading(false);
     };
@@ -88,340 +57,395 @@ export default function Dashboard() {
   };
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', background: '#fafafa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center', color: 'var(--muted)' }}>
         <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
-        <p>Loading dashboard...</p>
+        <p>Loading...</p>
       </div>
     </div>
   );
 
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Developer';
   const userInitial = userName[0].toUpperCase();
+  const levelIcons: Record<number, string> = { 1: '🥉', 2: '🥈', 3: '🥇' };
+  const levelColors: Record<number, string> = { 1: '#92400e', 2: '#374151', 3: '#78350f' };
+  const levelBg: Record<number, string> = { 1: '#fef3c7', 2: '#f3f4f6', 3: '#fef9c3' };
 
-  const levelColors: Record<number, string> = {
-    1: '#cd7f32',
-    2: '#c0c0c0',
-    3: '#ffd700',
-  };
+  const navItems = [
+    { id: 'overview', icon: '📊', label: 'Overview' },
+    { id: 'proposals', icon: '📨', label: 'My Proposals' },
+    { id: 'messages', icon: '💬', label: 'Messages' },
+    { id: 'earnings', icon: '💰', label: 'Earnings' },
+    { id: 'profile', icon: '👤', label: 'My Profile' },
+  ];
 
-  const levelIcons: Record<number, string> = {
-    1: '🥉',
-    2: '🥈',
-    3: '🥇',
-  };
+  const SidebarContent = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Logo */}
+      <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)' }}>
+        <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{
+            width: '28px', height: '28px', borderRadius: '6px',
+            background: 'var(--accent)', color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontWeight: 800, fontSize: '0.9rem',
+          }}>D</div>
+          <span style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.2rem', color: 'var(--text)' }}>
+            Dev<span style={{ color: 'var(--accent)' }}>Lpers</span>
+          </span>
+        </Link>
+      </div>
 
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
-
-      {/* SIDEBAR */}
-      <aside style={{
-        width: '240px', minHeight: '100vh',
-        background: 'var(--card)',
-        borderRight: '1px solid var(--border)',
-        padding: '1.5rem 0',
-        display: 'flex', flexDirection: 'column',
-        position: 'fixed', top: 0, left: 0,
-      }}>
-        <div style={{ padding: '0 1.5rem', marginBottom: '2rem' }}>
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.3rem', color: 'var(--accent)' }}>
-              Dev<span style={{ color: 'var(--text)' }}>Market</span>
+      {/* Profile */}
+      <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+          <div style={{
+            width: '40px', height: '40px', borderRadius: '50%',
+            background: 'var(--accent)', color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontWeight: 700, fontSize: '1rem', flexShrink: 0,
+          }}>{userInitial}</div>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userName}</div>
+            <span style={{
+              background: levelBg[sellerLevel?.level || 1],
+              color: levelColors[sellerLevel?.level || 1],
+              fontSize: '0.7rem', fontWeight: 600,
+              padding: '1px 6px', borderRadius: '4px',
+            }}>
+              {levelIcons[sellerLevel?.level || 1]} Level {sellerLevel?.level || 1}
             </span>
-          </Link>
+          </div>
         </div>
 
-        {/* Profile */}
-        <div style={{ padding: '0 1.5rem', marginBottom: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ position: 'relative' }}>
-              <div style={{
-                width: '44px', height: '44px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--accent), var(--accent2))',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem',
-              }}>{userInitial}</div>
-              {sellerLevel?.is_devmarket_choice && (
-                <div style={{
-                  position: 'absolute', bottom: '-2px', right: '-2px',
-                  fontSize: '0.7rem',
-                }}>⭐</div>
-              )}
+        {/* Bid Counter */}
+        {subscription && (
+          <div style={{
+            background: subscription.plan === 'free' ? '#fef2f2' : '#f0fdf4',
+            border: `1px solid ${subscription.plan === 'free' ? '#fecaca' : '#bbf7d0'}`,
+            borderRadius: '6px', padding: '0.75rem',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+              <span style={{ color: 'var(--text2)', fontSize: '0.75rem', fontWeight: 500 }}>Bids Remaining</span>
+              <span style={{ color: subscription.plan === 'free' ? '#dc2626' : 'var(--accent)', fontSize: '0.75rem', fontWeight: 700 }}>
+                {subscription.plan === 'free' ? `${subscription.bids_remaining}/${subscription.bids_total}` : '∞ Unlimited'}
+              </span>
             </div>
-            <div>
-              <div style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '0.88rem' }}>{userName}</div>
-              <div style={{ color: levelColors[sellerLevel?.level || 1], fontSize: '0.72rem' }}>
-                {levelIcons[sellerLevel?.level || 1]} Level {sellerLevel?.level || 1}
-                {sellerLevel?.is_devmarket_choice && ' · ⭐ Choice'}
+            {subscription.plan === 'free' && (
+              <div style={{ width: '100%', height: '4px', background: '#e5e7eb', borderRadius: '100px' }}>
+                <div style={{
+                  width: `${(subscription.bids_remaining / subscription.bids_total) * 100}%`,
+                  height: '100%',
+                  background: subscription.bids_remaining <= 2 ? '#dc2626' : 'var(--accent)',
+                  borderRadius: '100px',
+                }} />
               </div>
+            )}
+            <div style={{ marginTop: '0.4rem' }}>
+              <span style={{
+                background: subscription.plan === 'free' ? '#fef2f2' : '#f0fdf4',
+                color: subscription.plan === 'free' ? '#dc2626' : 'var(--accent)',
+                fontSize: '0.68rem', fontWeight: 700,
+                padding: '1px 6px', borderRadius: '4px',
+                border: `1px solid ${subscription.plan === 'free' ? '#fecaca' : '#bbf7d0'}`,
+              }}>{subscription.plan.toUpperCase()}</span>
             </div>
           </div>
+        )}
+      </div>
 
-          {/* Bid Counter */}
-          {subscription && (
-            <div style={{
-              marginTop: '1rem',
-              background: subscription.plan === 'free' ? 'rgba(255,101,132,0.08)' : 'rgba(0,212,170,0.08)',
-              border: `1px solid ${subscription.plan === 'free' ? 'rgba(255,101,132,0.2)' : 'rgba(0,212,170,0.2)'}`,
-              borderRadius: '10px', padding: '0.75rem',
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                <span style={{ color: 'var(--muted)', fontSize: '0.75rem' }}>Bids Remaining</span>
-                <span style={{
-                  color: subscription.plan === 'free' ? 'var(--accent2)' : 'var(--green)',
-                  fontSize: '0.75rem', fontWeight: 600,
-                }}>
-                  {subscription.plan === 'free' ? `${subscription.bids_remaining}/${subscription.bids_total}` : '∞ Unlimited'}
-                </span>
-              </div>
-              {subscription.plan === 'free' && (
-                <div style={{ width: '100%', height: '4px', background: 'var(--border)', borderRadius: '100px' }}>
-                  <div style={{
-                    width: `${(subscription.bids_remaining / subscription.bids_total) * 100}%`,
-                    height: '100%',
-                    background: subscription.bids_remaining <= 2 ? 'var(--accent2)' : 'var(--green)',
-                    borderRadius: '100px', transition: 'width 0.3s',
-                  }} />
-                </div>
-              )}
-              <div style={{ marginTop: '0.4rem' }}>
-                <span style={{
-                  background: subscription.plan === 'free' ? 'rgba(255,101,132,0.1)' : 'rgba(0,212,170,0.1)',
-                  color: subscription.plan === 'free' ? 'var(--accent2)' : 'var(--green)',
-                  fontSize: '0.7rem', fontWeight: 600,
-                  padding: '1px 6px', borderRadius: '4px',
-                }}>
-                  {subscription.plan.toUpperCase()} PLAN
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
+      {/* Nav */}
+      <nav style={{ flex: 1, padding: '0.75rem 0' }}>
+        {navItems.map(item => (
+          <button key={item.id} onClick={() => { setActiveTab(item.id); setSidebarOpen(false); }} style={{
+            width: '100%', padding: '0.7rem 1.5rem',
+            background: activeTab === item.id ? '#f0fdf4' : 'transparent',
+            border: 'none',
+            borderLeft: activeTab === item.id ? '3px solid var(--accent)' : '3px solid transparent',
+            color: activeTab === item.id ? 'var(--accent)' : 'var(--text2)',
+            display: 'flex', alignItems: 'center', gap: '0.75rem',
+            cursor: 'pointer', fontSize: '0.88rem', fontWeight: activeTab === item.id ? 600 : 400,
+            textAlign: 'left', transition: 'all 0.15s',
+          }}>
+            <span>{item.icon}</span> {item.label}
+          </button>
+        ))}
+      </nav>
 
-        <nav style={{ flex: 1 }}>
-          {[
-            { id: 'overview', icon: '📊', label: 'Overview' },
-            { id: 'proposals', icon: '📨', label: 'My Proposals' },
-            { id: 'messages', icon: '💬', label: 'Messages' },
-            { id: 'earnings', icon: '💰', label: 'Earnings' },
-            { id: 'profile', icon: '👤', label: 'My Profile' },
-          ].map(item => (
-            <button key={item.id} onClick={() => setActiveTab(item.id)} style={{
-              width: '100%', padding: '0.75rem 1.5rem',
-              background: activeTab === item.id ? 'rgba(108,99,255,0.12)' : 'transparent',
-              border: 'none',
-              borderLeft: activeTab === item.id ? '3px solid var(--accent)' : '3px solid transparent',
-              color: activeTab === item.id ? 'var(--accent)' : 'var(--muted)',
-              display: 'flex', alignItems: 'center', gap: '0.75rem',
-              cursor: 'pointer', fontSize: '0.9rem',
-              textAlign: 'left', transition: 'all 0.2s',
-            }}>
-              <span>{item.icon}</span> {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <div style={{ padding: '1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <Link href="/pricing" style={{ textDecoration: 'none' }}>
+      {/* Bottom Buttons */}
+      <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <Link href="/profile-setup" style={{ textDecoration: 'none' }}>
+          <button style={{
+            width: '100%', padding: '8px',
+            background: '#f0fdf4', border: '1px solid #bbf7d0',
+            borderRadius: '4px', color: 'var(--accent)',
+            cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600,
+          }}>👤 Edit Profile</button>
+        </Link>
+        <Link href="/pricing" style={{ textDecoration: 'none' }}>
+          <button style={{
+            width: '100%', padding: '8px',
+            background: 'var(--accent)', border: 'none',
+            borderRadius: '4px', color: '#fff',
+            cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600,
+          }}>⚡ Upgrade Plan</button>
+        </Link>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <Link href="/report" style={{ textDecoration: 'none', flex: 1 }}>
             <button style={{
-              width: '100%', padding: '9px',
-              background: 'linear-gradient(135deg, var(--accent), var(--green))',
-              border: 'none', borderRadius: '8px', color: '#fff',
-              fontFamily: 'Syne', fontWeight: 600,
-              cursor: 'pointer', fontSize: '0.82rem',
-            }}>⚡ Upgrade Plan</button>
+              width: '100%', padding: '7px',
+              background: '#fff5f5', border: '1px solid #fecaca',
+              borderRadius: '4px', color: '#dc2626',
+              cursor: 'pointer', fontSize: '0.78rem',
+            }}>🚨 Report</button>
           </Link>
-          <Link href="/report" style={{ textDecoration: 'none' }}>
-  <button style={{
-    width: '100%', padding: '9px',
-    background: 'transparent', border: '1px solid rgba(255,101,132,0.3)',
-    borderRadius: '8px', color: 'var(--accent2)',
-    cursor: 'pointer', fontSize: '0.82rem',
-  }}>🚨 Report User</button>
-</Link>
-          <Link href="/support" style={{ textDecoration: 'none' }}>
+          <Link href="/support" style={{ textDecoration: 'none', flex: 1 }}>
             <button style={{
-              width: '100%', padding: '9px',
-              background: 'transparent', border: '1px solid var(--border)',
-              borderRadius: '8px', color: 'var(--muted)',
-              cursor: 'pointer', fontSize: '0.82rem',
+              width: '100%', padding: '7px',
+              background: '#fff', border: '1px solid var(--border)',
+              borderRadius: '4px', color: 'var(--text2)',
+              cursor: 'pointer', fontSize: '0.78rem',
             }}>🎫 Support</button>
           </Link>
-          <button onClick={handleLogout} style={{
-            width: '100%', padding: '9px',
-            background: 'transparent', border: '1px solid var(--border)',
-            borderRadius: '8px', color: 'var(--muted)',
-            cursor: 'pointer', fontSize: '0.82rem',
-          }}>🚪 Log Out</button>
         </div>
-      </aside>
+        <button onClick={handleLogout} style={{
+          width: '100%', padding: '8px',
+          background: '#fff', border: '1px solid var(--border)',
+          borderRadius: '4px', color: 'var(--text2)',
+          cursor: 'pointer', fontSize: '0.82rem',
+        }}>🚪 Log Out</button>
+      </div>
+    </div>
+  );
 
-      {/* MAIN */}
-      <main style={{ marginLeft: '240px', flex: 1, padding: '2rem' }}>
+  return (
+    <>
+      <style>{`
+        @media (min-width: 769px) {
+          .dash-sidebar { display: flex !important; }
+          .dash-mobile-header { display: none !important; }
+          .dash-main { margin-left: 260px !important; }
+        }
+        @media (max-width: 768px) {
+          .dash-sidebar { display: none !important; }
+          .dash-mobile-header { display: flex !important; }
+          .dash-main { margin-left: 0 !important; padding-top: 60px !important; }
+        }
+      `}</style>
 
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-          <div>
-            <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.6rem', marginBottom: '0.25rem' }}>
-              Welcome, {userName} 👋
-            </h1>
-            <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>{user?.email}</p>
-          </div>
-          <Link href="/jobs">
-            <button style={{
-              background: 'var(--accent)', color: '#fff',
-              border: 'none', padding: '10px 22px',
-              borderRadius: '10px', fontFamily: 'Syne',
-              fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer',
-            }}>+ Find Jobs</button>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#fafafa' }}>
+
+        {/* DESKTOP SIDEBAR */}
+        <aside className="dash-sidebar" style={{
+          width: '260px', minHeight: '100vh',
+          background: '#fff', borderRight: '1px solid var(--border)',
+          position: 'fixed', top: 0, left: 0, zIndex: 50,
+          flexDirection: 'column', display: 'flex',
+        }}>
+          <SidebarContent />
+        </aside>
+
+        {/* MOBILE HEADER */}
+        <div className="dash-mobile-header" style={{
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+          background: '#fff', borderBottom: '1px solid var(--border)',
+          padding: '0 1rem', height: '60px',
+          alignItems: 'center', justifyContent: 'space-between',
+          display: 'none', boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+        }}>
+          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'var(--accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem' }}>D</div>
+            <span style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.1rem', color: 'var(--text)' }}>Dev<span style={{ color: 'var(--accent)' }}>Lpers</span></span>
           </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.9rem' }}>{userInitial}</div>
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--text)', cursor: 'pointer', fontSize: '1.2rem', padding: '6px 10px', borderRadius: '4px' }}>
+              {sidebarOpen ? '✕' : '☰'}
+            </button>
+          </div>
         </div>
 
-        {/* Stats */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '1rem', marginBottom: '2rem',
-        }}>
-          {[
-            { label: 'Proposals Sent', value: myProposals.length, icon: '📨' },
-            { label: 'Pending', value: myProposals.filter(p => p.status === 'Pending').length, icon: '⏳' },
-            { label: 'Accepted', value: myProposals.filter(p => p.status === 'Accepted').length, icon: '✅' },
-            { label: 'Seller Level', value: `Level ${sellerLevel?.level || 1}`, icon: levelIcons[sellerLevel?.level || 1] },
-            { label: 'Jobs Done', value: sellerLevel?.total_jobs || 0, icon: '🏆' },
-            { label: 'Member Since', value: new Date(user?.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), icon: '📅' },
-          ].map(s => (
-            <div key={s.label} style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: '14px', padding: '1.25rem',
+        {/* MOBILE SIDEBAR OVERLAY */}
+        {sidebarOpen && (
+          <>
+            <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 98, background: 'rgba(0,0,0,0.4)' }} />
+            <aside style={{
+              position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 99,
+              width: '280px', background: '#fff',
+              borderRight: '1px solid var(--border)',
+              overflowY: 'auto', display: 'flex', flexDirection: 'column',
             }}>
-              <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{s.icon}</div>
-              <div style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.4rem', marginBottom: '0.25rem' }}>{s.value}</div>
-              <div style={{ color: 'var(--muted)', fontSize: '0.78rem' }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
+              <SidebarContent />
+            </aside>
+          </>
+        )}
 
-        {/* Seller Level Card */}
-        <div style={{
-          background: 'var(--card)', border: `1px solid ${levelColors[sellerLevel?.level || 1]}`,
-          borderRadius: '16px', padding: '1.5rem', marginBottom: '1.5rem',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        {/* MAIN CONTENT */}
+        <main className="dash-main" style={{ flex: 1, padding: '2rem' }}>
+
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h1 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', marginBottom: '0.25rem', color: 'var(--text)' }}>
+                Welcome back, {userName} 👋
+              </h1>
+              <p style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>{user?.email}</p>
+            </div>
+            <Link href="/jobs">
+              <button style={{
+                background: 'var(--accent)', color: '#fff',
+                border: 'none', padding: '10px 20px',
+                borderRadius: '4px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer',
+              }}>+ Find Jobs</button>
+            </Link>
+          </div>
+
+          {/* Stats */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            gap: '1rem', marginBottom: '2rem',
+          }}>
+            {[
+              { label: 'Proposals', value: myProposals.length, icon: '📨', color: '#3b82f6' },
+              { label: 'Pending', value: myProposals.filter(p => p.status === 'Pending').length, icon: '⏳', color: '#f59e0b' },
+              { label: 'Accepted', value: myProposals.filter(p => p.status === 'Accepted').length, icon: '✅', color: 'var(--accent)' },
+              { label: `Level ${sellerLevel?.level || 1}`, value: levelIcons[sellerLevel?.level || 1], icon: '🏆', color: levelColors[sellerLevel?.level || 1] },
+            ].map(s => (
+              <div key={s.label} style={{
+                background: '#fff', border: '1px solid var(--border)',
+                borderRadius: '8px', padding: '1.25rem',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+              }}>
+                <div style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>{s.icon}</div>
+                <div style={{ fontWeight: 800, fontSize: '1.5rem', marginBottom: '0.2rem', color: s.color }}>{s.value}</div>
+                <div style={{ color: 'var(--muted)', fontSize: '0.78rem' }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Seller Level Card */}
+          <div style={{
+            background: levelBg[sellerLevel?.level || 1],
+            border: `1px solid ${sellerLevel?.level === 1 ? '#fde68a' : sellerLevel?.level === 2 ? '#d1d5db' : '#fde68a'}`,
+            borderRadius: '8px', padding: '1.25rem', marginBottom: '2rem',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem',
+          }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ fontSize: '3rem' }}>{levelIcons[sellerLevel?.level || 1]}</div>
+              <div style={{ fontSize: '2.5rem' }}>{levelIcons[sellerLevel?.level || 1]}</div>
               <div>
-                <div style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', color: levelColors[sellerLevel?.level || 1] }}>
+                <div style={{ fontWeight: 700, fontSize: '1rem', color: levelColors[sellerLevel?.level || 1] }}>
                   Level {sellerLevel?.level || 1} Seller
-                  {sellerLevel?.is_devmarket_choice && <span style={{ marginLeft: '0.5rem', color: 'var(--accent)' }}>⭐ DevMarket Choice</span>}
+                  {sellerLevel?.is_devmarket_choice && <span style={{ marginLeft: '0.5rem', color: 'var(--accent)' }}>⭐ DevLpers Choice</span>}
                 </div>
-                <div style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>
-                  {sellerLevel?.total_jobs || 0} jobs completed · Rating: {sellerLevel?.rating || 0}⭐
-                </div>
-                <div style={{ color: 'var(--muted)', fontSize: '0.78rem', marginTop: '0.25rem' }}>
-                  {sellerLevel?.level === 1 && 'Complete 10 jobs to reach Level 2'}
-                  {sellerLevel?.level === 2 && 'Complete 50 jobs to reach Level 3'}
-                  {sellerLevel?.level === 3 && 'You are at the highest level!'}
+                <div style={{ color: levelColors[sellerLevel?.level || 1], fontSize: '0.82rem', opacity: 0.8 }}>
+                  {sellerLevel?.total_jobs || 0} jobs completed
+                  {sellerLevel?.level === 1 && ' · Complete 10 jobs for Level 2'}
+                  {sellerLevel?.level === 2 && ' · Complete 50 jobs for Level 3'}
+                  {sellerLevel?.level === 3 && ' · Top Level! 🎉'}
                 </div>
               </div>
             </div>
             <Link href="/pricing">
               <button style={{
-                background: 'linear-gradient(135deg, var(--accent), var(--green))',
-                color: '#fff', border: 'none', padding: '10px 20px',
-                borderRadius: '8px', fontFamily: 'Syne', fontWeight: 600,
-                cursor: 'pointer', fontSize: '0.85rem',
+                background: 'var(--accent)', color: '#fff', border: 'none',
+                padding: '9px 18px', borderRadius: '4px',
+                fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer',
               }}>⚡ Upgrade Plan</button>
             </Link>
           </div>
-        </div>
 
-        {/* My Proposals */}
-        <div style={{
-          background: 'var(--card)', border: '1px solid var(--border)',
-          borderRadius: '16px', padding: '1.5rem', marginBottom: '1.5rem',
-        }}>
-          <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1rem', marginBottom: '1.25rem' }}>
-            📨 My Proposals
-          </h2>
-          {myProposals.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--muted)' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📭</div>
-              <p style={{ marginBottom: '1rem' }}>No proposals yet</p>
+          {/* My Proposals */}
+          <div style={{
+            background: '#fff', border: '1px solid var(--border)',
+            borderRadius: '8px', padding: '1.5rem', marginBottom: '1.5rem',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h2 style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text)' }}>📨 My Proposals</h2>
               <Link href="/jobs">
                 <button style={{
-                  background: 'var(--accent)', color: '#fff',
-                  border: 'none', padding: '10px 20px',
-                  borderRadius: '8px', cursor: 'pointer',
-                  fontFamily: 'Syne', fontWeight: 600,
-                }}>Browse Jobs →</button>
+                  background: '#f0fdf4', border: '1px solid #bbf7d0',
+                  color: 'var(--accent)', padding: '6px 14px',
+                  borderRadius: '4px', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600,
+                }}>+ Find Jobs</button>
               </Link>
             </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {myProposals.map((p, i) => (
-                <div key={i} style={{
-                  padding: '1rem', background: 'var(--bg)',
-                  borderRadius: '10px', border: '1px solid var(--border)',
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  flexWrap: 'wrap', gap: '0.5rem',
-                }}>
-                  <div>
-                    <div style={{ fontFamily: 'Syne', fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.25rem' }}>
-                      {p.jobs?.title || 'Job'}
+
+            {myProposals.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--muted)', background: '#fafafa', borderRadius: '6px' }}>
+                <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📭</div>
+                <p style={{ marginBottom: '1rem', fontWeight: 500, color: 'var(--text2)' }}>No proposals yet</p>
+                <Link href="/jobs">
+                  <button style={{
+                    background: 'var(--accent)', color: '#fff',
+                    border: 'none', padding: '10px 20px',
+                    borderRadius: '4px', cursor: 'pointer', fontWeight: 600,
+                  }}>Browse Jobs →</button>
+                </Link>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {myProposals.map((p, i) => (
+                  <div key={i} style={{
+                    padding: '1rem', background: '#fafafa',
+                    borderRadius: '6px', border: '1px solid var(--border)',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    flexWrap: 'wrap', gap: '0.5rem',
+                  }}>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text)', marginBottom: '0.25rem' }}>
+                        {p.jobs?.title || 'Job'}
+                      </div>
+                      <div style={{ color: 'var(--muted)', fontSize: '0.78rem' }}>
+                        Bid: ${p.bid_amount} · {new Date(p.created_at).toLocaleDateString()}
+                      </div>
                     </div>
-                    <div style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>
-                      Bid: ${p.bid_amount} · {new Date(p.created_at).toLocaleDateString()}
-                    </div>
+                    <span style={{
+                      background: p.status === 'Accepted' ? '#f0fdf4' : p.status === 'Declined' ? '#fef2f2' : '#eff6ff',
+                      color: p.status === 'Accepted' ? 'var(--accent)' : p.status === 'Declined' ? '#dc2626' : '#3b82f6',
+                      border: `1px solid ${p.status === 'Accepted' ? '#bbf7d0' : p.status === 'Declined' ? '#fecaca' : '#bfdbfe'}`,
+                      borderRadius: '100px', padding: '3px 12px', fontSize: '0.75rem', fontWeight: 600,
+                    }}>{p.status}</span>
                   </div>
-                  <span style={{
-                    background: p.status === 'Accepted' ? 'rgba(0,212,170,0.1)' : p.status === 'Declined' ? 'rgba(255,101,132,0.1)' : 'rgba(108,99,255,0.1)',
-                    color: p.status === 'Accepted' ? 'var(--green)' : p.status === 'Declined' ? 'var(--accent2)' : 'var(--accent)',
-                    border: `1px solid ${p.status === 'Accepted' ? 'rgba(0,212,170,0.3)' : p.status === 'Declined' ? 'rgba(255,101,132,0.3)' : 'rgba(108,99,255,0.3)'}`,
-                    borderRadius: '6px', padding: '3px 12px', fontSize: '0.78rem', fontWeight: 600,
-                  }}>{p.status}</span>
-                </div>
-              ))}
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Quick Links */}
+          <div style={{
+            background: 'linear-gradient(135deg, #f0fdf4, #e8fdf2)',
+            border: '1px solid #bbf7d0', borderRadius: '8px', padding: '1.5rem',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem',
+          }}>
+            <div>
+              <h3 style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '0.3rem', color: 'var(--text)' }}>
+                Complete Your Profile 🚀
+              </h3>
+              <p style={{ color: 'var(--text2)', fontSize: '0.83rem' }}>
+                Add skills, bio and portfolio to attract more clients
+              </p>
             </div>
-          )}
-        </div>
-
-        {/* Quick Links */}
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(108,99,255,0.15), rgba(255,101,132,0.15))',
-          border: '1px solid var(--border)',
-          borderRadius: '16px', padding: '2rem',
-          display: 'flex', justifyContent: 'space-between',
-          alignItems: 'center', flexWrap: 'wrap', gap: '1rem',
-        }}>
-          <div>
-            <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.4rem' }}>
-              Complete Your Profile 🚀
-            </h3>
-            <p style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>
-              Add skills, bio and portfolio to get more clients
-            </p>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <Link href="/profile-setup">
+                <button style={{
+                  background: 'var(--accent)', color: '#fff', border: 'none',
+                  padding: '9px 18px', borderRadius: '4px', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer',
+                }}>Edit Profile</button>
+              </Link>
+              <Link href="/support">
+                <button style={{
+                  background: '#fff', color: 'var(--text2)',
+                  border: '1px solid var(--border)', padding: '9px 18px',
+                  borderRadius: '4px', fontSize: '0.85rem', cursor: 'pointer',
+                }}>Support</button>
+              </Link>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <Link href="/jobs">
-              <button style={{
-                background: 'var(--accent)', color: '#fff',
-                border: 'none', padding: '10px 22px',
-                borderRadius: '8px', fontFamily: 'Syne',
-                fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer',
-              }}>Browse Jobs</button>
-            </Link>
-            <Link href="/support">
-              <button style={{
-                background: 'transparent', color: 'var(--text)',
-                border: '1px solid var(--border)', padding: '10px 22px',
-                borderRadius: '8px', fontSize: '0.9rem', cursor: 'pointer',
-              }}>Support</button>
-            </Link>
-          </div>
-        </div>
 
-      </main>
-    </div>
+        </main>
+      </div>
+    </>
   );
 }

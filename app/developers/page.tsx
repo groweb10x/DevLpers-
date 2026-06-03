@@ -4,6 +4,20 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import Navbar from '../components/Navbar';
 
+
+const mobileStyles = `
+@media (max-width: 768px){
+  .dev-header{padding:1.25rem 1rem !important;}
+  .dev-content{padding:1rem !important;}
+  .dev-grid{grid-template-columns:1fr !important;}
+  .dev-search{max-width:100% !important;}
+  .dev-card{padding:1rem !important;}
+  .dev-top{flex-wrap:wrap !important;}
+  .dev-meta{flex-direction:column !important;align-items:flex-start !important;gap:.5rem !important;}
+}
+`;
+
+
 const skillsList = ['All', 'React', 'Flutter', 'Python', 'Node.js', 'Laravel', 'WordPress', 'Figma', 'React Native', 'TypeScript', 'AWS', 'Docker'];
 
 export default function DevelopersFeed() {
@@ -39,7 +53,7 @@ export default function DevelopersFeed() {
   const levelBg: Record<number, string> = { 1: '#fef3c7', 2: '#f3f4f6', 3: '#fef9c3' };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fafafa' }}>
+    <div style={{ minHeight: '100vh', background: '#fafafa' }}><style>{mobileStyles}</style>
       <Navbar />
 
       <div style={{ paddingTop: '64px' }}>
@@ -47,7 +61,7 @@ export default function DevelopersFeed() {
         {/* HEADER */}
         <div style={{
           background: '#fff', borderBottom: '1px solid var(--border)',
-          padding: '2rem 5%',
+          padding: 'clamp(1rem,4vw,2rem) clamp(1rem,5vw,5%)',
         }}>
           <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
             <h1 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', marginBottom: '0.5rem', color: 'var(--text)' }}>
@@ -58,7 +72,7 @@ export default function DevelopersFeed() {
             </p>
 
             {/* Search */}
-            <div style={{ display: 'flex', gap: '0', maxWidth: '500px', marginBottom: '1rem', border: '1px solid var(--border)', borderRadius: '6px', overflow: 'hidden', background: '#fff' }}>
+            <div style={{ display: 'flex', gap: '0', maxWidth: '500px', width:'100%', marginBottom: '1rem', border: '1px solid var(--border)', borderRadius: '6px', overflow: 'hidden', background: '#fff' }}>
               <span style={{ padding: '0 14px', display: 'flex', alignItems: 'center', color: 'var(--muted)' }}>🔍</span>
               <input
                 type="text"
@@ -106,7 +120,7 @@ export default function DevelopersFeed() {
         </div>
 
         {/* DEVELOPERS */}
-        <div style={{ padding: '1.5rem 5%', maxWidth: '1100px', margin: '0 auto' }}>
+        <div className='dev-content' style={{ padding: '1.5rem 5%', maxWidth: '1100px', margin: '0 auto' }}>
           <p style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
             {loading ? 'Loading...' : `${filtered.length} developers found`}
           </p>
@@ -131,7 +145,7 @@ export default function DevelopersFeed() {
           ) : (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
               gap: '1rem',
             }}>
               {filtered.map((dev, i) => (

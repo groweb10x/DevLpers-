@@ -229,7 +229,7 @@ export default function Dashboard() {
         @media (max-width: 768px) {
           .dash-sidebar { display: none !important; }
           .dash-mobile-header { display: flex !important; }
-          .dash-main { margin-left: 0 !important; padding-top: 60px !important; }
+          .dash-main { margin-left: 0 !important; padding-top: 60px !important; padding-left: 1rem !important; padding-right: 1rem !important; }
         }
       `}</style>
 
@@ -303,7 +303,7 @@ export default function Dashboard() {
           {/* Stats */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
             gap: '1rem', marginBottom: '2rem',
           }}>
             {[

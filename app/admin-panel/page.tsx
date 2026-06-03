@@ -13,9 +13,14 @@ export default function AdminPanel() {
   const [search, setSearch] = useState('');
   const [replyText, setReplyText] = useState('');
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     fetchAll();
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const fetchAll = async () => {
@@ -117,16 +122,16 @@ export default function AdminPanel() {
   );
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
+    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', minHeight: '100vh', background: 'var(--bg)' }}>
 
       {/* SIDEBAR */}
       <aside style={{
-        width: '240px', minHeight: '100vh',
+        width: isMobile ? '100%' : '240px', minHeight: isMobile ? 'auto' : '100vh',
         background: 'var(--card)',
         borderRight: '1px solid var(--border)',
         padding: '1.5rem 0',
         display: 'flex', flexDirection: 'column',
-        position: 'fixed', top: 0, left: 0,
+        position: isMobile ? 'relative' : 'fixed', top: 0, left: 0,
       }}>
         <div style={{ padding: '0 1.5rem', marginBottom: '1rem' }}>
           <Link href="/" style={{ textDecoration: 'none' }}>
@@ -180,7 +185,7 @@ export default function AdminPanel() {
       </aside>
 
       {/* MAIN */}
-      <main style={{ marginLeft: '240px', flex: 1, padding: '2rem' }}>
+      <main style={{ marginLeft: isMobile ? '0' : '240px', flex: 1, padding: isMobile ? '1rem' : '2rem' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>

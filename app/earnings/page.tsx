@@ -1,6 +1,18 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import React from 'react';
+
+const responsiveCSS = `
+@media (max-width:768px){
+  .earn-wrap{padding:80px 16px 24px !important;}
+  .earn-stats{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:12px !important;}
+  .earn-main{grid-template-columns:1fr !important;gap:16px !important;}
+  .earn-card{padding:16px !important;}
+  .earn-row{flex-direction:column !important;align-items:flex-start !important;}
+}
+`;
+
 
 const stats = [
   { label: 'Total Earned', value: '$12,400', icon: '💰', change: '+$800 this month' },
@@ -45,7 +57,7 @@ export default function Earnings() {
     if (withdrawAmount && withdrawMethod) setWithdrawn(true);
   };
 
-  return (
+  return (<><style>{responsiveCSS}</style>
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
 
       {/* SIDEBAR */}
@@ -336,5 +348,5 @@ export default function Earnings() {
 
       </main>
     </div>
-  );
+  </>);
 }

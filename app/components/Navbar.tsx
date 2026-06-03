@@ -26,7 +26,7 @@ export default function Navbar() {
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         background: '#ffffff',
         borderBottom: '1px solid var(--border)',
-        padding: '0 5%',
+        padding: '0 clamp(12px,4vw,5%)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         height: '64px',
         boxShadow: '0 1px 4px rgba(0,0,0,0.06)',

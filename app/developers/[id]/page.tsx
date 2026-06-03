@@ -2,6 +2,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
+
+const responsiveStyles = `
+@media (max-width: 768px){
+  .dev-container{padding:80px 16px 24px !important;}
+  .dev-grid{grid-template-columns:1fr !important;}
+  .dev-nav{padding:0 16px !important;}
+  .dev-stats{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+}
+`;
+
 const developer = {
   id: 1,
   name: 'Ali Hassan',
@@ -41,7 +51,7 @@ export default function DeveloperProfile() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
 
       {/* NAVBAR */}
-      <nav style={{
+      <nav className='dev-nav' style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         background: 'rgba(10,10,15,0.9)',
         backdropFilter: 'blur(12px)',
@@ -66,8 +76,8 @@ export default function DeveloperProfile() {
         </div>
       </nav>
 
-      <div style={{ paddingTop: '80px', padding: '80px 5% 3rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem', maxWidth: '1100px', margin: '0 auto' }}>
+      <><style>{responsiveStyles}</style><div className='dev-container' style={{ paddingTop: '80px', padding: '80px 5% 3rem' }}>
+        <div className='dev-grid' style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem', maxWidth: '1100px', margin: '0 auto' }}>
 
           {/* LEFT */}
           <div>
@@ -295,7 +305,7 @@ export default function DeveloperProfile() {
 
           </div>
         </div>
-      </div>
+      </div></>
     </div>
   );
 }

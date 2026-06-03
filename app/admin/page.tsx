@@ -32,6 +32,8 @@ const disputes = [
 ];
 
 export default function AdminPanel() {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   const [activeTab, setActiveTab] = useState('overview');
   const [userFilter, setUserFilter] = useState('All');
 
@@ -43,16 +45,16 @@ export default function AdminPanel() {
   });
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
+    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', minHeight: '100vh', background: 'var(--bg)' }}>
 
       {/* SIDEBAR */}
       <aside style={{
-        width: '240px', minHeight: '100vh',
+        width: isMobile ? '100%' : '240px', minHeight: isMobile ? 'auto' : '100vh',
         background: 'var(--card)',
         borderRight: '1px solid var(--border)',
         padding: '1.5rem 0',
         display: 'flex', flexDirection: 'column',
-        position: 'fixed', top: 0, left: 0,
+        position: isMobile ? 'relative' : 'fixed', top: 0, left: 0,
       }}>
         <div style={{ padding: '0 1.5rem', marginBottom: '2rem' }}>
           <Link href="/" style={{ textDecoration: 'none' }}>
@@ -122,7 +124,7 @@ export default function AdminPanel() {
       </aside>
 
       {/* MAIN */}
-      <main style={{ marginLeft: '240px', flex: 1, padding: '2rem' }}>
+      <main style={{ marginLeft: isMobile ? '0' : '240px', flex: 1, padding: isMobile ? '1rem' : '2rem' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -260,7 +262,7 @@ export default function AdminPanel() {
         </div>
 
         {/* Jobs & Disputes */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
 
           {/* Jobs */}
           <div style={{

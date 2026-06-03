@@ -91,11 +91,11 @@ export default function PostJob() {
       {/* NAVBAR */}
      <Navbar />
 
-      <div style={{ paddingTop: '80px', padding: '80px 5% 3rem' }}>
+      <div style={{ paddingTop: '80px', padding: '80px clamp(16px,5%,60px) 3rem' }}>
         <div style={{ maxWidth: '700px', margin: '0 auto' }}>
 
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem' }}>
+            <h1 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem' }}>
               Post a Job 📋
             </h1>
             <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
@@ -122,7 +122,7 @@ export default function PostJob() {
               <div style={{ width: '100%', height: '4px', background: 'var(--border)', borderRadius: '100px' }}>
                 <div style={{
                   width: `${((step - 1) / (totalSteps - 1)) * 100}%`,
-                  height: '100%', background: 'var(--accent)',
+                  height: '100%', background: '#1dbf73',
                   borderRadius: '100px', transition: 'width 0.3s',
                 }} />
               </div>
@@ -131,14 +131,14 @@ export default function PostJob() {
 
           <div style={{
             background: 'var(--card)', border: '1px solid var(--border)',
-            borderRadius: '20px', padding: '2rem',
+            borderRadius: '16px', padding: 'clamp(1rem,3vw,2rem)', boxShadow:'0 2px 12px rgba(0,0,0,0.08)',
           }}>
 
             {/* SUCCESS */}
             {submitted && (
               <div style={{ textAlign: 'center', padding: '2rem' }}>
                 <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎉</div>
-                <h2 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.5rem', marginBottom: '0.75rem', color: 'var(--green)' }}>
+                <h2 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.5rem', marginBottom: '0.75rem', color: 'var(--green)' }}>
                   Job Posted Successfully!
                 </h2>
                 <p style={{ color: 'var(--muted)', marginBottom: '2rem', lineHeight: 1.7 }}>
@@ -147,9 +147,9 @@ export default function PostJob() {
                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                   <Link href="/buyer-dashboard">
                     <button style={{
-                      background: 'var(--accent)', color: '#fff',
+                      background: '#1dbf73', color: '#fff',
                       border: 'none', padding: '12px 28px',
-                      borderRadius: '10px', fontFamily: 'Syne',
+                      borderRadius: '10px', fontFamily: 'Inter',
                       fontWeight: 600, cursor: 'pointer',
                     }}>Go to Dashboard</button>
                   </Link>
@@ -165,7 +165,7 @@ export default function PostJob() {
             {/* STEP 1 */}
             {!submitted && step === 1 && (
               <>
-                <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>Job Details</h2>
+                <h2 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>Job Details</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <div>
                     <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>Job Title *</label>
@@ -218,7 +218,7 @@ export default function PostJob() {
                   width: '100%', padding: '14px', marginTop: '2rem',
                   background: form.title && form.category && form.desc && form.level ? 'var(--accent)' : 'var(--border)',
                   border: 'none', borderRadius: '10px', color: '#fff',
-                  fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem',
+                  fontFamily: 'Inter', fontWeight: 600, fontSize: '1rem',
                   cursor: form.title && form.category && form.desc && form.level ? 'pointer' : 'not-allowed',
                 }}>Next: Skills & Budget →</button>
               </>
@@ -227,7 +227,7 @@ export default function PostJob() {
             {/* STEP 2 */}
             {!submitted && step === 2 && (
               <>
-                <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>Skills & Budget</h2>
+                <h2 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>Skills & Budget</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   <div>
                     <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.75rem' }}>Required Skills * ({form.skills.length} selected)</label>
@@ -252,7 +252,7 @@ export default function PostJob() {
                           background: form.budgetType === t ? 'rgba(108,99,255,0.15)' : 'transparent',
                           border: `1px solid ${form.budgetType === t ? 'var(--accent)' : 'var(--border)'}`,
                           borderRadius: '8px', color: form.budgetType === t ? 'var(--accent)' : 'var(--muted)',
-                          cursor: 'pointer', fontFamily: 'Syne', fontWeight: 600, transition: 'all 0.2s',
+                          cursor: 'pointer', fontFamily: 'Inter', fontWeight: 600, transition: 'all 0.2s',
                         }}>{t === 'Fixed' ? '💰 Fixed Price' : '⏱️ Hourly Rate'}</button>
                       ))}
                     </div>
@@ -307,7 +307,7 @@ export default function PostJob() {
                     flex: 1, padding: '14px',
                     background: form.skills.length > 0 && form.duration ? 'var(--accent)' : 'var(--border)',
                     border: 'none', borderRadius: '10px', color: '#fff',
-                    fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem',
+                    fontFamily: 'Inter', fontWeight: 600, fontSize: '1rem',
                     cursor: form.skills.length > 0 && form.duration ? 'pointer' : 'not-allowed',
                   }}>Next: Review →</button>
                 </div>
@@ -317,7 +317,7 @@ export default function PostJob() {
             {/* STEP 3 */}
             {!submitted && step === 3 && (
               <>
-                <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>Review Your Job Post</h2>
+                <h2 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>Review Your Job Post</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
                   {[
                     { label: 'Job Title', value: form.title },
@@ -349,9 +349,9 @@ export default function PostJob() {
                   <button onClick={() => setStep(2)} style={{ padding: '14px 24px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--muted)', cursor: 'pointer', fontSize: '0.9rem' }}>← Back</button>
                   <button onClick={handlePostJob} style={{
                     flex: 1, padding: '14px',
-                    background: 'var(--accent2)', border: 'none',
+                    background: '#1dbf73', border: 'none',
                     borderRadius: '10px', color: '#fff',
-                    fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem', cursor: 'pointer',
+                    fontFamily: 'Inter', fontWeight: 600, fontSize: '1rem', cursor: 'pointer',
                   }}>🚀 Post Job Now</button>
                 </div>
               </>

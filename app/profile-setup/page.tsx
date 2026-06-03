@@ -132,10 +132,10 @@ export default function ProfileSetup() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <Navbar />
 
-      <div style={{ paddingTop: '80px', padding: '80px 5% 3rem', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ paddingTop: '80px', padding: '80px clamp(16px,5%,60px) 3rem', maxWidth: '900px', margin: '0 auto' }}>
 
         <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem' }}>
+          <h1 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem' }}>
             Setup Your Profile 👤
           </h1>
           <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
@@ -153,7 +153,7 @@ export default function ProfileSetup() {
 
         <div style={{
           background: 'var(--card)', border: '1px solid var(--border)',
-          borderRadius: '20px', padding: '2rem',
+          borderRadius: '16px', padding: 'clamp(1rem,3vw,2rem)', boxShadow:'0 4px 16px rgba(0,0,0,0.08)',
           display: 'flex', flexDirection: 'column', gap: '1.5rem',
         }}>
 
@@ -169,7 +169,7 @@ export default function ProfileSetup() {
                   width: '80px', height: '80px', borderRadius: '50%',
                   background: 'linear-gradient(135deg, var(--accent), var(--accent2))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'Syne', fontWeight: 800, fontSize: '2rem', color: '#fff',
+                  fontFamily: 'Inter', fontWeight: 800, fontSize: '2rem', color: '#fff',
                 }}>
                   {form.full_name?.[0]?.toUpperCase() || '?'}
                 </div>
@@ -177,13 +177,13 @@ export default function ProfileSetup() {
               <button onClick={() => fileRef.current?.click()} style={{
                 position: 'absolute', bottom: 0, right: 0,
                 width: '24px', height: '24px', borderRadius: '50%',
-                background: 'var(--accent)', border: 'none',
+                background: '#1dbf73', border: 'none',
                 color: '#fff', fontSize: '0.7rem', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>📷</button>
             </div>
             <div>
-              <div style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem' }}>
+              <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1.1rem' }}>
                 {form.full_name || 'Your Name'}
               </div>
               <div style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>{user?.email}</div>
@@ -298,9 +298,9 @@ export default function ProfileSetup() {
           <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
             <button onClick={handleSave} disabled={saving} style={{
               flex: 1, padding: '14px',
-              background: saving ? 'var(--border)' : 'var(--accent)',
+              background: saving ? 'var(--border)' : '#1dbf73',
               border: 'none', borderRadius: '10px', color: '#fff',
-              fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem',
+              fontFamily: 'Inter', fontWeight: 600, fontSize: '1rem',
               cursor: saving ? 'not-allowed' : 'pointer',
             }}>
               {saving ? 'Saving...' : '💾 Save Profile'}

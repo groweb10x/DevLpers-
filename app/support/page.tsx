@@ -70,11 +70,11 @@ export default function Support() {
       {/* NAVBAR */}
       <Navbar />
 
-      <div style={{ paddingTop: '80px', padding: '80px 5% 3rem', maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ paddingTop: '80px', padding: '80px clamp(16px,5%,60px) 3rem', maxWidth: '900px', margin: '0 auto' }}>
 
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem' }}>
+          <h1 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem' }}>
             Support Center 🎫
           </h1>
           <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
@@ -106,12 +106,12 @@ export default function Support() {
         {activeTab === 'new' && (
           <div style={{
             background: 'var(--card)', border: '1px solid var(--border)',
-            borderRadius: '20px', padding: '2rem',
+            borderRadius: '16px', padding: 'clamp(1rem,3vw,2rem)', boxShadow:'0 4px 16px rgba(0,0,0,0.08)',
           }}>
             {submitted ? (
               <div style={{ textAlign: 'center', padding: '2rem' }}>
                 <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>✅</div>
-                <h2 style={{ fontFamily: 'Syne', fontWeight: 700, color: 'var(--green)', marginBottom: '0.75rem' }}>
+                <h2 style={{ fontFamily: 'Inter', fontWeight: 700, color: 'var(--green)', marginBottom: '0.75rem' }}>
                   Ticket Submitted!
                 </h2>
                 <p style={{ color: 'var(--muted)', marginBottom: '2rem', lineHeight: 1.7 }}>
@@ -119,10 +119,10 @@ export default function Support() {
                 </p>
                 <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
                   <button onClick={() => { setSubmitted(false); setActiveTab('tickets'); }} style={{
-                    background: 'var(--accent)', color: '#fff',
+                    background: '#1dbf73', color: '#fff',
                     border: 'none', padding: '10px 24px',
                     borderRadius: '8px', cursor: 'pointer',
-                    fontFamily: 'Syne', fontWeight: 600,
+                    fontFamily: 'Inter', fontWeight: 600,
                   }}>View My Tickets</button>
                   <button onClick={() => setSubmitted(false)} style={{
                     background: 'transparent', color: 'var(--text)',
@@ -133,7 +133,7 @@ export default function Support() {
               </div>
             ) : (
               <>
-                <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>
+                <h2 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>
                   Submit a Support Ticket
                 </h2>
 
@@ -201,9 +201,9 @@ export default function Support() {
 
                 <button onClick={handleSubmit} disabled={loading} style={{
                   width: '100%', padding: '14px',
-                  background: loading ? 'var(--border)' : 'var(--accent)',
+                  background: loading ? 'var(--border)' : '#1dbf73',
                   border: 'none', borderRadius: '10px', color: '#fff',
-                  fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem',
+                  fontFamily: 'Inter', fontWeight: 600, fontSize: '1rem',
                   cursor: loading ? 'not-allowed' : 'pointer',
                 }}>
                   {loading ? 'Submitting...' : 'Submit Ticket →'}
@@ -225,10 +225,10 @@ export default function Support() {
                 <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎫</div>
                 <p style={{ marginBottom: '1rem' }}>No tickets yet</p>
                 <button onClick={() => setActiveTab('new')} style={{
-                  background: 'var(--accent)', color: '#fff',
+                  background: '#1dbf73', color: '#fff',
                   border: 'none', padding: '10px 20px',
                   borderRadius: '8px', cursor: 'pointer',
-                  fontFamily: 'Syne', fontWeight: 600,
+                  fontFamily: 'Inter', fontWeight: 600,
                 }}>Create First Ticket</button>
               </div>
             ) : (
@@ -238,7 +238,7 @@ export default function Support() {
                   borderRadius: '16px', padding: '1.5rem',
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1rem' }}>{ticket.subject}</h3>
+                    <h3 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1rem' }}>{ticket.subject}</h3>
                     <span style={{
                       background: ticket.status === 'Open' ? 'rgba(255,101,132,0.1)' : 'rgba(0,212,170,0.1)',
                       color: ticket.status === 'Open' ? 'var(--accent2)' : 'var(--green)',
@@ -297,7 +297,7 @@ export default function Support() {
           background: 'var(--card)', border: '1px solid var(--border)',
           borderRadius: '16px', padding: '1.5rem',
         }}>
-          <h3 style={{ fontFamily: 'Syne', fontWeight: 700, marginBottom: '1rem' }}>Quick Help 💡</h3>
+          <h3 style={{ fontFamily: 'Inter', fontWeight: 700, marginBottom: '1rem' }}>Quick Help 💡</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
             {[
               { icon: '📖', title: 'How to Post a Job', desc: 'Step by step guide' },
@@ -314,7 +314,7 @@ export default function Support() {
                 onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
               >
                 <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{item.icon}</div>
-                <div style={{ fontFamily: 'Syne', fontWeight: 600, fontSize: '0.88rem', marginBottom: '0.25rem' }}>{item.title}</div>
+                <div style={{ fontFamily: 'Inter', fontWeight: 600, fontSize: '0.88rem', marginBottom: '0.25rem' }}>{item.title}</div>
                 <div style={{ color: 'var(--muted)', fontSize: '0.78rem' }}>{item.desc}</div>
               </div>
             ))}

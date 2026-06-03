@@ -98,7 +98,7 @@ export default function Pricing() {
       <div style={{ paddingTop: '64px' }}>
 
         {/* HEADER */}
-        <div style={{ background: '#fff', borderBottom: '1px solid var(--border)', padding: '3rem 5%', textAlign: 'center' }}>
+        <div style={{ background: '#fff', borderBottom: '1px solid var(--border)', padding: '3rem clamp(16px,5%,60px)', textAlign: 'center' }}>
           <div style={{ maxWidth: '600px', margin: '0 auto' }}>
             <div style={{
               display: 'inline-block', background: '#e8fdf2', border: '1px solid #bbf7d0',
@@ -126,7 +126,7 @@ export default function Pricing() {
         </div>
 
         {/* PLANS */}
-        <div style={{ padding: '3rem 5%', maxWidth: '1000px', margin: '0 auto' }}>
+        <div style={{ padding: '3rem clamp(16px,5%,60px)', maxWidth: '1000px', margin: '0 auto' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
@@ -136,9 +136,9 @@ export default function Pricing() {
               <div key={plan.id} style={{
                 background: '#fff',
                 border: plan.popular ? '2px solid var(--accent)' : subscription?.plan === plan.id ? '2px solid var(--accent)' : '1px solid var(--border)',
-                borderRadius: '8px', padding: '2rem',
+                borderRadius: '16px', padding: 'clamp(1rem,3vw,2rem)',
                 position: 'relative',
-                boxShadow: plan.popular ? '0 4px 20px rgba(29,191,115,0.15)' : '0 1px 4px rgba(0,0,0,0.04)',
+                boxShadow: plan.popular ? '0 8px 30px rgba(29,191,115,0.15)' : '0 4px 12px rgba(0,0,0,0.08)',
                 transition: 'transform 0.2s',
               }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
@@ -148,7 +148,7 @@ export default function Pricing() {
                 {plan.popular && (
                   <div style={{
                     position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)',
-                    background: 'var(--accent)', color: '#fff',
+                    background: '#1dbf73', color: '#fff',
                     borderRadius: '100px', padding: '4px 16px',
                     fontSize: '0.75rem', fontWeight: 700, whiteSpace: 'nowrap',
                   }}>🔥 Most Popular</div>
@@ -218,7 +218,7 @@ export default function Pricing() {
           </div>
 
           {/* How Bids Work */}
-          <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: '8px', padding: '2rem', marginBottom: '2rem' }}>
+          <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: '16px', padding: 'clamp(1rem,3vw,2rem)', marginBottom: '2rem' }}>
             <h2 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1.25rem', marginBottom: '1.5rem', color: 'var(--text)' }}>
               How Bids Work 🎯
             </h2>
@@ -239,7 +239,7 @@ export default function Pricing() {
           </div>
 
           {/* Seller Levels */}
-          <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: '8px', padding: '2rem' }}>
+          <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: '16px', padding: 'clamp(1rem,3vw,2rem)' }}>
             <h2 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1.25rem', marginBottom: '1.5rem', color: 'var(--text)' }}>
               Seller Levels 🏆
             </h2>

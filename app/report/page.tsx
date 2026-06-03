@@ -73,11 +73,11 @@ export default function ReportUser() {
 
       {/* NAVBAR */}
       <Navbar />
-      <div style={{ paddingTop: '80px', padding: '80px 5% 3rem', maxWidth: '700px', margin: '0 auto' }}>
+      <div style={{ paddingTop: '80px', padding: '80px clamp(16px,5%,60px) 3rem', maxWidth: '800px', margin: '0 auto' }}>
 
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
-          <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem' }}>
+          <h1 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem' }}>
             Report a User 🚨
           </h1>
           <p style={{ color: 'var(--muted)', fontSize: '0.9rem', lineHeight: 1.7 }}>
@@ -87,12 +87,12 @@ export default function ReportUser() {
 
         <div style={{
           background: 'var(--card)', border: '1px solid var(--border)',
-          borderRadius: '20px', padding: '2rem',
+          borderRadius: '16px', padding: 'clamp(1rem,3vw,2rem)', boxShadow:'0 4px 16px rgba(0,0,0,0.08)',
         }}>
           {submitted ? (
             <div style={{ textAlign: 'center', padding: '2rem' }}>
               <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>✅</div>
-              <h2 style={{ fontFamily: 'Syne', fontWeight: 700, color: 'var(--green)', marginBottom: '0.75rem' }}>
+              <h2 style={{ fontFamily: 'Inter', fontWeight: 700, color: 'var(--green)', marginBottom: '0.75rem' }}>
                 Report Submitted!
               </h2>
               <p style={{ color: 'var(--muted)', marginBottom: '2rem', lineHeight: 1.7 }}>
@@ -101,10 +101,10 @@ export default function ReportUser() {
               <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Link href="/dashboard">
                   <button style={{
-                    background: 'var(--accent)', color: '#fff',
+                    background: '#1dbf73', color: '#fff',
                     border: 'none', padding: '10px 24px',
                     borderRadius: '8px', cursor: 'pointer',
-                    fontFamily: 'Syne', fontWeight: 600,
+                    fontFamily: 'Inter', fontWeight: 600,
                   }}>Go to Dashboard</button>
                 </Link>
                 <button onClick={() => { setSubmitted(false); setForm({ reportedEmail: '', reason: '', category: '', description: '' }); }} style={{
@@ -116,7 +116,7 @@ export default function ReportUser() {
             </div>
           ) : (
             <>
-              <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1.5rem' }}>
                 Report Details
               </h2>
 
@@ -217,9 +217,9 @@ export default function ReportUser() {
 
               <button onClick={handleSubmit} disabled={loading} style={{
                 width: '100%', padding: '14px',
-                background: loading ? 'var(--border)' : 'var(--accent2)',
+                background: loading ? 'var(--border)' : '#1dbf73',
                 border: 'none', borderRadius: '10px', color: '#fff',
-                fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem',
+                fontFamily: 'Inter', fontWeight: 600, fontSize: '1rem',
                 cursor: loading ? 'not-allowed' : 'pointer',
               }}>
                 {loading ? 'Submitting...' : '🚨 Submit Report'}
@@ -234,7 +234,7 @@ export default function ReportUser() {
           background: 'var(--card)', border: '1px solid var(--border)',
           borderRadius: '16px', padding: '1.5rem',
         }}>
-          <h3 style={{ fontFamily: 'Syne', fontWeight: 700, marginBottom: '1rem' }}>🔒 Safety Tips</h3>
+          <h3 style={{ fontFamily: 'Inter', fontWeight: 700, marginBottom: '1rem' }}>🔒 Safety Tips</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             {[
               'Never pay outside the DevMarket platform',

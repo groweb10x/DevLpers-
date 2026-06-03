@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const conversations = [
@@ -43,6 +43,15 @@ const messageData: Record<number, { from: string; text: string; time: string; mi
 };
 
 export default function Messages() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [activeChat, setActiveChat] = useState(1);
   const [newMsg, setNewMsg] = useState('');
   const [messages, setMessages] = useState(messageData);
@@ -66,15 +75,15 @@ export default function Messages() {
 
       {/* NAVBAR */}
       <nav style={{
-        background: 'rgba(10,10,15,0.9)',
+        background: '#ffffff',
         backdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--border)',
-        padding: '0 5%',
+        padding: isMobile ? '0 16px' : '0 5%',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         height: '64px', flexShrink: 0,
       }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
-          <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.4rem', color: 'var(--accent)' }}>
+          <span style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.4rem', color: 'var(--accent)' }}>
             Dev<span style={{ color: 'var(--text)' }}>Market</span>
           </span>
         </Link>
@@ -90,18 +99,18 @@ export default function Messages() {
       </nav>
 
       {/* CHAT LAYOUT */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', flex: 1, overflow: 'hidden' }}>
 
         {/* LEFT - Conversations */}
         <div style={{
-          width: '320px', flexShrink: 0,
+          width: isMobile ? '100%' : '320px', flexShrink: 0,
           borderRight: '1px solid var(--border)',
           display: 'flex', flexDirection: 'column',
           background: 'var(--card)',
         }}>
           {/* Search */}
           <div style={{ padding: '1rem', borderBottom: '1px solid var(--border)' }}>
-            <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1rem', marginBottom: '0.75rem' }}>
+            <h2 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1rem', marginBottom: '0.75rem' }}>
               💬 Messages
             </h2>
             <input
@@ -132,7 +141,7 @@ export default function Messages() {
                       width: '44px', height: '44px', borderRadius: '50%',
                       background: 'linear-gradient(135deg, var(--accent), var(--accent2))',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: 'Syne', fontWeight: 700,
+                      fontFamily: 'Inter', fontWeight: 700,
                     }}>{convo.avatar}</div>
                     {convo.online && (
                       <div style={{
@@ -146,7 +155,7 @@ export default function Messages() {
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
-                      <span style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '0.88rem' }}>{convo.name}</span>
+                      <span style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '0.88rem' }}>{convo.name}</span>
                       <span style={{ color: 'var(--muted)', fontSize: '0.72rem' }}>{convo.time}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -187,7 +196,7 @@ export default function Messages() {
                   width: '40px', height: '40px', borderRadius: '50%',
                   background: 'linear-gradient(135deg, var(--accent), var(--accent2))',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'Syne', fontWeight: 700,
+                  fontFamily: 'Inter', fontWeight: 700,
                 }}>{activeConvo?.avatar}</div>
                 {activeConvo?.online && (
                   <div style={{
@@ -198,7 +207,7 @@ export default function Messages() {
                 )}
               </div>
               <div>
-                <div style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '0.95rem' }}>{activeConvo?.name}</div>
+                <div style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '0.95rem' }}>{activeConvo?.name}</div>
                 <div style={{ fontSize: '0.75rem', color: activeConvo?.online ? 'var(--green)' : 'var(--muted)' }}>
                   {activeConvo?.online ? '● Online' : '● Offline'}
                 </div>
@@ -228,7 +237,7 @@ export default function Messages() {
                 display: 'flex',
                 justifyContent: msg.mine ? 'flex-end' : 'flex-start',
               }}>
-                <div style={{ maxWidth: '65%' }}>
+                <div style={{ maxWidth: isMobile ? '90%' : '65%' }}>
                   <div style={{
                     padding: '10px 16px',
                     background: msg.mine ? 'var(--accent)' : 'var(--card)',
@@ -254,7 +263,7 @@ export default function Messages() {
             padding: '1rem 1.5rem',
             borderTop: '1px solid var(--border)',
             background: 'var(--card)',
-            display: 'flex', gap: '0.75rem', alignItems: 'flex-end',
+            display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'flex-end',
           }}>
             <input
               value={newMsg}
@@ -279,7 +288,7 @@ export default function Messages() {
               background: 'var(--accent)', border: 'none',
               color: '#fff', padding: '12px 20px',
               borderRadius: '10px', cursor: 'pointer',
-              fontFamily: 'Syne', fontWeight: 600, fontSize: '0.9rem',
+              fontFamily: 'Inter', fontWeight: 600, fontSize: '0.9rem',
             }}>Send →</button>
           </div>
         </div>

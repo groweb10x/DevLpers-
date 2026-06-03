@@ -43,7 +43,7 @@ export default function JobsFeed() {
   });
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fafafa' }}>
+    <div style={{ minHeight: '100vh', background: '#f7f7f7' }}>
       <Navbar />
 
       <div style={{ paddingTop: '64px' }}>
@@ -51,15 +51,15 @@ export default function JobsFeed() {
         {/* HEADER */}
         <div style={{
           background: '#fff', borderBottom: '1px solid var(--border)',
-          padding: '2rem 5%',
+          padding: '2.5rem 5%',
         }}>
-          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-            <h1 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: 'clamp(1.3rem, 3vw, 1.75rem)', marginBottom: '1rem', color: 'var(--text)' }}>
+          <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+            <h1 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: 'clamp(2rem, 4vw, 2.8rem)', marginBottom: '1rem', color: 'var(--text)' }}>
               Find Your Next Project
             </h1>
 
             {/* Search */}
-            <div style={{ display: 'flex', gap: '0', maxWidth: '600px', marginBottom: '1rem', border: '1px solid var(--border)', borderRadius: '6px', overflow: 'hidden', background: '#fff' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0', maxWidth: '760px', marginBottom: '1rem', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden', background: '#fff' }}>
               <span style={{ padding: '0 14px', display: 'flex', alignItems: 'center', color: 'var(--muted)', fontSize: '1rem' }}>🔍</span>
               <input
                 type="text"
@@ -126,7 +126,7 @@ export default function JobsFeed() {
         </div>
 
         {/* JOBS */}
-        <div style={{ padding: '1.5rem 5%', maxWidth: '1100px', margin: '0 auto' }}>
+        <div style={{ padding: '1.5rem 5%', maxWidth: '1280px', margin: '0 auto' }}>
           <p style={{ color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
             {loadingJobs ? 'Loading jobs...' : `${filtered.length} jobs found`}
           </p>
@@ -141,9 +141,9 @@ export default function JobsFeed() {
               {filtered.map(job => (
                 <div key={job.id} style={{
                   background: '#fff', border: '1px solid var(--border)',
-                  borderRadius: '8px', padding: '1.5rem',
+                  borderRadius: '16px', padding: 'clamp(1rem,2vw,1.75rem)',
                   transition: 'all 0.2s', cursor: 'pointer',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
                 }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(29,191,115,0.1)'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.04)'; }}
@@ -160,7 +160,7 @@ export default function JobsFeed() {
                           borderRadius: '100px', padding: '2px 10px', fontSize: '0.72rem', fontWeight: 600,
                         }}>{job.budget_type}</span>
                         <span style={{
-                          background: '#fafafa', color: 'var(--text2)',
+                          background: '#f7f7f7', color: 'var(--text2)',
                           border: '1px solid var(--border)',
                           borderRadius: '100px', padding: '2px 10px', fontSize: '0.72rem',
                         }}>{job.level}</span>
@@ -230,7 +230,7 @@ export default function JobsFeed() {
               ))}
 
               {!loadingJobs && filtered.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--muted)', background: '#fff', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--muted)', background: '#fff', borderRadius: '16px', border: '1px solid var(--border)' }}>
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
                   <p style={{ marginBottom: '1rem', fontWeight: 500 }}>No jobs found matching your filters</p>
                   {user && (

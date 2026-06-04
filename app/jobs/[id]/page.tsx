@@ -65,6 +65,31 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
         <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
         <p>Loading job...</p>
       </div>
+
+      <style jsx>{`
+        .job-layout{
+          display:grid;
+          grid-template-columns:1fr 340px;
+          gap:2rem;
+        }
+
+        @media (max-width: 992px){
+          .job-layout{
+            grid-template-columns:1fr;
+          }
+        }
+
+        @media (max-width: 768px){
+          h1{
+            font-size:1.4rem !important;
+          }
+
+          .job-layout{
+            gap:1rem;
+          }
+        }
+      `}</style>
+
     </div>
   );
 
@@ -79,6 +104,31 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
           </button>
         </Link>
       </div>
+
+      <style jsx>{`
+        .job-layout{
+          display:grid;
+          grid-template-columns:1fr 340px;
+          gap:2rem;
+        }
+
+        @media (max-width: 992px){
+          .job-layout{
+            grid-template-columns:1fr;
+          }
+        }
+
+        @media (max-width: 768px){
+          h1{
+            font-size:1.4rem !important;
+          }
+
+          .job-layout{
+            gap:1rem;
+          }
+        }
+      `}</style>
+
     </div>
   );
 
@@ -88,7 +138,7 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
       {/* NAVBAR */}
       <Navbar />
       <div style={{ paddingTop: '80px', padding: '80px 5% 3rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', maxWidth: '1100px', margin: '0 auto' }}>
+        <div className='job-layout' style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
           {/* LEFT */}
           <div>
@@ -308,6 +358,31 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .job-layout{
+          display:grid;
+          grid-template-columns:1fr 340px;
+          gap:2rem;
+        }
+
+        @media (max-width: 992px){
+          .job-layout{
+            grid-template-columns:1fr;
+          }
+        }
+
+        @media (max-width: 768px){
+          h1{
+            font-size:1.4rem !important;
+          }
+
+          .job-layout{
+            gap:1rem;
+          }
+        }
+      `}</style>
+
     </div>
   );
 }

@@ -107,7 +107,6 @@ export default function ProfileSetup() {
         location: form.location,
         availability: form.availability,
         skills: form.skills,
-        avatar_url: avatarUrl,
       });
 
     setSaving(false);

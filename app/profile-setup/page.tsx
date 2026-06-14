@@ -96,18 +96,19 @@ export default function ProfileSetup() {
     }
     setSaving(true);
 
-    const { error } = await supabase
-      .from('developer_profiles')
-      .upsert({
-        user_id: user.id,
-        full_name: form.full_name,
-        title: form.title,
-        bio: form.bio,
-        hourly_rate: Number(form.hourly_rate),
-        location: form.location,
-        availability: form.availability,
-        skills: form.skills,
-      });
+const { error } = await supabase
+  .from('developer_profiles')
+  .upsert({
+    user_id: user.id,
+    full_name: form.full_name,
+    title: form.title,
+    bio: form.bio,
+    hourly_rate: Number(form.hourly_rate),
+    location: form.location,
+    availability: form.availability,
+    skills: form.skills,
+    avatar_url: avatarUrl,
+  });
 
     setSaving(false);
     if (error) {

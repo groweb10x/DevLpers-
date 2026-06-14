@@ -107,7 +107,6 @@ const { error } = await supabase
     location: form.location,
     availability: form.availability,
     skills: form.skills,
-    avatar_url: avatarUrl,
   });
 
     setSaving(false);

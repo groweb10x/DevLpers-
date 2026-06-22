@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import Navbar from '../../components/Navbar';
+import Navbar from '../components/Navbar';
 
 export default function LoanEMICalculator() {
   const [principal, setPrincipal] = useState('500000');

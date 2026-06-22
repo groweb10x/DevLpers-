@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import Navbar from '../../components/Navbar';
+import Navbar from '../components/Navbar';
 
 const unitCategories: Record<string, { label: string; units: Record<string, number> }> = {
   length: {

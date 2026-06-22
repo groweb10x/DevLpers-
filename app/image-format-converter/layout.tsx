@@ -1,14 +1,14 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Free Favicon Generator — Create All Icon Sizes Online | DevLpers',
-  description: 'Generate favicons in all sizes from one image: 16x16, 32x32, 180x180 Apple touch icon, 192x192 and 512x512 for Android/PWA. Free, instant, no signup.',
-  keywords: 'favicon generator, favicon maker, create favicon online, ico generator, apple touch icon, free favicon tool, website icon generator, favicon all sizes',
-  alternates: { canonical: 'https://develpers.com/favicon-generator' },
+  title: 'Free Image Format Converter — PNG, JPG, WebP, BMP, GIF, AVIF | DevLpers',
+  description: 'Convert images between PNG, JPG, WebP, BMP, GIF and AVIF instantly — free, fast, bulk conversion, no signup, no upload limits. 100% browser-based and private.',
+  keywords: 'image format converter, png to webp, jpg to png, webp to jpg, png to jpg, convert image online free, bulk image converter, image converter no upload',
+  alternates: { canonical: 'https://develpers.com/image-format-converter' },
   openGraph: {
-    title: 'Free Favicon Generator — All Sizes Instantly',
-    description: 'Upload one image, generate every favicon size your website needs. Free, instant, no signup.',
-    url: 'https://develpers.com/favicon-generator',
+    title: 'Free Image Format Converter — PNG, JPG, WebP, BMP, GIF, AVIF',
+    description: 'Convert images between formats instantly, free and private. No uploads, no limits.',
+    url: 'https://develpers.com/image-format-converter',
     type: 'website',
   },
 };

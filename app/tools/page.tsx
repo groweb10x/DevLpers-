@@ -3,18 +3,27 @@
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
 
-const calculatorTools = [
-  { icon: '📏', name: 'Unit Converter', slug: '/unit-converter', desc: 'Convert length, weight, temperature and more instantly', badge: 'Popular' },
-  { icon: '⚖️', name: 'BMI Calculator', slug: '/bmi-calculator', desc: 'Calculate your Body Mass Index and health category', badge: 'Health' },
-  { icon: '🏦', name: 'Loan EMI Calculator', slug: '/loan-emi-calculator', desc: 'Calculate monthly EMI for home, car or personal loans', badge: 'Finance' },
-  { icon: '🔢', name: 'Percentage Calculator', slug: '/percentage-calculator', desc: 'Quick percentage calculations for any number', badge: 'Math' },
-];
+
 
 const imageTools = [
   { icon: '🖼️', name: 'Image Format Converter', slug: '/image-format-converter', desc: 'Convert between PNG, JPG, WebP, BMP, GIF and AVIF in bulk', badge: 'Popular' },
   { icon: '🗜️', name: 'Image Compressor', slug: '/image-compressor', desc: 'Reduce image file size without losing visible quality', badge: 'Popular' },
   { icon: '📐', name: 'Image Resizer', slug: '/image-resizer', desc: 'Resize photos to any dimension or social media preset', badge: 'Design' },
   { icon: '🔖', name: 'Favicon Generator', slug: '/favicon-generator', desc: 'Create all favicon sizes from one image instantly', badge: 'Dev' },
+];
+
+const freelanceTools = [
+  { icon: '📝', name: 'Urdu Word Counter', slug: '/urdu-word-counter', desc: 'Count words, characters and sentences in Urdu text instantly', badge: 'Unique' },
+  { icon: '💰', name: 'Freelancer Rate Calculator', slug: '/freelancer-rate-calculator', desc: 'Calculate your ideal hourly rate based on income goals', badge: 'Popular' },
+  { icon: '💻', name: 'Code Line Counter', slug: '/code-line-counter', desc: 'Count lines of code, comments and blank lines instantly', badge: 'Dev' },
+  { icon: '🧾', name: 'Invoice Generator', slug: '/invoice-generator', desc: 'Create professional PDF invoices free — no signup needed', badge: 'Free' },
+];
+
+const calculatorTools = [
+  { icon: '📏', name: 'Unit Converter', slug: '/unit-converter', desc: 'Convert length, weight, temperature and more instantly', badge: 'Popular' },
+  { icon: '⚖️', name: 'BMI Calculator', slug: '/bmi-calculator', desc: 'Calculate your Body Mass Index and health category', badge: 'Health' },
+  { icon: '🏦', name: 'Loan EMI Calculator', slug: '/loan-emi-calculator', desc: 'Calculate monthly EMI for home, car or personal loans', badge: 'Finance' },
+  { icon: '🔢', name: 'Percentage Calculator', slug: '/percentage-calculator', desc: 'Quick percentage calculations for any number', badge: 'Math' },
 ];
 
 function ToolCard({ icon, name, slug, desc, badge }: { icon: string; name: string; slug: string; desc: string; badge: string }) {
@@ -147,6 +156,23 @@ export default function ToolsHub() {
             ))}
           </div>
         </div>
+
+        {/* FREELANCE TOOLS */}
+<div style={{ padding: '2rem 5% 1rem', maxWidth: '1100px', margin: '0 auto' }}>
+  <div style={{ marginBottom: '1.5rem' }}>
+    <h2 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1.25rem', color: '#404145', marginBottom: '0.3rem' }}>
+      💼 Freelance Tools
+    </h2>
+    <p style={{ color: '#95979d', fontSize: '0.85rem', margin: 0 }}>
+      Tools built specifically for freelancers and developers
+    </p>
+  </div>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '1rem' }}>
+    {freelanceTools.map(tool => (
+      <ToolCard key={tool.slug} icon={tool.icon} name={tool.name} slug={tool.slug} desc={tool.desc} badge={tool.badge} />
+    ))}
+  </div>
+</div>
 
         {/* SEO CONTENT */}
         <div style={{ padding: '2rem 5% 1rem', maxWidth: '1100px', margin: '0 auto' }}>

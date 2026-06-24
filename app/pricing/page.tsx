@@ -24,24 +24,22 @@ export default function Pricing() {
     fetchData();
   }, []);
 
-  const handleSubscribe = async (plan: string) => {
-    if (!user) { window.location.href = '/signup'; return; }
+const handleSubscribe = async (plan: string) => {
+  if (!user) { window.location.href = '/signup'; return; }
+  if (plan === 'free') {
     setLoading(true);
     setSelectedPlan(plan);
-    const bidsMap: Record<string, number> = { free: 5, weekly: 999, monthly: 999 };
-    const expiryMap: Record<string, Date> = {
-      free: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      weekly: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      monthly: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-    };
     const { error } = await supabase.from('subscriptions').upsert({
       user_id: user.id, plan,
-      bids_remaining: bidsMap[plan], bids_total: bidsMap[plan],
-      expires_at: expiryMap[plan].toISOString(),
+      bids_remaining: 5, bids_total: 5,
+      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     });
     setLoading(false);
-    if (!error) { alert(`${plan} plan activated!`); window.location.reload(); }
-  };
+    if (!error) { alert('Free plan activated!'); window.location.reload(); }
+  } else {
+    window.location.href = `/payment?plan=${plan}`;
+  }
+};
 
   const plans = [
     {

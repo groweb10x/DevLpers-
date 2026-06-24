@@ -15,7 +15,12 @@ export default function AdminPanel() {
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
   const [isMobile, setIsMobile] = useState(false);
 
+
+
+
   useEffect(() => {
+
+    
     fetchAll();
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -23,7 +28,24 @@ export default function AdminPanel() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  
+
   const fetchAll = async () => {
+  // Admin check — sabse pehle
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+  if (!currentUser) { window.location.href = '/login'; return; }
+
+  const { data: adminCheck } = await supabase
+    .from('admin_users')
+    .select('id')
+    .eq('user_id', currentUser.id)
+    .maybeSingle();
+
+  if (!adminCheck) {
+    window.location.href = '/';
+    return;
+  }
+    
     setLoading(true);
 
     // Fetch all users from auth

@@ -29,10 +29,10 @@ const freelanceTools = [
 
 // ============ SEO TOOLS — 4 cards ============
 const seoTools = [
-  { icon: '🔗', name: 'DevLpers Backlink Indexer', slug: '/backlink-indexer', desc: 'Submit and index your backlinks instantly for faster Google ranking', badge: 'SEO' },
-  { icon: '🔍', name: 'Coming Soon', slug: '/tools', desc: 'More SEO tools coming soon — stay tuned!', badge: 'Soon' },
-  { icon: '📊', name: 'Coming Soon', slug: '/tools', desc: 'More SEO tools coming soon — stay tuned!', badge: 'Soon' },
-  { icon: '🚀', name: 'Coming Soon', slug: '/tools', desc: 'More SEO tools coming soon — stay tuned!', badge: 'Soon' },
+  { icon: '🔗', name: 'DevLpers Backlink Indexer', slug: '/devlpers-backlink-indexer', desc: 'Submit and index your backlinks instantly for faster Google ranking', badge: 'SEO' },
+  { icon: '📊', name: 'DA PA Checker', slug: '/da-pa-checker', desc: 'Check Domain Authority and Page Authority of any website instantly', badge: 'SEO' },
+  { icon: '🛡️', name: 'Spam Score Checker', slug: '/spam-score-checker', desc: 'Analyze if a domain is spammy or safe using 10+ real signals', badge: 'SEO' },
+  { icon: '🔍', name: 'Backlink Checker', slug: '/backlink-checker', desc: 'Find 100-200+ real backlinks and referring domains for any website', badge: 'Free' },
 ];
 
 // ============ SECTION CONFIGS ============

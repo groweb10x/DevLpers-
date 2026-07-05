@@ -34,5 +34,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/freelancer-rate-calculator`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/code-line-counter`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/invoice-generator`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+
+    { url: `${baseUrl}/backlink-indexer`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/da-pa-checker`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/spam-score-checker`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/backlink-checker`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
   ];
 }

@@ -35,6 +35,16 @@ const seoTools = [
   { icon: '🔍', name: 'Backlink Checker', slug: '/backlink-checker', desc: 'Find 100-200+ real backlinks and referring domains for any website', badge: 'Free' },
 ];
 
+// ============ AI TOOLS — 4 cards ============
+
+const aiTools = [
+  { icon: '✍️', name: 'AI Article Generator', slug: '/article-generator', desc: 'Generate better articles from competitor content in 8+ languages', badge: 'AI' },
+  { icon: '📊', name: 'Coming Soon', slug: '/tools', desc: 'More AI writing tools coming soon', badge: 'Soon' },
+  { icon: '🤖', name: 'Coming Soon', slug: '/tools', desc: 'More AI tools coming soon', badge: 'Soon' },
+  { icon: '🧠', name: 'Coming Soon', slug: '/tools', desc: 'More AI tools coming soon', badge: 'Soon' },
+];
+
+
 // ============ SECTION CONFIGS ============
 const sections = [
   {
@@ -77,6 +87,17 @@ const sections = [
     border: '#bbf7d0',
     iconBg: '#1dbf73',
   },
+
+  {
+  id: 'ai',
+  emoji: '🤖',
+  title: 'AI Tools',
+  desc: 'AI-powered writing and content generation tools — free, fast, multilingual',
+  tools: aiTools,
+  gradient: 'linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%)',
+  border: '#c4b5fd',
+  iconBg: '#7c3aed',
+},
 ];
 
 type Tool = {

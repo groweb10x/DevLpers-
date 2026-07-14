@@ -52,6 +52,7 @@ export default function Navbar() {
             { label: 'Find Jobs', href: '/jobs' },
             { label: 'How it Works', href: '/#how-it-works' },
             { label: 'Pricing', href: '/pricing' },
+            { label: 'Dev Tools', href: '/tools' },
           ].map(item => (
             <Link key={item.label} href={item.href} style={{ textDecoration: 'none' }}>
               <span style={{

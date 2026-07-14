@@ -98,6 +98,7 @@ const sections = [
   border: '#c4b5fd',
   iconBg: '#7c3aed',
 },
+
 ];
 
 type Tool = {

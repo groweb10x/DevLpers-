@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import Navbar from '../components/Navbar';
@@ -11,6 +11,9 @@ export default function ProfileSetup() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     full_name: '',
     title: '',
@@ -21,7 +24,7 @@ export default function ProfileSetup() {
     skills: [] as string[],
   });
 
-  useEffect(() => {
+useEffect(() => {
     const fetchData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { window.location.href = '/login'; return; }
@@ -44,6 +47,7 @@ export default function ProfileSetup() {
           availability: profile.availability || 'available',
           skills: profile.skills || [],
         });
+        if (profile?.avatar_url) setAvatarUrl(profile.avatar_url);
       }
       setLoading(false);
     };
@@ -59,11 +63,36 @@ export default function ProfileSetup() {
     }));
   };
 
+  const uploadAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file || !user) return;
+  setUploading(true);
+
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${user.id}.${fileExt}`;
+
+  const { error } = await supabase.storage
+    .from('avatars')
+    .upload(fileName, file, { upsert: true });
+
+  if (!error) {
+    const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+    setAvatarUrl(data.publicUrl);
+
+    // Save to profile immediately
+    await supabase
+      .from('developer_profiles')
+      .update({ avatar_url: data.publicUrl })
+      .eq('user_id', user.id);
+  }
+  setUploading(false);
+};
+
   const handleSave = async () => {
 
-     console.log('Save clicked!');
-  console.log('Form data:', form);
-  console.log('User:', user?.id);
+    console.log('Save clicked!');
+    console.log('Form data:', form);
+    console.log('User:', user?.id);
     if (!form.full_name || !form.title || !form.bio) {
       alert('Please fill name, title and bio!');
       return;
@@ -82,17 +111,18 @@ export default function ProfileSetup() {
     if (existing) {
       // Update
       const { error: updateError } = await supabase
-        .from('developer_profiles')
-        .update({
-          full_name: form.full_name,
-          title: form.title,
-          bio: form.bio,
-          hourly_rate: Number(form.hourly_rate),
-          location: form.location,
-          availability: form.availability,
-          skills: form.skills,
-        })
-        .eq('user_id', user.id);
+.from('developer_profiles')
+  .update({
+    full_name: form.full_name,
+    title: form.title,
+    bio: form.bio,
+    hourly_rate: Number(form.hourly_rate),
+    location: form.location,
+    availability: form.availability,
+    skills: form.skills,
+    avatar_url: avatarUrl,
+  })
+  .eq('user_id', user.id);
       error = updateError;
     } else {
       // Insert
@@ -150,18 +180,42 @@ export default function ProfileSetup() {
         <div style={{ background: '#fff', border: '1px solid #e4e5e7', borderRadius: '12px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
           {/* Avatar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{
-              width: '64px', height: '64px', borderRadius: '50%',
-              background: '#1dbf73', color: '#fff',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontWeight: 700, fontSize: '1.5rem', flexShrink: 0,
-            }}>{form.full_name?.[0]?.toUpperCase() || '?'}</div>
-            <div>
-              <div style={{ fontWeight: 700, color: '#404145' }}>{form.full_name || 'Your Name'}</div>
-              <div style={{ color: '#95979d', fontSize: '0.85rem' }}>{user?.email}</div>
-            </div>
-          </div>
+{/* Avatar */}
+<div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+  <div style={{ position: 'relative', flexShrink: 0 }}>
+    {avatarUrl ? (
+      <img src={avatarUrl} alt="Avatar"
+        style={{ width: '72px', height: '72px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #1dbf73' }}
+      />
+    ) : (
+      <div style={{
+        width: '72px', height: '72px', borderRadius: '50%',
+        background: '#1dbf73', color: '#fff',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontWeight: 700, fontSize: '1.5rem',
+      }}>{form.full_name?.[0]?.toUpperCase() || '?'}</div>
+    )}
+    <button onClick={() => fileRef.current?.click()} style={{
+      position: 'absolute', bottom: 0, right: 0,
+      width: '24px', height: '24px', borderRadius: '50%',
+      background: '#1dbf73', border: '2px solid #fff',
+      color: '#fff', fontSize: '0.7rem', cursor: 'pointer',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>📷</button>
+  </div>
+  <div>
+    <div style={{ fontWeight: 700, color: '#404145' }}>{form.full_name || 'Your Name'}</div>
+    <div style={{ color: '#95979d', fontSize: '0.85rem' }}>{user?.email}</div>
+    <button onClick={() => fileRef.current?.click()} disabled={uploading} style={{
+      marginTop: '0.4rem', background: '#fff', border: '1px solid #e4e5e7',
+      borderRadius: '6px', padding: '5px 12px', cursor: 'pointer',
+      fontSize: '0.78rem', color: '#62646a',
+    }}>
+      {uploading ? 'Uploading...' : '📷 Upload Photo'}
+    </button>
+    <input ref={fileRef} type="file" accept="image/*" onChange={uploadAvatar} style={{ display: 'none' }} />
+  </div>
+</div>
 
           {/* Full Name */}
           <div>

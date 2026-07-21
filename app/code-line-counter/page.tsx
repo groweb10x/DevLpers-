@@ -109,7 +109,7 @@ export default function CodeLineCounter() {
                 fontSize: '0.88rem', outline: 'none', resize: 'vertical',
                 fontFamily: 'Courier New, monospace',
                 color: '#404145', lineHeight: 1.6,
-                background: '#1e1e1e', color: '#d4d4d4',
+                background: '#1e1e1e',
                 boxSizing: 'border-box',
               }}
               onFocus={e => (e.target as HTMLElement).style.borderColor = '#1dbf73'}

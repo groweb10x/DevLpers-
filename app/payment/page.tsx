@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -10,7 +10,7 @@ const plans = {
   monthly: { name: 'Monthly Elite', price: 29.99, bids: 999, duration: '30 days' },
 };
 
-export default function Payment() {
+function PaymentContent() {
   const searchParams = useSearchParams();
   const planId = (searchParams.get('plan') || 'weekly') as keyof typeof plans;
   const plan = plans[planId] || plans.weekly;
@@ -325,5 +325,13 @@ export default function Payment() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Payment() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#fafafa' }} />}>
+      <PaymentContent />
+    </Suspense>
   );
 }

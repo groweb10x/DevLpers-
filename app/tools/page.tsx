@@ -44,6 +44,12 @@ const aiTools = [
   { icon: '🧠', name: 'Coming Soon', slug: '/tools', desc: 'More AI tools coming soon', badge: 'Soon' },
 ];
 
+const developerTools = [
+  { icon: '🎬', name: 'YouTube Thumbnail Downloader', slug: '/youtube-thumbnail-downloader', desc: 'Download YouTube video thumbnails in all sizes instantly', badge: 'Popular' },
+  { icon: '🏷️', name: 'Meta Tag Generator', slug: '/meta-tag-generator', desc: 'Generate complete SEO meta tags with Open Graph and Twitter Cards', badge: 'SEO' },
+  { icon: '🤖', name: 'Robots.txt Generator', slug: '/robots-txt-generator', desc: 'Block AI bots and control search engine crawling', badge: 'Dev' },
+  { icon: '⚙️', name: '.htaccess Generator', slug: '/htaccess-generator', desc: 'Generate Apache config with HTTPS, Gzip, caching and bot blocking', badge: 'Dev' },
+];
 
 // ============ SECTION CONFIGS ============
 const sections = [
@@ -97,6 +103,17 @@ const sections = [
   gradient: 'linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%)',
   border: '#c4b5fd',
   iconBg: '#7c3aed',
+},
+
+{
+  id: 'developer',
+  emoji: '🛠️',
+  title: 'Developer Tools',
+  desc: 'Essential tools for web developers — thumbnail downloaders, config generators and more',
+  tools: developerTools,
+  gradient: 'linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%)',
+  border: '#bae6fd',
+  iconBg: '#0ea5e9',
 },
 
 ];

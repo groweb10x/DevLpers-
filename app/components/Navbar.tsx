@@ -6,14 +6,24 @@ import { supabase } from '@/lib/supabase';
 export default function Navbar() {
   const [user, setUser] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
-  }, []);
+useEffect(() => {
+  const getUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from('developer_profiles')
+        .select('avatar_url, full_name')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (profile) setProfile(profile);
+    }
+  };
+  getUser();
+}, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -81,6 +91,24 @@ export default function Navbar() {
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLElement).style.color = 'var(--text)'; }}
                 >Dashboard</button>
               </Link>
+              {user && (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    {profile?.avatar_url ? (
+      <img src={profile.avatar_url} alt="avatar"
+        style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #1dbf73' }}
+      />
+    ) : (
+      <div style={{
+        width: '32px', height: '32px', borderRadius: '50%',
+        background: '#1dbf73', color: '#fff',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontWeight: 700, fontSize: '0.85rem',
+      }}>
+        {(profile?.full_name || user?.email)?.[0]?.toUpperCase()}
+      </div>
+    )}
+  </div>
+)}
               <button onClick={handleLogout} style={{
                 background: 'var(--accent)', border: 'none', color: '#fff',
                 padding: '8px 18px', borderRadius: '4px',

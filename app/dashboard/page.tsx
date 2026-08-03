@@ -518,7 +518,7 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div style={{ textAlign: 'center', padding: '2rem', color: '#95979d', background: '#fafafa', borderRadius: '6px', marginBottom: '1.5rem' }}>
-                  <p>Profile not set up yet</p>
+                  <p>Profile not set up yet </p>
                 </div>
               )}
 

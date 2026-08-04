@@ -4,12 +4,12 @@ export const metadata: Metadata = {
   title: 'Pricing Plans — DevLpers',
   description: 'Choose the right plan. Free, Weekly Pro and Monthly Elite. Unlimited bids, featured listings and priority support.',
   alternates: {
-    canonical: 'https://develpers.com/pricing',
+    canonical: 'https://www.develpers.com/pricing',
   },
   openGraph: {
     title: 'Pricing Plans — DevLpers',
     description: 'Simple and transparent pricing for developers and buyers.',
-    url: 'https://develpers.com/pricing',
+    url: 'https://www.develpers.com/pricing',
     type: 'website',
   },
 };

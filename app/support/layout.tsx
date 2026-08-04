@@ -4,7 +4,7 @@ export const metadata: Metadata = {
   title: 'Support Center — DevLpers',
   description: 'Get help from the DevLpers support team. Submit tickets, report issues, and get answers within 24 hours.',
   alternates: {
-    canonical: 'https://develpers.com/support',
+    canonical: 'https://www.develpers.com/support',
   },
 };
 

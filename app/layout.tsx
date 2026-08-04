@@ -2,12 +2,14 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.develpers.com'),
   title: 'DevLpers — The Global Developer Marketplace',
   description: 'Hire top developers or get hired on DevLpers. Post jobs, submit proposals, and work with the best global talent. The future of developer hiring is here.',
-keywords: 'hire developers, freelance developers, developer marketplace, post jobs, find developers, web development, mobile apps, AI developers, remote developers, tech talent, hire AI developers, machine learning engineers, blockchain developers, Web3 developers, remote tech talent, best developer marketplace, Upwork alternative, Fiverr alternative, developer jobs online, hire full stack developer, React developer for hire, Node.js developer, Flutter developer, Python developer, DevLpers, develpers.com, global developer marketplace, tech freelancers, software engineers for hire, hire programmers online, affordable developers, top rated developers, verified developers, escrow payment developers, developer bidding platform, project based hiring, hourly developer hiring, startup developers, enterprise developers',  openGraph: {
+  keywords: 'hire developers, freelance developers, developer marketplace, ...',
+  openGraph: {
     title: 'DevLpers — The Global Developer Marketplace',
     description: 'Hire top developers or get hired. Post jobs, submit proposals, and work with the best talent worldwide.',
-    url: 'https://develpers.com',
+    url: 'https://www.develpers.com',
     siteName: 'DevLpers',
     type: 'website',
     locale: 'en_US',
@@ -30,7 +32,7 @@ keywords: 'hire developers, freelance developers, developer marketplace, post jo
     },
   },
   alternates: {
-    canonical: 'https://develpers.com',
+    canonical: 'https://www.develpers.com',
   },
   verification: {
     google: 'Zugs9Aqmh_Y-u0QTBAujd5loH2jT7TgSd0xPiKjYl7Y',
@@ -60,27 +62,27 @@ export default function RootLayout({
               "@graph": [
                 {
                   "@type": "WebSite",
-                  "@id": "https://develpers.com/#website",
-                  "url": "https://develpers.com",
+                  "@id": "https://www.develpers.com/#website",
+                  "url": "https://www.develpers.com",
                   "name": "DevLpers",
                   "description": "The Global Developer Marketplace",
                   "potentialAction": {
                     "@type": "SearchAction",
                     "target": {
                       "@type": "EntryPoint",
-                      "urlTemplate": "https://develpers.com/jobs?search={search_term_string}"
+                      "urlTemplate": "https://www.develpers.com/jobs?search={search_term_string}"
                     },
                     "query-input": "required name=search_term_string"
                   }
                 },
                 {
                   "@type": "Organization",
-                  "@id": "https://develpers.com/#organization",
+                  "@id": "https://www.develpers.com/#organization",
                   "name": "DevLpers",
-                  "url": "https://develpers.com",
+                  "url": "https://www.develpers.com",
                   "logo": {
                     "@type": "ImageObject",
-                    "url": "https://develpers.com/logo.png"
+                    "url": "https://www.develpers.com/logo.png"
                   },
                   "sameAs": [
                     "https://twitter.com/devlpers",
@@ -90,14 +92,14 @@ export default function RootLayout({
                   "contactPoint": {
                     "@type": "ContactPoint",
                     "contactType": "customer support",
-                    "url": "https://develpers.com/support"
+                    "url": "https://www.develpers.com/support"
                   }
                 },
                 {
                   "@type": "MarketPlace",
-                  "@id": "https://develpers.com/#marketplace",
+                  "@id": "https://www.develpers.com/#marketplace",
                   "name": "DevLpers Marketplace",
-                  "url": "https://develpers.com",
+                  "url": "https://www.develpers.com",
                   "description": "Global marketplace for hiring top developers and finding freelance work",
                   "offers": {
                     "@type": "AggregateOffer",

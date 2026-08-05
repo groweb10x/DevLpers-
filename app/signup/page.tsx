@@ -25,6 +25,7 @@ export default function SignUp() {
       return;
     }
     setLoading(true);
+
     const { error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -32,12 +33,30 @@ export default function SignUp() {
         data: { full_name: form.name, role: role }
       }
     });
-    setLoading(false);
+
     if (error) {
       setError(error.message);
-    } else {
-      window.location.href = role === 'developer' ? '/dashboard' : '/buyer-dashboard';
+      setLoading(false);
+      return;
     }
+
+    // Welcome email bhejo
+    try {
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'welcome',
+          to: form.email,
+          name: form.name,
+        }),
+      });
+    } catch (e) {
+      console.log('Email error:', e);
+    }
+
+    setLoading(false);
+    window.location.href = role === 'developer' ? '/dashboard' : '/buyer-dashboard';
   };
 
   return (
@@ -80,7 +99,6 @@ export default function SignUp() {
             </p>
           </div>
 
-          {/* Error */}
           {error && (
             <div style={{
               background: '#fef2f2', border: '1px solid #fecaca',
@@ -118,12 +136,8 @@ export default function SignUp() {
                       fontSize: '1.5rem', flexShrink: 0,
                     }}>💻</div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: '0.2rem' }}>
-                        Work as a Developer
-                      </div>
-                      <div style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>
-                        Find clients, showcase skills, earn money
-                      </div>
+                      <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: '0.2rem' }}>Work as a Developer</div>
+                      <div style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>Find clients, showcase skills, earn money</div>
                     </div>
                     <div style={{
                       width: '20px', height: '20px', borderRadius: '50%',
@@ -149,12 +163,8 @@ export default function SignUp() {
                       fontSize: '1.5rem', flexShrink: 0,
                     }}>🏢</div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: '0.2rem' }}>
-                        Hire a Developer
-                      </div>
-                      <div style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>
-                        Post jobs, hire top talent, build faster
-                      </div>
+                      <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: '0.2rem' }}>Hire a Developer</div>
+                      <div style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>Post jobs, hire top talent, build faster</div>
                     </div>
                     <div style={{
                       width: '20px', height: '20px', borderRadius: '50%',
@@ -173,7 +183,6 @@ export default function SignUp() {
                   color: role ? '#fff' : 'var(--muted)',
                   fontWeight: 700, fontSize: '0.95rem',
                   cursor: role ? 'pointer' : 'not-allowed',
-                  transition: 'background 0.2s',
                 }}>Continue →</button>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.5rem 0' }}>
@@ -202,10 +211,8 @@ export default function SignUp() {
                   color: 'var(--text2)', cursor: 'pointer',
                   fontSize: '0.85rem', marginBottom: '1.25rem',
                   padding: 0, display: 'flex', alignItems: 'center', gap: '4px',
-                  fontWeight: 500,
                 }}>← Back</button>
 
-                {/* Role Badge */}
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
                   background: role === 'developer' ? '#f0fdf4' : '#fff7ed',
@@ -218,7 +225,6 @@ export default function SignUp() {
                   {role === 'developer' ? '💻 Developer Account' : '🏢 Client Account'}
                 </div>
 
-                {/* Fields */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
                   {[
                     { label: 'Full Name', name: 'name', type: 'text', placeholder: 'Ali Hassan' },
@@ -271,14 +277,11 @@ export default function SignUp() {
 
           <p style={{ textAlign: 'center', color: 'var(--text2)', fontSize: '0.85rem', marginTop: '1.5rem' }}>
             Already have an account?{' '}
-            <Link href="/login" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
-              Sign in
-            </Link>
+            <Link href="/login" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
           </p>
         </div>
       </div>
 
-      {/* FOOTER */}
       <div style={{
         textAlign: 'center', padding: '1.5rem',
         borderTop: '1px solid var(--border)',

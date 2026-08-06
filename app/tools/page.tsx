@@ -5,50 +5,50 @@ import Navbar from '../components/Navbar';
 
 // ============ IMAGE TOOLS — 4 cards ============
 const imageTools = [
-  { icon: '🖼️', name: 'Image Format Converter', slug: '/image-format-converter', desc: 'Convert between PNG, JPG, WebP, BMP, GIF and AVIF in bulk', badge: 'Popular' },
-  { icon: '🗜️', name: 'Image Compressor', slug: '/image-compressor', desc: 'Reduce image file size without losing visible quality', badge: 'Popular' },
-  { icon: '📐', name: 'Image Resizer', slug: '/image-resizer', desc: 'Resize photos to any dimension or social media preset', badge: 'Design' },
-  { icon: '🔖', name: 'Favicon Generator', slug: '/favicon-generator', desc: 'Create all favicon sizes from one image instantly', badge: 'Dev' },
+  { icon: '🖼️', name: 'Image Format Converter', slug: '/tools/image-format-converter', desc: 'Convert between PNG, JPG, WebP, BMP, GIF and AVIF in bulk', badge: 'Popular' },
+  { icon: '🗜️', name: 'Image Compressor', slug: '/tools/image-compressor', desc: 'Reduce image file size without losing visible quality', badge: 'Popular' },
+  { icon: '📐', name: 'Image Resizer', slug: '/tools/image-resizer', desc: 'Resize photos to any dimension or social media preset', badge: 'Design' },
+  { icon: '🔖', name: 'Favicon Generator', slug: '/tools/favicon-generator', desc: 'Create all favicon sizes from one image instantly', badge: 'Dev' },
 ];
 
 // ============ CALCULATOR TOOLS — 4 cards ============
 const calculatorTools = [
-  { icon: '📏', name: 'Unit Converter', slug: '/unit-converter', desc: 'Convert length, weight, temperature and more instantly', badge: 'Popular' },
-  { icon: '⚖️', name: 'BMI Calculator', slug: '/bmi-calculator', desc: 'Calculate your Body Mass Index and health category', badge: 'Health' },
-  { icon: '🏦', name: 'Loan EMI Calculator', slug: '/loan-emi-calculator', desc: 'Calculate monthly EMI for home, car or personal loans', badge: 'Finance' },
-  { icon: '🔢', name: 'Percentage Calculator', slug: '/percentage-calculator', desc: 'Quick percentage calculations for any number', badge: 'Math' },
+  { icon: '📏', name: 'Unit Converter', slug: '/tools/unit-converter', desc: 'Convert length, weight, temperature and more instantly', badge: 'Popular' },
+  { icon: '⚖️', name: 'BMI Calculator', slug: '/tools/bmi-calculator', desc: 'Calculate your Body Mass Index and health category', badge: 'Health' },
+  { icon: '🏦', name: 'Loan EMI Calculator', slug: '/tools/loan-emi-calculator', desc: 'Calculate monthly EMI for home, car or personal loans', badge: 'Finance' },
+  { icon: '🔢', name: 'Percentage Calculator', slug: '/tools/percentage-calculator', desc: 'Quick percentage calculations for any number', badge: 'Math' },
 ];
 
 // ============ FREELANCE TOOLS — 4 cards ============
 const freelanceTools = [
-  { icon: '📝', name: 'Urdu Word Counter', slug: '/urdu-word-counter', desc: 'Count words, characters and sentences in Urdu text instantly', badge: 'Unique' },
-  { icon: '💰', name: 'Freelancer Rate Calculator', slug: '/freelancer-rate-calculator', desc: 'Calculate your ideal hourly rate based on income goals', badge: 'Popular' },
-  { icon: '💻', name: 'Code Line Counter', slug: '/code-line-counter', desc: 'Count lines of code, comments and blank lines instantly', badge: 'Dev' },
-  { icon: '🧾', name: 'Invoice Generator', slug: '/invoice-generator', desc: 'Create professional PDF invoices free — no signup needed', badge: 'Free' },
+  { icon: '📝', name: 'Urdu Word Counter', slug: '/tools/urdu-word-counter', desc: 'Count words, characters and sentences in Urdu text instantly', badge: 'Unique' },
+  { icon: '💰', name: 'Freelancer Rate Calculator', slug: '/tools/freelancer-rate-calculator', desc: 'Calculate your ideal hourly rate based on income goals', badge: 'Popular' },
+  { icon: '💻', name: 'Code Line Counter', slug: '/tools/code-line-counter', desc: 'Count lines of code, comments and blank lines instantly', badge: 'Dev' },
+  { icon: '🧾', name: 'Invoice Generator', slug: '/tools/invoice-generator', desc: 'Create professional PDF invoices free — no signup needed', badge: 'Free' },
 ];
 
 // ============ SEO TOOLS — 4 cards ============
 const seoTools = [
-  { icon: '🔗', name: 'DevLpers Backlink Indexer', slug: '/backlink-indexer', desc: 'Submit and index your backlinks instantly for faster Google ranking', badge: 'SEO' },
-  { icon: '📊', name: 'DA PA Checker', slug: '/da-pa-checker', desc: 'Check Domain Authority and Page Authority of any website instantly', badge: 'SEO' },
-  { icon: '🛡️', name: 'Spam Score Checker', slug: '/spam-score-checker', desc: 'Analyze if a domain is spammy or safe using 10+ real signals', badge: 'SEO' },
-  { icon: '🔍', name: 'Backlink Checker', slug: '/backlink-checker', desc: 'Find 100-200+ real backlinks and referring domains for any website', badge: 'Free' },
+  { icon: '🔗', name: 'DevLpers Backlink Indexer', slug: '/tools/backlink-indexer', desc: 'Submit and index your backlinks instantly for faster Google ranking', badge: 'SEO' },
+  { icon: '📊', name: 'DA PA Checker', slug: '/tools/da-pa-checker', desc: 'Check Domain Authority and Page Authority of any website instantly', badge: 'SEO' },
+  { icon: '🛡️', name: 'Spam Score Checker', slug: '/tools/spam-score-checker', desc: 'Analyze if a domain is spammy or safe using 10+ real signals', badge: 'SEO' },
+  { icon: '🔍', name: 'Backlink Checker', slug: '/tools/backlink-checker', desc: 'Find 100-200+ real backlinks and referring domains for any website', badge: 'Free' },
 ];
 
 // ============ AI TOOLS — 4 cards ============
 
 const aiTools = [
-  { icon: '✍️', name: 'AI Article Generator', slug: '/article-generator', desc: 'Generate better articles from competitor content in 8+ languages', badge: 'AI' },
+  { icon: '✍️', name: 'AI Article Generator', slug: '/tools/article-generator', desc: 'Generate better articles from competitor content in 8+ languages', badge: 'AI' },
   { icon: '📊', name: 'Coming Soon', slug: '/tools', desc: 'More AI writing tools coming soon', badge: 'Soon' },
   { icon: '🤖', name: 'Coming Soon', slug: '/tools', desc: 'More AI tools coming soon', badge: 'Soon' },
   { icon: '🧠', name: 'Coming Soon', slug: '/tools', desc: 'More AI tools coming soon', badge: 'Soon' },
 ];
 
 const developerTools = [
-  { icon: '🎬', name: 'YouTube Thumbnail Downloader', slug: '/youtube-thumbnail-downloader', desc: 'Download YouTube video thumbnails in all sizes instantly', badge: 'Popular' },
-  { icon: '🏷️', name: 'Meta Tag Generator', slug: '/meta-tag-generator', desc: 'Generate complete SEO meta tags with Open Graph and Twitter Cards', badge: 'SEO' },
-  { icon: '🤖', name: 'Robots.txt Generator', slug: '/robots-txt-generator', desc: 'Block AI bots and control search engine crawling', badge: 'Dev' },
-  { icon: '⚙️', name: '.htaccess Generator', slug: '/htaccess-generator', desc: 'Generate Apache config with HTTPS, Gzip, caching and bot blocking', badge: 'Dev' },
+  { icon: '🎬', name: 'YouTube Thumbnail Downloader', slug: '/tools/youtube-thumbnail-downloader', desc: 'Download YouTube video thumbnails in all sizes instantly', badge: 'Popular' },
+  { icon: '🏷️', name: 'Meta Tag Generator', slug: '/tools/meta-tag-generator', desc: 'Generate complete SEO meta tags with Open Graph and Twitter Cards', badge: 'SEO' },
+  { icon: '🤖', name: 'Robots.txt Generator', slug: '/tools/robots-txt-generator', desc: 'Block AI bots and control search engine crawling', badge: 'Dev' },
+  { icon: '⚙️', name: '.htaccess Generator', slug: '/tools/htaccess-generator', desc: 'Generate Apache config with HTTPS, Gzip, caching and bot blocking', badge: 'Dev' },
 ];
 
 // ============ SECTION CONFIGS ============

@@ -15,18 +15,16 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
   const [submitting, setSubmitting] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) setIsLoggedIn(true);
+      if (user) { setIsLoggedIn(true); setUser(user); }
       setAuthChecked(true);
 
       const { data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('id', id)
-        .single();
+        .from('jobs').select('*').eq('id', id).single();
       if (!error && data) setJob(data);
       setLoading(false);
     };
@@ -34,16 +32,12 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
   }, [id]);
 
   const handleSubmit = async () => {
-    if (!proposal || !bidAmount) {
-      alert('Please fill all fields!');
-      return;
-    }
+    if (!proposal || !bidAmount) { alert('Please fill all fields!'); return; }
     setSubmitting(true);
+
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      window.location.href = '/login';
-      return;
-    }
+    if (!user) { window.location.href = '/login'; return; }
+
     const { error } = await supabase.from('proposals').insert({
       job_id: id,
       developer_id: user.id,
@@ -51,131 +45,101 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
       cover_letter: proposal,
       status: 'Pending',
     });
-    setSubmitting(false);
+
     if (error) {
       alert('Error: ' + error.message);
-    } else {
-      setSubmitted(true);
+      setSubmitting(false);
+      return;
     }
+
+    // Proposal email bhejo
+    try {
+      const userName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Developer';
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'proposal_sent',
+          to: user.email,
+          name: userName,
+          jobTitle: job.title,
+          amount: bidAmount,
+        }),
+      });
+    } catch (e) {
+      console.log('Email error:', e);
+    }
+
+    setSubmitting(false);
+    setSubmitted(true);
   };
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ textAlign: 'center', color: 'var(--muted)' }}>
+    <div style={{ minHeight: '100vh', background: '#fafafa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ textAlign: 'center', color: '#95979d' }}>
         <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
         <p>Loading job...</p>
       </div>
-
-      <style jsx>{`
-        .job-layout{
-          display:grid;
-          grid-template-columns:1fr 340px;
-          gap:2rem;
-        }
-
-        @media (max-width: 992px){
-          .job-layout{
-            grid-template-columns:1fr;
-          }
-        }
-
-        @media (max-width: 768px){
-          h1{
-            font-size:1.4rem !important;
-          }
-
-          .job-layout{
-            gap:1rem;
-          }
-        }
-      `}</style>
-
     </div>
   );
 
   if (!job) return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ textAlign: 'center', color: 'var(--muted)' }}>
+    <div style={{ minHeight: '100vh', background: '#fafafa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ textAlign: 'center', color: '#95979d' }}>
         <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>❌</div>
         <p>Job not found</p>
         <Link href="/jobs">
-          <button style={{ marginTop: '1rem', background: 'var(--accent)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer' }}>
+          <button style={{ marginTop: '1rem', background: '#1dbf73', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer' }}>
             Back to Jobs
           </button>
         </Link>
       </div>
-
-      <style jsx>{`
-        .job-layout{
-          display:grid;
-          grid-template-columns:1fr 340px;
-          gap:2rem;
-        }
-
-        @media (max-width: 992px){
-          .job-layout{
-            grid-template-columns:1fr;
-          }
-        }
-
-        @media (max-width: 768px){
-          h1{
-            font-size:1.4rem !important;
-          }
-
-          .job-layout{
-            gap:1rem;
-          }
-        }
-      `}</style>
-
     </div>
   );
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-
-      {/* NAVBAR */}
+    <div style={{ minHeight: '100vh', background: '#fafafa' }}>
       <Navbar />
+
       <div style={{ paddingTop: '80px', padding: '80px 5% 3rem' }}>
         <div className='job-layout' style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
           {/* LEFT */}
           <div>
             <div style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
+              background: '#fff', border: '1px solid #e4e5e7',
               borderRadius: '16px', padding: '2rem', marginBottom: '1.5rem',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
             }}>
               <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
                 <span style={{
-                  background: 'rgba(108,99,255,0.1)', color: 'var(--accent)',
-                  border: '1px solid rgba(108,99,255,0.3)',
-                  borderRadius: '6px', padding: '3px 12px', fontSize: '0.78rem',
+                  background: '#f0fdf4', color: '#1dbf73',
+                  border: '1px solid #bbf7d0',
+                  borderRadius: '6px', padding: '3px 12px', fontSize: '0.78rem', fontWeight: 600,
                 }}>{job.budget_type}</span>
                 <span style={{
-                  background: 'rgba(0,212,170,0.1)', color: 'var(--green)',
-                  border: '1px solid rgba(0,212,170,0.3)',
-                  borderRadius: '6px', padding: '3px 12px', fontSize: '0.78rem',
+                  background: '#eff6ff', color: '#3b82f6',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: '6px', padding: '3px 12px', fontSize: '0.78rem', fontWeight: 600,
                 }}>{job.level}</span>
-                <span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>📁 {job.category}</span>
+                <span style={{ color: '#95979d', fontSize: '0.82rem' }}>📁 {job.category}</span>
               </div>
 
-              <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 'clamp(1.3rem, 2.5vw, 1.8rem)', marginBottom: '1.5rem' }}>
+              <h1 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.3rem, 2.5vw, 1.8rem)', marginBottom: '1.5rem', color: '#404145' }}>
                 {job.title}
               </h1>
 
-              <div style={{ color: 'var(--muted)', lineHeight: 1.8, fontSize: '0.92rem', whiteSpace: 'pre-line', marginBottom: '1.5rem' }}>
+              <div style={{ color: '#62646a', lineHeight: 1.8, fontSize: '0.92rem', whiteSpace: 'pre-line', marginBottom: '1.5rem' }}>
                 {job.description}
               </div>
 
-              <h3 style={{ fontFamily: 'Syne', fontWeight: 700, marginBottom: '0.75rem' }}>Skills Required</h3>
+              <h3 style={{ fontFamily: 'Inter', fontWeight: 700, marginBottom: '0.75rem', color: '#404145' }}>Skills Required</h3>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 {(job.skills || []).map((skill: string) => (
                   <span key={skill} style={{
-                    background: 'rgba(108,99,255,0.08)',
-                    border: '1px solid rgba(108,99,255,0.2)',
+                    background: '#f0fdf4', border: '1px solid #bbf7d0',
                     borderRadius: '6px', padding: '5px 14px',
-                    fontSize: '0.82rem', color: 'var(--accent)',
+                    fontSize: '0.82rem', color: '#1dbf73',
                   }}>{skill}</span>
                 ))}
               </div>
@@ -183,10 +147,11 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
 
             {/* PROPOSAL SECTION */}
             <div style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
+              background: '#fff', border: '1px solid #e4e5e7',
               borderRadius: '16px', padding: '2rem',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
             }}>
-              <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.2rem', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1.2rem', marginBottom: '1.5rem', color: '#404145' }}>
                 📨 Submit Your Proposal
               </h2>
 
@@ -194,30 +159,28 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
               {authChecked && !isLoggedIn && (
                 <div style={{
                   textAlign: 'center', padding: '2rem',
-                  background: 'rgba(108,99,255,0.08)',
-                  border: '1px solid rgba(108,99,255,0.2)',
+                  background: '#f0fdf4', border: '1px solid #bbf7d0',
                   borderRadius: '12px',
                 }}>
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔐</div>
-                  <h3 style={{ fontFamily: 'Syne', fontWeight: 700, marginBottom: '0.75rem' }}>
+                  <h3 style={{ fontFamily: 'Inter', fontWeight: 700, marginBottom: '0.75rem', color: '#404145' }}>
                     Login Required
                   </h3>
-                  <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-                    You need an account to submit proposals and use bids. Join free today!
+                  <p style={{ color: '#62646a', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                    You need an account to submit proposals. Join free today!
                   </p>
                   <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                     <Link href="/login">
                       <button style={{
-                        background: 'var(--accent)', color: '#fff',
-                        border: 'none', padding: '12px 28px',
-                        borderRadius: '8px', cursor: 'pointer',
-                        fontFamily: 'Syne', fontWeight: 600, fontSize: '0.95rem',
+                        background: '#1dbf73', color: '#fff', border: 'none',
+                        padding: '12px 28px', borderRadius: '8px', cursor: 'pointer',
+                        fontWeight: 600, fontSize: '0.95rem',
                       }}>Login</button>
                     </Link>
                     <Link href="/signup">
                       <button style={{
-                        background: 'transparent', color: 'var(--text)',
-                        border: '1px solid var(--border)', padding: '12px 28px',
+                        background: '#fff', color: '#404145',
+                        border: '1px solid #e4e5e7', padding: '12px 28px',
                         borderRadius: '8px', cursor: 'pointer', fontSize: '0.95rem',
                       }}>Sign Up Free</button>
                     </Link>
@@ -225,34 +188,34 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
                 </div>
               )}
 
-              {/* LOGGED IN - SUBMITTED */}
+              {/* SUBMITTED */}
               {authChecked && isLoggedIn && submitted && (
                 <div style={{
                   textAlign: 'center', padding: '2rem',
-                  background: 'rgba(0,212,170,0.08)',
-                  border: '1px solid rgba(0,212,170,0.2)',
+                  background: '#f0fdf4', border: '1px solid #bbf7d0',
                   borderRadius: '12px',
                 }}>
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
-                  <h3 style={{ fontFamily: 'Syne', fontWeight: 700, color: 'var(--green)', marginBottom: '0.5rem' }}>
+                  <h3 style={{ fontFamily: 'Inter', fontWeight: 700, color: '#1dbf73', marginBottom: '0.5rem' }}>
                     Proposal Submitted!
                   </h3>
-                  <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
+                  <p style={{ color: '#62646a', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
                     The client will review your proposal soon.
                   </p>
-                  <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', marginTop: '1.5rem' }}>
+                  <p style={{ color: '#95979d', fontSize: '0.82rem', marginBottom: '1.5rem' }}>
+                    📧 Confirmation email sent to {user?.email}
+                  </p>
+                  <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                     <Link href="/jobs">
                       <button style={{
-                        background: 'var(--accent)', color: '#fff',
-                        border: 'none', padding: '10px 24px',
-                        borderRadius: '8px', cursor: 'pointer',
-                        fontFamily: 'Syne', fontWeight: 600,
+                        background: '#1dbf73', color: '#fff', border: 'none',
+                        padding: '10px 24px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600,
                       }}>Browse More Jobs</button>
                     </Link>
                     <Link href="/dashboard">
                       <button style={{
-                        background: 'transparent', color: 'var(--text)',
-                        border: '1px solid var(--border)', padding: '10px 24px',
+                        background: '#fff', color: '#404145',
+                        border: '1px solid #e4e5e7', padding: '10px 24px',
                         borderRadius: '8px', cursor: 'pointer',
                       }}>My Dashboard</button>
                     </Link>
@@ -260,11 +223,11 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
                 </div>
               )}
 
-              {/* LOGGED IN - FORM */}
+              {/* FORM */}
               {authChecked && isLoggedIn && !submitted && (
                 <>
                   <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>
+                    <label style={{ display: 'block', color: '#62646a', fontSize: '0.83rem', fontWeight: 500, marginBottom: '0.4rem' }}>
                       Your Bid Amount (USD)
                     </label>
                     <input
@@ -274,17 +237,17 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
                       onChange={e => setBidAmount(e.target.value)}
                       style={{
                         width: '100%', padding: '12px 14px',
-                        background: 'var(--bg)', border: '1px solid var(--border)',
-                        borderRadius: '8px', color: 'var(--text)',
+                        background: '#fafafa', border: '1px solid #e4e5e7',
+                        borderRadius: '8px', color: '#404145',
                         fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box',
                       }}
-                      onFocus={e => (e.target as HTMLElement).style.borderColor = 'var(--accent)'}
-                      onBlur={e => (e.target as HTMLElement).style.borderColor = 'var(--border)'}
+                      onFocus={e => (e.target as HTMLElement).style.borderColor = '#1dbf73'}
+                      onBlur={e => (e.target as HTMLElement).style.borderColor = '#e4e5e7'}
                     />
                   </div>
 
                   <div style={{ marginBottom: '1.5rem' }}>
-                    <label style={{ display: 'block', color: 'var(--muted)', fontSize: '0.83rem', marginBottom: '0.4rem' }}>
+                    <label style={{ display: 'block', color: '#62646a', fontSize: '0.83rem', fontWeight: 500, marginBottom: '0.4rem' }}>
                       Cover Letter
                     </label>
                     <textarea
@@ -294,22 +257,22 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
                       rows={6}
                       style={{
                         width: '100%', padding: '12px 14px',
-                        background: 'var(--bg)', border: '1px solid var(--border)',
-                        borderRadius: '8px', color: 'var(--text)',
+                        background: '#fafafa', border: '1px solid #e4e5e7',
+                        borderRadius: '8px', color: '#404145',
                         fontSize: '0.9rem', outline: 'none',
-                        resize: 'vertical', fontFamily: 'DM Sans',
+                        resize: 'vertical', fontFamily: 'Inter, sans-serif',
                         boxSizing: 'border-box',
                       }}
-                      onFocus={e => (e.target as HTMLElement).style.borderColor = 'var(--accent)'}
-                      onBlur={e => (e.target as HTMLElement).style.borderColor = 'var(--border)'}
+                      onFocus={e => (e.target as HTMLElement).style.borderColor = '#1dbf73'}
+                      onBlur={e => (e.target as HTMLElement).style.borderColor = '#e4e5e7'}
                     />
                   </div>
 
                   <button onClick={handleSubmit} disabled={submitting} style={{
                     width: '100%', padding: '14px',
-                    background: submitting ? 'var(--border)' : 'var(--accent)',
+                    background: submitting ? '#a7f3d0' : '#1dbf73',
                     border: 'none', borderRadius: '10px', color: '#fff',
-                    fontFamily: 'Syne', fontWeight: 600, fontSize: '1rem',
+                    fontWeight: 700, fontSize: '1rem',
                     cursor: submitting ? 'not-allowed' : 'pointer',
                   }}>
                     {submitting ? 'Submitting...' : 'Submit Proposal →'}
@@ -322,23 +285,25 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
           {/* RIGHT SIDEBAR */}
           <div>
             <div style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
+              background: '#fff', border: '1px solid #e4e5e7',
               borderRadius: '16px', padding: '1.5rem',
               position: 'sticky', top: '80px',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
             }}>
-              <h3 style={{ fontFamily: 'Syne', fontWeight: 700, marginBottom: '1.25rem' }}>Job Details</h3>
+              <h3 style={{ fontFamily: 'Inter', fontWeight: 700, marginBottom: '1.25rem', color: '#404145' }}>Job Details</h3>
               {[
-                { label: 'Budget', value: job.budget_type === 'Fixed' ? `$${job.budget_min} - $${job.budget_max}` : `$${job.budget_min}/hr`, color: 'var(--green)' },
-                { label: 'Type', value: job.budget_type, color: 'var(--text)' },
-                { label: 'Duration', value: job.duration, color: 'var(--text)' },
-                { label: 'Level', value: job.level, color: 'var(--text)' },
-                { label: 'Status', value: job.status, color: 'var(--green)' },
+                { label: 'Budget', value: job.budget_type === 'Fixed' ? `$${job.budget_min} - $${job.budget_max}` : `$${job.budget_min}/hr`, color: '#1dbf73' },
+                { label: 'Type', value: job.budget_type, color: '#404145' },
+                { label: 'Duration', value: job.duration, color: '#404145' },
+                { label: 'Level', value: job.level, color: '#404145' },
+                { label: 'Status', value: job.status, color: '#1dbf73' },
+                { label: 'Posted', value: new Date(job.created_at).toLocaleDateString(), color: '#95979d' },
               ].map(item => (
                 <div key={item.label} style={{
                   display: 'flex', justifyContent: 'space-between',
-                  padding: '0.6rem 0', borderBottom: '1px solid var(--border)',
+                  padding: '0.6rem 0', borderBottom: '1px solid #e4e5e7',
                 }}>
-                  <span style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>{item.label}</span>
+                  <span style={{ color: '#95979d', fontSize: '0.85rem' }}>{item.label}</span>
                   <span style={{ color: item.color, fontWeight: 600, fontSize: '0.85rem' }}>{item.value}</span>
                 </div>
               ))}
@@ -347,10 +312,9 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
                 <Link href="/signup" style={{ textDecoration: 'none' }}>
                   <button style={{
                     width: '100%', padding: '12px', marginTop: '1.5rem',
-                    background: 'var(--accent)', border: 'none',
+                    background: '#1dbf73', border: 'none',
                     borderRadius: '10px', color: '#fff',
-                    fontFamily: 'Syne', fontWeight: 600,
-                    cursor: 'pointer', fontSize: '0.9rem',
+                    fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem',
                   }}>Sign Up to Apply →</button>
                 </Link>
               )}
@@ -360,29 +324,19 @@ export default function JobDetail({ params }: { params: Promise<{ id: string }> 
       </div>
 
       <style jsx>{`
-        .job-layout{
-          display:grid;
-          grid-template-columns:1fr 340px;
-          gap:2rem;
+        .job-layout {
+          display: grid;
+          grid-template-columns: 1fr 340px;
+          gap: 2rem;
         }
-
-        @media (max-width: 992px){
-          .job-layout{
-            grid-template-columns:1fr;
-          }
+        @media (max-width: 992px) {
+          .job-layout { grid-template-columns: 1fr; }
         }
-
-        @media (max-width: 768px){
-          h1{
-            font-size:1.4rem !important;
-          }
-
-          .job-layout{
-            gap:1rem;
-          }
+        @media (max-width: 768px) {
+          h1 { font-size: 1.4rem !important; }
+          .job-layout { gap: 1rem; }
         }
       `}</style>
-
     </div>
   );
 }

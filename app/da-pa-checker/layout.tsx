@@ -4,11 +4,11 @@ export const metadata: Metadata = {
   title: 'Free DA PA Checker — Domain Authority Page Authority Tool | DevLpers',
   description: 'Check Domain Authority (DA) and Page Authority (PA) of any website free. Real data from Wayback Machine and Common Crawl. No signup required.',
   keywords: 'da pa checker, domain authority checker, page authority checker, free da checker, moz da pa, domain authority tool, check domain authority online',
-  alternates: { canonical: 'https://develpers.com/da-pa-checker' },
+  alternates: { canonical: 'https://www.develpers.com/da-pa-checker' },
   openGraph: {
     title: 'Free DA PA Checker — Domain Authority Tool',
     description: 'Check DA and PA of any domain instantly using real public data.',
-    url: 'https://develpers.com/da-pa-checker',
+    url: 'https://www.develpers.com/da-pa-checker',
     type: 'website',
   },
 };

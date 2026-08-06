@@ -28,7 +28,7 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://develpers.com/sitemap.xml',
-    host: 'https://develpers.com',
+    sitemap: 'https://www.develpers.com//sitemap.xml',
+    host: 'https://www.develpers.com/',
   };
 }

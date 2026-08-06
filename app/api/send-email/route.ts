@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
             </ul>
           </div>
           <div style="text-align:center;margin-top:2rem;">
-            <a href="https://develpers.com/dashboard" style="background:#1dbf73;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;">
+            <a href="https://www.develpers.com//dashboard" style="background:#1dbf73;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;">
               Go to Dashboard →
             </a>
           </div>
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
             The client will review your proposal and get back to you soon. You will receive an email when they respond.
           </p>
           <div style="text-align:center;margin-top:2rem;">
-            <a href="https://develpers.com/dashboard" style="background:#1dbf73;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;">
+            <a href="https://www.develpers.com//dashboard" style="background:#1dbf73;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;">
               View Dashboard →
             </a>
           </div>
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
             The client has accepted your proposal. Login to your dashboard to start the project!
           </p>
           <div style="text-align:center;margin-top:2rem;">
-            <a href="https://develpers.com/dashboard" style="background:#1dbf73;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;">
+            <a href="https://www.develpers.com//dashboard" style="background:#1dbf73;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;">
               Start Working →
             </a>
           </div>
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
             Don't give up — there are many more opportunities waiting for you!
           </p>
           <div style="text-align:center;margin-top:2rem;">
-            <a href="https://develpers.com/jobs" style="background:#1dbf73;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;">
+            <a href="https://www.develpers.com//jobs" style="background:#1dbf73;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:600;">
               Browse More Jobs →
             </a>
           </div>

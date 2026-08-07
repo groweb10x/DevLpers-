@@ -55,6 +55,16 @@ export default function Messages() {
     init();
   }, []);
 
+  // URL mein ?with=developer_id hai toh direct open karo
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const withId = params.get('with');
+  if (withId && user) {
+    setActiveChat(withId);
+    fetchMessages(user.id, withId);
+  }
+}, [user]);
+
   const fetchConversations = async (userId: string) => {
     // Get all messages involving this user
     const { data: msgs } = await supabase

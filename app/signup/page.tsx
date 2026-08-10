@@ -4,15 +4,21 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
 export default function SignUp() {
-  const [role, setRole] = useState<'developer' | 'buyer' | null>(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [form, setForm] = useState({ name: '', email: '', password: '' });
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError('');
+  };
+
+  const toggleRole = (role: string) => {
+    setSelectedRoles(prev =>
+      prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]
+    );
   };
 
   const handleSubmit = async () => {
@@ -24,177 +30,226 @@ export default function SignUp() {
       setError('Password must be at least 6 characters!');
       return;
     }
+    if (selectedRoles.length === 0) {
+      setError('Please select at least one role!');
+      return;
+    }
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    const primaryRole = selectedRoles.includes('developer') ? 'developer' : selectedRoles[0];
+
+    const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: {
-        data: { full_name: form.name, role: role }
+        data: {
+          full_name: form.name,
+          role: primaryRole,
+          roles: selectedRoles,
+        }
       }
     });
 
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-      return;
-    }
+    if (error) { setError(error.message); setLoading(false); return; }
 
-    // Welcome email bhejo
-    try {
-      await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'welcome',
-          to: form.email,
-          name: form.name,
-        }),
+    // Profile banao
+    if (data.user) {
+      await supabase.from('developer_profiles').insert({
+        user_id: data.user.id,
+        full_name: form.name,
+        is_developer: selectedRoles.includes('developer'),
+        is_client: selectedRoles.includes('client'),
+        is_tools_buyer: selectedRoles.includes('tools'),
+        active_role: primaryRole,
       });
-    } catch (e) {
-      console.log('Email error:', e);
+
+      // Welcome email
+      try {
+        await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'welcome',
+            to: form.email,
+            name: form.name,
+          }),
+        });
+      } catch (e) { console.log('Email error:', e); }
     }
 
     setLoading(false);
-    window.location.href = role === 'developer' ? '/dashboard' : '/buyer-dashboard';
+    window.location.href = primaryRole === 'developer' ? '/dashboard' : '/buyer-dashboard';
   };
 
+  const roles = [
+    {
+      id: 'developer',
+      icon: '💻',
+      title: 'Developer',
+      desc: 'Find jobs, submit proposals, earn money',
+      color: '#1dbf73',
+      bg: '#f0fdf4',
+      border: '#bbf7d0',
+    },
+    {
+      id: 'client',
+      icon: '🏢',
+      title: 'Client',
+      desc: 'Post jobs, hire developers, manage projects',
+      color: '#f59e0b',
+      bg: '#fffbeb',
+      border: '#fde68a',
+    },
+    {
+      id: 'tools',
+      icon: '🛠️',
+      title: 'Tools Buyer',
+      desc: 'Access premium dev tools and utilities',
+      color: '#8b5cf6',
+      bg: '#faf5ff',
+      border: '#e9d5ff',
+    },
+  ];
+
   return (
-    <div style={{ minHeight: '100vh', background: '#fafafa', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', flexDirection: 'column' }}>
 
       {/* NAVBAR */}
       <nav style={{
-        background: '#fff', borderBottom: '1px solid var(--border)',
+        background: '#fff', borderBottom: '1px solid #e4e5e7',
         padding: '0 5%', height: '64px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
       }}>
         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
-            width: '32px', height: '32px', borderRadius: '8px',
-            background: 'var(--accent)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontWeight: 800, fontSize: '1rem', color: '#fff',
-          }}>D</div>
-          <span style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.3rem', color: 'var(--text)' }}>
-            Dev<span style={{ color: 'var(--accent)' }}>Lpers</span>
+          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#1dbf73', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1rem', color: '#fff' }}>D</div>
+          <span style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.3rem', color: '#404145' }}>
+            Dev<span style={{ color: '#1dbf73' }}>Lpers</span>
           </span>
         </Link>
-        <p style={{ color: 'var(--text2)', fontSize: '0.9rem' }}>
+        <p style={{ color: '#62646a', fontSize: '0.9rem' }}>
           Already a member?{' '}
-          <Link href="/login" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
+          <Link href="/login" style={{ color: '#1dbf73', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
         </p>
       </nav>
 
       {/* MAIN */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-        <div style={{ width: '100%', maxWidth: '480px' }}>
+        <div style={{ width: '100%', maxWidth: '520px' }}>
+
+          {/* Progress */}
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
+            {[1, 2].map(s => (
+              <div key={s} style={{
+                flex: 1, height: '4px', borderRadius: '100px',
+                background: step >= s ? '#1dbf73' : '#e4e5e7',
+                transition: 'background 0.3s',
+              }} />
+            ))}
+          </div>
 
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <h1 style={{ fontFamily: 'Inter', fontWeight: 700, fontSize: '1.75rem', marginBottom: '0.5rem', color: 'var(--text)' }}>
-              {step === 1 ? 'Join DevLpers' : `Create ${role === 'developer' ? 'Developer' : 'Client'} Account`}
+            <h1 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.75rem', marginBottom: '0.5rem', color: '#1a1a2e' }}>
+              {step === 1 ? 'Choose Your Role(s)' : 'Create Your Account'}
             </h1>
-            <p style={{ color: 'var(--text2)', fontSize: '0.9rem' }}>
-              {step === 1 ? 'Start hiring or get hired today' : 'Fill in your details to get started'}
+            <p style={{ color: '#62646a', fontSize: '0.9rem' }}>
+              {step === 1
+                ? 'Select one or more roles — you can switch anytime'
+                : 'Fill in your details to get started'}
             </p>
           </div>
 
           {error && (
-            <div style={{
-              background: '#fef2f2', border: '1px solid #fecaca',
-              borderRadius: '6px', padding: '0.75rem 1rem',
-              color: '#dc2626', fontSize: '0.85rem', marginBottom: '1rem',
-            }}>⚠️ {error}</div>
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '0.75rem 1rem', color: '#dc2626', fontSize: '0.85rem', marginBottom: '1rem' }}>
+              ⚠️ {error}
+            </div>
           )}
 
-          <div style={{
-            background: '#fff', border: '1px solid var(--border)',
-            borderRadius: '8px', padding: '2rem',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-          }}>
+          <div style={{ background: '#fff', border: '1px solid #e4e5e7', borderRadius: '12px', padding: '2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
 
-            {/* STEP 1 - Role Selection */}
+            {/* STEP 1 — Role Selection */}
             {step === 1 && (
               <>
-                <p style={{ color: 'var(--text)', fontWeight: 600, fontSize: '0.95rem', marginBottom: '1rem' }}>
-                  I want to...
+                <p style={{ color: '#62646a', fontSize: '0.85rem', marginBottom: '1.25rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', padding: '0.75rem', lineHeight: 1.6 }}>
+                  💡 <strong>One account, multiple roles!</strong> Select all roles you need — you can switch between them anytime from the navbar.
                 </p>
+
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-
-                  {/* Developer */}
-                  <div onClick={() => setRole('developer')} style={{
-                    border: `2px solid ${role === 'developer' ? 'var(--accent)' : 'var(--border)'}`,
-                    borderRadius: '8px', padding: '1.25rem',
-                    cursor: 'pointer', transition: 'all 0.2s',
-                    background: role === 'developer' ? '#f0fdf4' : '#fff',
-                    display: 'flex', alignItems: 'center', gap: '1rem',
-                  }}>
-                    <div style={{
-                      width: '48px', height: '48px', borderRadius: '8px',
-                      background: role === 'developer' ? '#dcfce7' : '#f5f5f5',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '1.5rem', flexShrink: 0,
-                    }}>💻</div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: '0.2rem' }}>Work as a Developer</div>
-                      <div style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>Find clients, showcase skills, earn money</div>
-                    </div>
-                    <div style={{
-                      width: '20px', height: '20px', borderRadius: '50%',
-                      border: `2px solid ${role === 'developer' ? 'var(--accent)' : 'var(--border)'}`,
-                      background: role === 'developer' ? 'var(--accent)' : '#fff',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: '#fff', fontSize: '0.65rem', flexShrink: 0,
-                    }}>{role === 'developer' ? '✓' : ''}</div>
-                  </div>
-
-                  {/* Buyer */}
-                  <div onClick={() => setRole('buyer')} style={{
-                    border: `2px solid ${role === 'buyer' ? 'var(--accent2)' : 'var(--border)'}`,
-                    borderRadius: '8px', padding: '1.25rem',
-                    cursor: 'pointer', transition: 'all 0.2s',
-                    background: role === 'buyer' ? '#fff7ed' : '#fff',
-                    display: 'flex', alignItems: 'center', gap: '1rem',
-                  }}>
-                    <div style={{
-                      width: '48px', height: '48px', borderRadius: '8px',
-                      background: role === 'buyer' ? '#fed7aa' : '#f5f5f5',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '1.5rem', flexShrink: 0,
-                    }}>🏢</div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: '0.2rem' }}>Hire a Developer</div>
-                      <div style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>Post jobs, hire top talent, build faster</div>
-                    </div>
-                    <div style={{
-                      width: '20px', height: '20px', borderRadius: '50%',
-                      border: `2px solid ${role === 'buyer' ? 'var(--accent2)' : 'var(--border)'}`,
-                      background: role === 'buyer' ? 'var(--accent2)' : '#fff',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: '#fff', fontSize: '0.65rem', flexShrink: 0,
-                    }}>{role === 'buyer' ? '✓' : ''}</div>
-                  </div>
+                  {roles.map(role => {
+                    const isSelected = selectedRoles.includes(role.id);
+                    return (
+                      <div key={role.id} onClick={() => toggleRole(role.id)} style={{
+                        border: `2px solid ${isSelected ? role.color : '#e4e5e7'}`,
+                        borderRadius: '10px', padding: '1.25rem',
+                        cursor: 'pointer', transition: 'all 0.2s',
+                        background: isSelected ? role.bg : '#fff',
+                        display: 'flex', alignItems: 'center', gap: '1rem',
+                      }}>
+                        <div style={{
+                          width: '48px', height: '48px', borderRadius: '10px',
+                          background: isSelected ? role.border : '#f5f5f5',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: '1.5rem', flexShrink: 0,
+                        }}>{role.icon}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: 700, color: '#1a1a2e', marginBottom: '0.2rem', fontSize: '0.95rem' }}>
+                            {role.title}
+                          </div>
+                          <div style={{ color: '#62646a', fontSize: '0.82rem' }}>{role.desc}</div>
+                        </div>
+                        {/* Checkbox */}
+                        <div style={{
+                          width: '22px', height: '22px', borderRadius: '6px',
+                          border: `2px solid ${isSelected ? role.color : '#e4e5e7'}`,
+                          background: isSelected ? role.color : '#fff',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: '#fff', fontSize: '0.75rem', flexShrink: 0,
+                          fontWeight: 700,
+                        }}>{isSelected ? '✓' : ''}</div>
+                      </div>
+                    );
+                  })}
                 </div>
 
-                <button onClick={() => role && setStep(2)} style={{
-                  width: '100%', padding: '12px',
-                  background: role ? 'var(--accent)' : '#e4e5e7',
-                  border: 'none', borderRadius: '6px',
-                  color: role ? '#fff' : 'var(--muted)',
+                {/* Selected roles preview */}
+                {selectedRoles.length > 0 && (
+                  <div style={{ marginBottom: '1.25rem', display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                    {selectedRoles.map(r => {
+                      const role = roles.find(ro => ro.id === r);
+                      return (
+                        <span key={r} style={{
+                          background: role?.bg, color: role?.color,
+                          border: `1px solid ${role?.border}`,
+                          borderRadius: '100px', padding: '3px 12px',
+                          fontSize: '0.78rem', fontWeight: 600,
+                        }}>{role?.icon} {role?.title}</span>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <button onClick={() => selectedRoles.length > 0 && setStep(2)} style={{
+                  width: '100%', padding: '13px',
+                  background: selectedRoles.length > 0 ? '#1dbf73' : '#e4e5e7',
+                  border: 'none', borderRadius: '8px',
+                  color: selectedRoles.length > 0 ? '#fff' : '#95979d',
                   fontWeight: 700, fontSize: '0.95rem',
-                  cursor: role ? 'pointer' : 'not-allowed',
-                }}>Continue →</button>
+                  cursor: selectedRoles.length > 0 ? 'pointer' : 'not-allowed',
+                  transition: 'all 0.2s',
+                }}>
+                  Continue → {selectedRoles.length > 0 && `(${selectedRoles.length} role${selectedRoles.length > 1 ? 's' : ''} selected)`}
+                </button>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.5rem 0' }}>
-                  <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
-                  <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>or</span>
-                  <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+                  <div style={{ flex: 1, height: '1px', background: '#e4e5e7' }} />
+                  <span style={{ color: '#95979d', fontSize: '0.8rem' }}>or</span>
+                  <div style={{ flex: 1, height: '1px', background: '#e4e5e7' }} />
                 </div>
 
                 <button style={{
                   width: '100%', padding: '11px',
-                  background: '#fff', border: '1px solid var(--border)',
-                  borderRadius: '6px', color: 'var(--text)',
+                  background: '#fff', border: '1px solid #e4e5e7',
+                  borderRadius: '8px', color: '#404145',
                   fontSize: '0.9rem', fontWeight: 500, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
                 }}>
@@ -203,26 +258,29 @@ export default function SignUp() {
               </>
             )}
 
-            {/* STEP 2 - Form */}
+            {/* STEP 2 — Form */}
             {step === 2 && (
               <>
                 <button onClick={() => setStep(1)} style={{
                   background: 'transparent', border: 'none',
-                  color: 'var(--text2)', cursor: 'pointer',
+                  color: '#62646a', cursor: 'pointer',
                   fontSize: '0.85rem', marginBottom: '1.25rem',
                   padding: 0, display: 'flex', alignItems: 'center', gap: '4px',
                 }}>← Back</button>
 
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                  background: role === 'developer' ? '#f0fdf4' : '#fff7ed',
-                  border: `1px solid ${role === 'developer' ? '#bbf7d0' : '#fed7aa'}`,
-                  borderRadius: '6px', padding: '6px 12px',
-                  fontSize: '0.82rem', fontWeight: 600,
-                  color: role === 'developer' ? 'var(--accent)' : 'var(--accent2)',
-                  marginBottom: '1.25rem',
-                }}>
-                  {role === 'developer' ? '💻 Developer Account' : '🏢 Client Account'}
+                {/* Selected roles */}
+                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+                  {selectedRoles.map(r => {
+                    const role = roles.find(ro => ro.id === r);
+                    return (
+                      <span key={r} style={{
+                        background: role?.bg, color: role?.color,
+                        border: `1px solid ${role?.border}`,
+                        borderRadius: '100px', padding: '3px 12px',
+                        fontSize: '0.78rem', fontWeight: 600,
+                      }}>{role?.icon} {role?.title}</span>
+                    );
+                  })}
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -232,7 +290,7 @@ export default function SignUp() {
                     { label: 'Password', name: 'password', type: 'password', placeholder: 'Min. 6 characters' },
                   ].map(field => (
                     <div key={field.name}>
-                      <label style={{ display: 'block', color: 'var(--text)', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.4rem' }}>
+                      <label style={{ display: 'block', color: '#404145', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.4rem' }}>
                         {field.label}
                       </label>
                       <input
@@ -243,51 +301,47 @@ export default function SignUp() {
                         onChange={handleInput}
                         style={{
                           width: '100%', padding: '10px 14px',
-                          border: '1px solid var(--border)',
-                          borderRadius: '6px', color: 'var(--text)',
+                          border: '1px solid #e4e5e7',
+                          borderRadius: '8px', color: '#404145',
                           fontSize: '0.9rem', outline: 'none',
                           boxSizing: 'border-box', background: '#fff',
                         }}
-                        onFocus={e => (e.target as HTMLElement).style.borderColor = 'var(--accent)'}
-                        onBlur={e => (e.target as HTMLElement).style.borderColor = 'var(--border)'}
+                        onFocus={e => (e.target as HTMLElement).style.borderColor = '#1dbf73'}
+                        onBlur={e => (e.target as HTMLElement).style.borderColor = '#e4e5e7'}
                       />
                     </div>
                   ))}
                 </div>
 
                 <button onClick={handleSubmit} disabled={loading} style={{
-                  width: '100%', padding: '12px',
-                  background: loading ? '#a7f3d0' : 'var(--accent)',
-                  border: 'none', borderRadius: '6px',
+                  width: '100%', padding: '13px',
+                  background: loading ? '#a7f3d0' : '#1dbf73',
+                  border: 'none', borderRadius: '8px',
                   color: '#fff', fontWeight: 700, fontSize: '0.95rem',
                   cursor: loading ? 'not-allowed' : 'pointer',
                 }}>
-                  {loading ? 'Creating Account...' : `Create ${role === 'developer' ? 'Developer' : 'Client'} Account`}
+                  {loading ? 'Creating Account...' : 'Create Account 🚀'}
                 </button>
 
-                <p style={{ textAlign: 'center', color: 'var(--muted)', fontSize: '0.78rem', marginTop: '1rem', lineHeight: 1.6 }}>
+                <p style={{ textAlign: 'center', color: '#95979d', fontSize: '0.78rem', marginTop: '1rem', lineHeight: 1.6 }}>
                   By joining, you agree to our{' '}
-                  <Link href="#" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Terms</Link>{' '}
+                  <Link href="#" style={{ color: '#1dbf73', textDecoration: 'none' }}>Terms</Link>{' '}
                   and{' '}
-                  <Link href="#" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Privacy Policy</Link>
+                  <Link href="#" style={{ color: '#1dbf73', textDecoration: 'none' }}>Privacy Policy</Link>
                 </p>
               </>
             )}
           </div>
 
-          <p style={{ textAlign: 'center', color: 'var(--text2)', fontSize: '0.85rem', marginTop: '1.5rem' }}>
+          <p style={{ textAlign: 'center', color: '#62646a', fontSize: '0.85rem', marginTop: '1.5rem' }}>
             Already have an account?{' '}
-            <Link href="/login" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
+            <Link href="/login" style={{ color: '#1dbf73', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
           </p>
         </div>
       </div>
 
-      <div style={{
-        textAlign: 'center', padding: '1.5rem',
-        borderTop: '1px solid var(--border)',
-        color: 'var(--muted)', fontSize: '0.8rem',
-      }}>
-        © 2026 DevLpers · <Link href="#" style={{ color: 'var(--muted)', textDecoration: 'none' }}>Privacy</Link> · <Link href="#" style={{ color: 'var(--muted)', textDecoration: 'none' }}>Terms</Link>
+      <div style={{ textAlign: 'center', padding: '1.5rem', borderTop: '1px solid #e4e5e7', color: '#95979d', fontSize: '0.8rem' }}>
+        © 2026 DevLpers · <Link href="#" style={{ color: '#95979d', textDecoration: 'none' }}>Privacy</Link> · <Link href="#" style={{ color: '#95979d', textDecoration: 'none' }}>Terms</Link>
       </div>
     </div>
   );

@@ -59,18 +59,18 @@ export default function Navbar() {
     window.location.href = '/';
   };
 
-  const switchRole = async (role: string) => {
-    setActiveRole(role);
-    setSwitchOpen(false);
-    if (user) {
-      await supabase.from('developer_profiles')
-        .update({ active_role: role })
-        .eq('user_id', user.id);
-    }
-    if (role === 'developer') window.location.href = '/dashboard';
-    else if (role === 'client') window.location.href = '/buyer-dashboard';
-    else if (role === 'tools') window.location.href = '/tools';
-  };
+const switchRole = async (role: string) => {
+  setActiveRole(role);
+  setSwitchOpen(false);
+  if (user) {
+    await supabase.from('developer_profiles')
+      .update({ active_role: role })
+      .eq('user_id', user.id);
+  }
+  if (role === 'developer') window.location.href = '/dashboard';
+  else if (role === 'client') window.location.href = '/buyer-dashboard';
+  else if (role === 'tools') window.location.href = '/tools-dashboard'; // ← yeh update karo
+};
 
   const markAllRead = async () => {
     if (!user) return;

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -11,7 +11,9 @@ const plans = {
   yearly: { name: 'Yearly Ultimate', price: 99.99, bids: 999, duration: '365 days', type: 'subscription' },
 };
 
-export default function Payment() {
+
+
+function PaymentContent() {
   const searchParams = useSearchParams();
   const planId = searchParams.get('plan') as string;
   const escrowAmount = searchParams.get('amount');
@@ -137,6 +139,7 @@ export default function Payment() {
     }
     setLoading(false);
   };
+  
 
   const handleManualPayment = async (paymentMethod: string) => {
     if (!txId.trim()) {
@@ -156,6 +159,8 @@ export default function Payment() {
     }
     setLoading(false);
   };
+
+  
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
@@ -457,6 +462,8 @@ export default function Payment() {
               <div style={{ textAlign: 'center', color: '#95979d', fontSize: '0.78rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                 🔒 Secure payment · SSL encrypted · Admin verified
               </div>
+
+              
             </>
           )}
         </div>
@@ -464,3 +471,19 @@ export default function Payment() {
     </div>
   );
 }
+
+export default function Payment() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center', color: '#95979d' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    }>
+      <PaymentContent />
+    </Suspense>
+  );
+}
+

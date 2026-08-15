@@ -49,6 +49,8 @@ export default function BuyerDashboard() {
     if (!error) {
       setProposals(prev => prev.map(p => p.id === proposalId ? { ...p, status } : p));
 
+
+      
       // Email notification
       if (status === 'Accepted' || status === 'Declined') {
         try {
@@ -75,6 +77,8 @@ export default function BuyerDashboard() {
     }
   };
 
+  
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     window.location.href = '/';
@@ -89,6 +93,7 @@ export default function BuyerDashboard() {
     </div>
   );
 
+  
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Client';
   const userInitial = userName[0].toUpperCase();
   const totalProposals = myJobs.reduce((acc: number, job: any) => acc + (job.proposals?.length || 0), 0);
@@ -399,6 +404,18 @@ export default function BuyerDashboard() {
                               borderRadius: '100px', padding: '3px 12px', fontSize: '0.75rem', fontWeight: 600,
                             }}>{p.status}</span>
                           </div>
+                          {p.status === 'Accepted' && (
+  <Link href={`/developers/${p.developer_id}?review=true`} style={{ textDecoration: 'none' }}>
+    <button style={{
+      background: '#fffbeb', border: '1px solid #fde68a',
+      color: '#f59e0b', padding: '8px 18px',
+      borderRadius: '4px', cursor: 'pointer',
+      fontSize: '0.85rem', fontWeight: 600,
+    }}>
+      ⭐ Leave Review
+    </button>
+  </Link>
+)}
 
                           <p style={{ color: '#62646a', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: '0.75rem' }}>{p.cover_letter}</p>
                           <div style={{ color: '#95979d', fontSize: '0.75rem', marginBottom: '1rem' }}>

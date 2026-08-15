@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import Navbar from '../components/Navbar';
 
 
+
 const mobileStyles = `
 @media (max-width: 768px){
   .dev-header{padding:1.25rem 1rem !important;}

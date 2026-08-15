@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import ReviewSystem from '../../components/ReviewSystem';
 
 
 const responsiveStyles = `
@@ -129,6 +130,7 @@ export default function DeveloperProfile() {
                 ))}
               </div>
             </div>
+            
 
             {/* Bio */}
             <div style={{
@@ -140,6 +142,7 @@ export default function DeveloperProfile() {
                 {developer.bio}
               </p>
             </div>
+            
 
             {/* Skills */}
             <div style={{
@@ -158,6 +161,7 @@ export default function DeveloperProfile() {
                 ))}
               </div>
             </div>
+            
 
             {/* Portfolio & Reviews Tabs */}
             <div style={{
@@ -179,6 +183,7 @@ export default function DeveloperProfile() {
                   }}>{tab === 'portfolio' ? '🎨 Portfolio' : '⭐ Reviews'}</button>
                 ))}
               </div>
+              
 
               <div style={{ padding: '1.5rem' }}>
                 {/* Portfolio */}
@@ -206,6 +211,7 @@ export default function DeveloperProfile() {
                     ))}
                   </div>
                 )}
+                
 
                 {/* Reviews */}
                 {activeTab === 'reviews' && (
@@ -230,6 +236,7 @@ export default function DeveloperProfile() {
               </div>
             </div>
           </div>
+          
 
           {/* RIGHT SIDEBAR */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -285,6 +292,7 @@ export default function DeveloperProfile() {
                   </button>
                 </>
               )}
+              
 
               <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                 {[

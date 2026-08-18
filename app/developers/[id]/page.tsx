@@ -1,319 +1,449 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import Navbar from '../../components/Navbar';
 import ReviewSystem from '../../components/ReviewSystem';
 
+export default function DeveloperProfile({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const [developer, setDeveloper] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [sellerLevel, setSellerLevel] = useState<any>(null);
+  const [status, setStatus] = useState<any>(null);
+  const [proposals, setProposals] = useState<number>(0);
+  const [avgRating, setAvgRating] = useState<number>(0);
+  const [totalReviews, setTotalReviews] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [messageSent, setMessageSent] = useState(false);
 
-const responsiveStyles = `
-@media (max-width: 768px){
-  .dev-container{padding:80px 16px 24px !important;}
-  .dev-grid{grid-template-columns:1fr !important;}
-  .dev-nav{padding:0 16px !important;}
-  .dev-stats{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
-}
-`;
+  useEffect(() => {
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      await fetchDeveloper();
+    };
+    init();
+  }, [id]);
 
-const developer = {
-  id: 1,
-  name: 'Ali Hassan',
-  title: 'Full Stack Developer',
-  location: 'Lahore, Pakistan',
-  rate: '$45/hr',
-  rating: 4.9,
-  reviews: 34,
-  jobs: 87,
-  earned: '$12,400',
-  availability: 'Available',
-  level: 'Expert',
-  bio: `I am a passionate Full Stack Developer with 5+ years of experience building modern web applications. I specialize in React, Node.js and PostgreSQL and have worked with clients from Pakistan, UAE and USA.
+  const fetchDeveloper = async () => {
+    setLoading(true);
 
-I take pride in writing clean, maintainable code and always deliver projects on time. I believe in clear communication and regular updates throughout the project.
+    // Fetch profile
+    const { data: profile } = await supabase
+      .from('developer_profiles')
+      .select('*')
+      .eq('user_id', id)
+      .maybeSingle();
 
-Let us build something amazing together!`,
-  skills: ['React', 'Next.js', 'Node.js', 'PostgreSQL', 'TypeScript', 'REST API', 'Docker', 'AWS', 'MongoDB', 'Tailwind CSS'],
-  portfolio: [
-    { title: 'E-commerce Platform', desc: 'Full stack store with payment integration', tech: 'React · Node.js · PostgreSQL', emoji: '🛒' },
-    { title: 'Food Delivery App', desc: 'Real-time tracking mobile app', tech: 'React Native · Firebase', emoji: '🍕' },
-    { title: 'SaaS Dashboard', desc: 'Analytics dashboard for marketing teams', tech: 'Next.js · Chart.js · Tailwind', emoji: '📊' },
-    { title: 'AI Chatbot', desc: 'GPT-4 powered customer support bot', tech: 'Python · OpenAI · FastAPI', emoji: '🤖' },
-  ],
-  reviewsList: [
-    { client: 'Ahmed Store', rating: 5, comment: 'Excellent work! Delivered on time and communicated very well throughout the project.', date: 'Apr 2025' },
-    { client: 'TechPak Ltd', rating: 5, comment: 'Ali is a true professional. The app works perfectly and the code is very clean.', date: 'Mar 2025' },
-    { client: 'StartupX', rating: 4, comment: 'Good developer, knows his stuff. Would hire again for future projects.', date: 'Feb 2025' },
-  ],
-};
+    if (!profile) { setLoading(false); return; }
+    setDeveloper(profile);
 
-export default function DeveloperProfile() {
-  const [activeTab, setActiveTab] = useState<'portfolio' | 'reviews'>('portfolio');
-  const [contacted, setContacted] = useState(false);
+    // Fetch seller level
+    const { data: level } = await supabase
+      .from('seller_levels')
+      .select('*')
+      .eq('user_id', id)
+      .maybeSingle();
+    if (level) setSellerLevel(level);
+
+    // Fetch status
+    const { data: userStatus } = await supabase
+      .from('user_status')
+      .select('*')
+      .eq('user_id', id)
+      .maybeSingle();
+    if (userStatus) setStatus(userStatus);
+
+    // Fetch proposals count
+    const { count: propCount } = await supabase
+      .from('proposals')
+      .select('*', { count: 'exact', head: true })
+      .eq('developer_id', id);
+    setProposals(propCount || 0);
+
+    // Fetch reviews
+    const { data: reviews } = await supabase
+      .from('reviews')
+      .select('rating')
+      .eq('reviewee_id', id);
+
+    if (reviews && reviews.length > 0) {
+      const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+      setAvgRating(Math.round(avg * 10) / 10);
+      setTotalReviews(reviews.length);
+    }
+
+    setLoading(false);
+  };
+
+  const sendMessage = async () => {
+    if (!user) { window.location.href = '/login'; return; }
+    window.location.href = `/messages?with=${id}`;
+  };
+
+  const levelIcons: Record<number, string> = { 1: '🥉', 2: '🥈', 3: '🥇' };
+  const levelLabels: Record<number, string> = { 1: 'Level 1', 2: 'Level 2', 3: 'Level 3' };
+  const levelColors: Record<number, string> = { 1: '#92400e', 2: '#374151', 3: '#78350f' };
+  const levelBg: Record<number, string> = { 1: '#fef3c7', 2: '#f3f4f6', 3: '#fef9c3' };
+
+  const StarDisplay = ({ rating, size = 14 }: { rating: number; size?: number }) => (
+    <div style={{ display: 'flex', gap: '1px' }}>
+      {[1, 2, 3, 4, 5].map(s => (
+        <span key={s} style={{ fontSize: size, color: s <= Math.round(rating) ? '#f59e0b' : '#e4e5e7' }}>★</span>
+      ))}
+    </div>
+  );
+
+  if (loading) return (
+    <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ textAlign: 'center', color: '#95979d' }}>
+        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
+        <p>Loading profile...</p>
+      </div>
+    </div>
+  );
+
+  if (!developer) return (
+    <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ textAlign: 'center', color: '#95979d' }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👤</div>
+        <h3 style={{ fontWeight: 700, color: '#404145', marginBottom: '0.75rem' }}>Developer not found</h3>
+        <Link href="/developers">
+          <button style={{ background: '#1dbf73', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>
+            Browse Developers →
+          </button>
+        </Link>
+      </div>
+    </div>
+  );
+
+  const level = sellerLevel?.level || 1;
+  const isOwnProfile = user?.id === id;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
+      <Navbar />
+      <div style={{ paddingTop: '64px' }}>
 
-      {/* NAVBAR */}
-      <nav className='dev-nav' style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        background: 'rgba(10,10,15,0.9)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid var(--border)',
-        padding: '0 5%',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        height: '64px',
-      }}>
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <span style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.4rem', color: 'var(--accent)' }}>
-            Dev<span style={{ color: 'var(--text)' }}>Market</span>
-          </span>
-        </Link>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <Link href="/developers">
-            <button style={{
-              background: 'transparent', border: '1px solid var(--border)',
-              color: 'var(--text)', padding: '8px 18px',
-              borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem',
-            }}>← Browse Devs</button>
-          </Link>
-        </div>
-      </nav>
-
-      <><style>{responsiveStyles}</style><div className='dev-container' style={{ paddingTop: '80px', padding: '80px 5% 3rem' }}>
-        <div className='dev-grid' style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem', maxWidth: '1100px', margin: '0 auto' }}>
-
-          {/* LEFT */}
-          <div>
-
-            {/* Profile Header */}
-            <div style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: '16px', padding: '2rem', marginBottom: '1.5rem',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.5rem', flexWrap: 'wrap' }}>
-                {/* Avatar */}
-                <div style={{
-                  width: '80px', height: '80px', borderRadius: '50%', flexShrink: 0,
-                  background: 'linear-gradient(135deg, var(--accent), var(--accent2))',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'Syne', fontWeight: 800, fontSize: '2rem',
-                }}>{developer.name[0]}</div>
-
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.3rem' }}>
-                    <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '1.5rem' }}>{developer.name}</h1>
-                    <span style={{
-                      background: 'rgba(0,212,170,0.1)', color: 'var(--green)',
-                      border: '1px solid rgba(0,212,170,0.3)',
-                      borderRadius: '6px', padding: '2px 10px', fontSize: '0.75rem', fontWeight: 600,
-                    }}>● {developer.availability}</span>
-                  </div>
-                  <div style={{ color: 'var(--muted)', fontSize: '0.95rem', marginBottom: '0.5rem' }}>{developer.title}</div>
-                  <div style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>📍 {developer.location}</div>
-                </div>
-              </div>
-
-              {/* Stats Row */}
-              <div style={{
-                display: 'flex', gap: '2rem', flexWrap: 'wrap',
-                marginTop: '1.5rem', paddingTop: '1.5rem',
-                borderTop: '1px solid var(--border)',
-              }}>
-                {[
-                  { label: 'Rating', value: `⭐ ${developer.rating}` },
-                  { label: 'Reviews', value: developer.reviews },
-                  { label: 'Jobs Done', value: developer.jobs },
-                  { label: 'Total Earned', value: developer.earned },
-                ].map(s => (
-                  <div key={s.label}>
-                    <div style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem' }}>{s.value}</div>
-                    <div style={{ color: 'var(--muted)', fontSize: '0.78rem' }}>{s.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-
-            {/* Bio */}
-            <div style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: '16px', padding: '2rem', marginBottom: '1.5rem',
-            }}>
-              <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1rem' }}>About Me</h2>
-              <p style={{ color: 'var(--muted)', lineHeight: 1.8, fontSize: '0.92rem', whiteSpace: 'pre-line' }}>
-                {developer.bio}
-              </p>
-            </div>
-            
-
-            {/* Skills */}
-            <div style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: '16px', padding: '2rem', marginBottom: '1.5rem',
-            }}>
-              <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '1.1rem', marginBottom: '1rem' }}>Skills</h2>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {developer.skills.map(skill => (
-                  <span key={skill} style={{
-                    background: 'rgba(108,99,255,0.08)',
-                    border: '1px solid rgba(108,99,255,0.2)',
-                    borderRadius: '6px', padding: '6px 14px',
-                    fontSize: '0.85rem', color: 'var(--accent)',
-                  }}>{skill}</span>
-                ))}
-              </div>
-            </div>
-            
-
-            {/* Portfolio & Reviews Tabs */}
-            <div style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: '16px', overflow: 'hidden',
-            }}>
-              {/* Tabs */}
-              <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
-                {(['portfolio', 'reviews'] as const).map(tab => (
-                  <button key={tab} onClick={() => setActiveTab(tab)} style={{
-                    flex: 1, padding: '1rem',
-                    background: activeTab === tab ? 'rgba(108,99,255,0.08)' : 'transparent',
-                    border: 'none',
-                    borderBottom: activeTab === tab ? '2px solid var(--accent)' : '2px solid transparent',
-                    color: activeTab === tab ? 'var(--accent)' : 'var(--muted)',
-                    fontFamily: 'Syne', fontWeight: 600, fontSize: '0.9rem',
-                    cursor: 'pointer', transition: 'all 0.2s',
-                    textTransform: 'capitalize',
-                  }}>{tab === 'portfolio' ? '🎨 Portfolio' : '⭐ Reviews'}</button>
-                ))}
-              </div>
-              
-
-              <div style={{ padding: '1.5rem' }}>
-                {/* Portfolio */}
-                {activeTab === 'portfolio' && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    {developer.portfolio.map((item, i) => (
-                      <div key={i} style={{
-                        background: 'var(--bg)', border: '1px solid var(--border)',
-                        borderRadius: '12px', padding: '1.25rem',
-                        transition: 'border-color 0.2s', cursor: 'pointer',
-                      }}
-                        onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
-                        onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
-                      >
-                        <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{item.emoji}</div>
-                        <div style={{ fontFamily: 'Syne', fontWeight: 700, marginBottom: '0.4rem' }}>{item.title}</div>
-                        <div style={{ color: 'var(--muted)', fontSize: '0.82rem', marginBottom: '0.75rem' }}>{item.desc}</div>
-                        <div style={{
-                          background: 'rgba(108,99,255,0.08)',
-                          border: '1px solid rgba(108,99,255,0.15)',
-                          borderRadius: '6px', padding: '4px 10px',
-                          fontSize: '0.75rem', color: 'var(--accent)', display: 'inline-block',
-                        }}>{item.tech}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                
-
-                {/* Reviews */}
-                {activeTab === 'reviews' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {developer.reviewsList.map((review, i) => (
-                      <div key={i} style={{
-                        background: 'var(--bg)', border: '1px solid var(--border)',
-                        borderRadius: '12px', padding: '1.25rem',
-                      }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                          <div style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: '0.9rem' }}>{review.client}</div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span style={{ color: '#fbbf24' }}>{'⭐'.repeat(review.rating)}</span>
-                            <span style={{ color: 'var(--muted)', fontSize: '0.78rem' }}>{review.date}</span>
-                          </div>
-                        </div>
-                        <p style={{ color: 'var(--muted)', fontSize: '0.87rem', lineHeight: 1.6 }}>{review.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+        {/* HERO BANNER */}
+        <div style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)', padding: '2.5rem 5%' }}>
+          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+            <Link href="/developers" style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', textDecoration: 'none' }}>
+              ← Back to Developers
+            </Link>
           </div>
-          
+        </div>
 
-          {/* RIGHT SIDEBAR */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 5% 3rem' }}>
 
-            {/* Hire Card */}
-            <div style={{
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: '16px', padding: '1.5rem',
-              position: 'sticky', top: '80px',
-            }}>
-              <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                <div style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: '2rem', color: 'var(--green)', marginBottom: '0.25rem' }}>
-                  {developer.rate}
-                </div>
-                <div style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>Hourly Rate</div>
+          {/* PROFILE CARD */}
+          <div style={{
+            background: '#fff', border: '1px solid #e4e5e7',
+            borderRadius: '16px', padding: '2rem',
+            marginTop: '-30px', marginBottom: '1.5rem',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+            position: 'relative',
+          }}>
+
+            {/* DevLpers Choice */}
+            {sellerLevel?.is_devmarket_choice && (
+              <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#fff', borderRadius: '100px', padding: '4px 18px', fontSize: '0.78rem', fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(245,158,11,0.4)' }}>
+                ⭐ DevLpers Choice Developer
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start', marginTop: sellerLevel?.is_devmarket_choice ? '0.75rem' : '0' }}>
+
+              {/* Avatar */}
+              <div style={{ position: 'relative', flexShrink: 0 }}>
+                {developer.avatar_url ? (
+                  <img src={developer.avatar_url} alt={developer.full_name} style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #1dbf73' }} />
+                ) : (
+                  <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: '#1dbf73', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '2.5rem', border: '3px solid #1dbf73' }}>
+                    {developer.full_name?.[0]?.toUpperCase() || '?'}
+                  </div>
+                )}
+                {/* Online indicator */}
+                <div style={{ position: 'absolute', bottom: '6px', right: '6px', width: '14px', height: '14px', borderRadius: '50%', background: developer.availability === 'available' ? '#1dbf73' : '#95979d', border: '2px solid #fff' }} />
               </div>
 
-              {contacted ? (
-                <div style={{
-                  textAlign: 'center', padding: '1rem',
-                  background: 'rgba(0,212,170,0.08)',
-                  border: '1px solid rgba(0,212,170,0.2)',
-                  borderRadius: '10px',
+              {/* Info */}
+              <div style={{ flex: 1, minWidth: '200px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.4rem' }}>
+                  <h1 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.2rem, 3vw, 1.6rem)', color: '#1a1a2e', margin: 0 }}>
+                    {developer.full_name || 'Developer'}
+                  </h1>
+                  {status?.is_verified && (
+                    <span style={{ background: '#f0fdf4', color: '#1dbf73', border: '1px solid #bbf7d0', borderRadius: '100px', padding: '2px 10px', fontSize: '0.72rem', fontWeight: 700 }}>
+                      ✓ Verified
+                    </span>
+                  )}
+                  <span style={{ background: levelBg[level], color: levelColors[level], borderRadius: '100px', padding: '2px 10px', fontSize: '0.72rem', fontWeight: 700 }}>
+                    {levelIcons[level]} {levelLabels[level]}
+                  </span>
+                </div>
+
+                <p style={{ color: '#62646a', fontSize: '0.95rem', marginBottom: '0.5rem' }}>
+                  {developer.title || 'Developer on DevLpers'}
+                </p>
+
+                {developer.location && (
+                  <p style={{ color: '#95979d', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+                    📍 {developer.location}
+                  </p>
+                )}
+
+                {/* Rating */}
+                {totalReviews > 0 && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                    <StarDisplay rating={avgRating} size={16} />
+                    <span style={{ fontWeight: 700, color: '#f59e0b' }}>{avgRating}</span>
+                    <span style={{ color: '#95979d', fontSize: '0.82rem' }}>({totalReviews} reviews)</span>
+                  </div>
+                )}
+
+                {/* Stats Row */}
+                <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#1dbf73' }}>
+                      {sellerLevel?.total_jobs || 0}
+                    </div>
+                    <div style={{ color: '#95979d', fontSize: '0.72rem' }}>Jobs Done</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#3b82f6' }}>{proposals}</div>
+                    <div style={{ color: '#95979d', fontSize: '0.72rem' }}>Proposals</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#f59e0b' }}>{totalReviews}</div>
+                    <div style={{ color: '#95979d', fontSize: '0.72rem' }}>Reviews</div>
+                  </div>
+                  {developer.hourly_rate && (
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#8b5cf6' }}>${developer.hourly_rate}</div>
+                      <div style={{ color: '#95979d', fontSize: '0.72rem' }}>Per Hour</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Panel */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', minWidth: '180px' }}>
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '1rem', textAlign: 'center' }}>
+                  <div style={{ fontWeight: 800, fontSize: '1.4rem', color: '#1dbf73' }}>
+                    {developer.hourly_rate ? `$${developer.hourly_rate}/hr` : 'Negotiable'}
+                  </div>
+                  <div style={{ color: '#62646a', fontSize: '0.75rem', marginTop: '0.2rem' }}>Hourly Rate</div>
+                </div>
+
+                <span style={{
+                  textAlign: 'center', padding: '6px',
+                  background: developer.availability === 'available' ? '#f0fdf4' : developer.availability === 'busy' ? '#fef2f2' : '#fffbeb',
+                  color: developer.availability === 'available' ? '#1dbf73' : developer.availability === 'busy' ? '#dc2626' : '#f59e0b',
+                  border: `1px solid ${developer.availability === 'available' ? '#bbf7d0' : developer.availability === 'busy' ? '#fecaca' : '#fde68a'}`,
+                  borderRadius: '8px', fontSize: '0.82rem', fontWeight: 600,
                 }}>
-                  <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>✅</div>
-                  <div style={{ color: 'var(--green)', fontFamily: 'Syne', fontWeight: 600, fontSize: '0.9rem' }}>
-                    Message Sent!
-                  </div>
-                  <div style={{ color: 'var(--muted)', fontSize: '0.8rem', marginTop: '0.25rem' }}>
-                    Ali will respond soon
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <button onClick={() => setContacted(true)} style={{
-                    width: '100%', padding: '13px',
-                    background: 'var(--accent)', border: 'none',
-                    borderRadius: '10px', color: '#fff',
-                    fontFamily: 'Syne', fontWeight: 600, fontSize: '0.95rem',
-                    cursor: 'pointer', marginBottom: '0.75rem',
-                  }}>
-                    💬 Contact Ali
-                  </button>
-                  <button style={{
-                    width: '100%', padding: '13px',
-                    background: 'transparent',
-                    border: '1px solid var(--border)',
-                    borderRadius: '10px', color: 'var(--text)',
-                    fontFamily: 'Syne', fontWeight: 600, fontSize: '0.95rem',
-                    cursor: 'pointer',
-                  }}>
-                    📋 Invite to Job
-                  </button>
-                </>
-              )}
-              
+                  {developer.availability === 'available' ? '● Available for Work' : developer.availability === 'busy' ? '● Currently Busy' : '● Part-time Available'}
+                </span>
 
-              <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                {[
-                  { label: 'Response Time', value: '< 1 hour' },
-                  { label: 'Level', value: developer.level },
-                  { label: 'Languages', value: 'Urdu, English' },
-                ].map(item => (
-                  <div key={item.label} style={{
-                    display: 'flex', justifyContent: 'space-between',
-                    padding: '0.5rem 0', borderBottom: '1px solid var(--border)',
-                  }}>
-                    <span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>{item.label}</span>
-                    <span style={{ fontWeight: 600, fontSize: '0.82rem' }}>{item.value}</span>
-                  </div>
-                ))}
+                {!isOwnProfile ? (
+                  <>
+                    <button onClick={sendMessage} style={{ width: '100%', padding: '11px', background: '#1dbf73', border: 'none', borderRadius: '8px', color: '#fff', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>
+                      💬 Message
+                    </button>
+                    <Link href="/post-job" style={{ textDecoration: 'none' }}>
+                      <button style={{ width: '100%', padding: '11px', background: '#fff', border: '1px solid #1dbf73', borderRadius: '8px', color: '#1dbf73', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>
+                        📋 Hire Now
+                      </button>
+                    </Link>
+                  </>
+                ) : (
+                  <Link href="/profile-setup" style={{ textDecoration: 'none' }}>
+                    <button style={{ width: '100%', padding: '11px', background: '#1dbf73', border: 'none', borderRadius: '8px', color: '#fff', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>
+                      ✏️ Edit Profile
+                    </button>
+                  </Link>
+                )}
               </div>
             </div>
+          </div>
 
+          {/* TABS + CONTENT */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '1.5rem' }}>
+
+            {/* LEFT */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+              {/* Tabs */}
+              <div style={{ display: 'flex', gap: '0', background: '#fff', border: '1px solid #e4e5e7', borderRadius: '10px', overflow: 'hidden' }}>
+                {[
+                  { id: 'overview', label: '📋 Overview' },
+                  { id: 'skills', label: '🛠️ Skills' },
+                  { id: 'reviews', label: `⭐ Reviews (${totalReviews})` },
+                ].map(tab => (
+                  <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
+                    flex: 1, padding: '12px 8px',
+                    background: activeTab === tab.id ? '#1a1a2e' : '#fff',
+                    border: 'none', color: activeTab === tab.id ? '#fff' : '#62646a',
+                    fontWeight: activeTab === tab.id ? 700 : 400,
+                    fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.15s',
+                  }}>{tab.label}</button>
+                ))}
+              </div>
+
+              {/* OVERVIEW TAB */}
+              {activeTab === 'overview' && (
+                <div style={{ background: '#fff', border: '1px solid #e4e5e7', borderRadius: '12px', padding: '1.5rem' }}>
+                  <h2 style={{ fontWeight: 700, fontSize: '1rem', color: '#1a1a2e', marginBottom: '1rem' }}>About Me</h2>
+                  {developer.bio ? (
+                    <p style={{ color: '#62646a', fontSize: '0.9rem', lineHeight: 1.8, whiteSpace: 'pre-line' }}>
+                      {developer.bio}
+                    </p>
+                  ) : (
+                    <p style={{ color: '#95979d', fontSize: '0.88rem', fontStyle: 'italic' }}>
+                      No bio added yet.
+                    </p>
+                  )}
+
+                  {/* Quick Stats */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.75rem', marginTop: '1.5rem' }}>
+                    {[
+                      { label: 'Member Since', value: new Date(developer.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), icon: '📅' },
+                      { label: 'Jobs Completed', value: sellerLevel?.total_jobs || 0, icon: '✅' },
+                      { label: 'Total Reviews', value: totalReviews, icon: '⭐' },
+                      { label: 'Availability', value: developer.availability || 'Available', icon: '🟢' },
+                    ].map(stat => (
+                      <div key={stat.label} style={{ background: '#fafafa', border: '1px solid #e4e5e7', borderRadius: '8px', padding: '1rem', textAlign: 'center' }}>
+                        <div style={{ fontSize: '1.25rem', marginBottom: '0.3rem' }}>{stat.icon}</div>
+                        <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1a1a2e' }}>{stat.value}</div>
+                        <div style={{ color: '#95979d', fontSize: '0.7rem' }}>{stat.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* SKILLS TAB */}
+              {activeTab === 'skills' && (
+                <div style={{ background: '#fff', border: '1px solid #e4e5e7', borderRadius: '12px', padding: '1.5rem' }}>
+                  <h2 style={{ fontWeight: 700, fontSize: '1rem', color: '#1a1a2e', marginBottom: '1.25rem' }}>🛠️ Skills & Expertise</h2>
+                  {developer.skills && developer.skills.length > 0 ? (
+                    <>
+                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+                        {developer.skills.map((skill: string) => (
+                          <span key={skill} style={{
+                            background: '#f0fdf4', color: '#1dbf73',
+                            border: '1px solid #bbf7d0',
+                            borderRadius: '8px', padding: '6px 16px',
+                            fontSize: '0.85rem', fontWeight: 600,
+                          }}>{skill}</span>
+                        ))}
+                      </div>
+                      <div style={{ background: '#fafafa', border: '1px solid #e4e5e7', borderRadius: '8px', padding: '1rem' }}>
+                        <div style={{ fontWeight: 600, fontSize: '0.85rem', color: '#62646a', marginBottom: '0.5rem' }}>
+                          {developer.skills.length} skills listed
+                        </div>
+                        <div style={{ color: '#95979d', fontSize: '0.78rem' }}>
+                          Looking for someone with specific skills?{' '}
+                          <Link href="/post-job" style={{ color: '#1dbf73', textDecoration: 'none', fontWeight: 600 }}>Post a job →</Link>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <p style={{ color: '#95979d', fontSize: '0.88rem', fontStyle: 'italic' }}>No skills added yet.</p>
+                  )}
+                </div>
+              )}
+
+              {/* REVIEWS TAB */}
+              {activeTab === 'reviews' && (
+                <ReviewSystem
+                  revieweeId={id}
+                  canReview={!!user && user.id !== id}
+                  reviewerRole="client"
+                />
+              )}
+            </div>
+
+            {/* RIGHT SIDEBAR */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
+              {/* Contact Card */}
+              {!isOwnProfile && (
+                <div style={{ background: '#fff', border: '1px solid #e4e5e7', borderRadius: '12px', padding: '1.5rem' }}>
+                  <h3 style={{ fontWeight: 700, fontSize: '0.95rem', color: '#1a1a2e', marginBottom: '1rem' }}>
+                    Ready to work together?
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <button onClick={sendMessage} style={{ width: '100%', padding: '12px', background: '#1dbf73', border: 'none', borderRadius: '8px', color: '#fff', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>
+                      💬 Send Message
+                    </button>
+                    <Link href="/post-job" style={{ textDecoration: 'none' }}>
+                      <button style={{ width: '100%', padding: '12px', background: '#fff', border: '1px solid #1dbf73', borderRadius: '8px', color: '#1dbf73', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>
+                        📋 Post a Job
+                      </button>
+                    </Link>
+                    {!user && (
+                      <Link href="/signup" style={{ textDecoration: 'none' }}>
+                        <button style={{ width: '100%', padding: '12px', background: '#1a1a2e', border: 'none', borderRadius: '8px', color: '#fff', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>
+                          Join Free to Hire →
+                        </button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Profile Details */}
+              <div style={{ background: '#fff', border: '1px solid #e4e5e7', borderRadius: '12px', padding: '1.5rem' }}>
+                <h3 style={{ fontWeight: 700, fontSize: '0.95rem', color: '#1a1a2e', marginBottom: '1rem' }}>Profile Details</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {[
+                    { label: 'Hourly Rate', value: developer.hourly_rate ? `$${developer.hourly_rate}/hr` : 'Negotiable', icon: '💰' },
+                    { label: 'Location', value: developer.location || 'Not specified', icon: '📍' },
+                    { label: 'Availability', value: developer.availability || 'Available', icon: '🟢' },
+                    { label: 'Level', value: `${levelIcons[level]} ${levelLabels[level]}`, icon: '🏆' },
+                    { label: 'Member Since', value: new Date(developer.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }), icon: '📅' },
+                  ].map(item => (
+                    <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0', borderBottom: '1px solid #f0f0f0' }}>
+                      <span style={{ color: '#95979d', fontSize: '0.82rem' }}>{item.icon} {item.label}</span>
+                      <span style={{ fontWeight: 500, color: '#404145', fontSize: '0.82rem' }}>{item.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Rating Summary */}
+              {totalReviews > 0 && (
+                <div style={{ background: '#fff', border: '1px solid #e4e5e7', borderRadius: '12px', padding: '1.5rem', textAlign: 'center' }}>
+                  <div style={{ fontWeight: 800, fontSize: '2.5rem', color: '#1a1a2e', lineHeight: 1 }}>{avgRating}</div>
+                  <StarDisplay rating={avgRating} size={18} />
+                  <div style={{ color: '#95979d', fontSize: '0.78rem', marginTop: '0.4rem' }}>{totalReviews} reviews</div>
+                  <button onClick={() => setActiveTab('reviews')} style={{ marginTop: '0.75rem', background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#1dbf73', padding: '6px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}>
+                    View All Reviews →
+                  </button>
+                </div>
+              )}
+
+              {/* Share Profile */}
+              <div style={{ background: '#fafafa', border: '1px solid #e4e5e7', borderRadius: '12px', padding: '1.25rem', textAlign: 'center' }}>
+                <div style={{ color: '#62646a', fontSize: '0.82rem', marginBottom: '0.75rem' }}>Share this profile</div>
+                <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Link copied!'); }} style={{ background: '#fff', border: '1px solid #e4e5e7', color: '#404145', padding: '7px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 500 }}>
+                  🔗 Copy Profile Link
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div></>
+      </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .profile-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }

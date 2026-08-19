@@ -382,7 +382,7 @@ export default function Developers() {
                     </div>
 
                     {/* Rating */}
-                    {dev.total_reviews > 0 && (
+                    {(dev.total_reviews ?? 0) > 0 && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
                         <StarRating rating={dev.rating || 0} />
                         <span style={{ fontWeight: 700, fontSize: '0.8rem', color: '#f59e0b' }}>{dev.rating}</span>

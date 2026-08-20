@@ -131,6 +131,7 @@ const switchRole = async (role: string) => {
             { label: 'Find Jobs', href: '/jobs' },
             { label: 'Pricing', href: '/pricing' },
             { label: 'Tools', href: '/tools' },
+            { label: 'Contracts', href: '/contracts' },
           ].map(item => (
             <Link key={item.label} href={item.href} style={{ textDecoration: 'none' }}>
               <span style={{ color: '#62646a', fontSize: '0.9rem', fontWeight: 500, cursor: 'pointer' }}

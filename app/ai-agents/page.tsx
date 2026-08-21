@@ -321,9 +321,9 @@ export default function AIAgents() {
                       border: '2px solid #e4e5e7', borderRadius: '10px',
                       fontSize: '0.88rem', outline: 'none', resize: 'vertical',
                       fontFamily: ['code-reviewer', 'bug-fixer', 'sql-helper', 'api-doc-writer'].includes(selectedAgent.id) ? 'Courier New, monospace' : 'Inter, sans-serif',
-                      color: '#404145', lineHeight: 1.6, boxSizing: 'border-box',
                       background: ['code-reviewer', 'bug-fixer', 'sql-helper', 'api-doc-writer'].includes(selectedAgent.id) ? '#1e1e1e' : '#fff',
-                      color: ['code-reviewer', 'bug-fixer', 'sql-helper', 'api-doc-writer'].includes(selectedAgent.id) ? '#d4d4d4' : '#404145',
+color: ['code-reviewer', 'bug-fixer', 'sql-helper', 'api-doc-writer'].includes(selectedAgent.id) ? '#d4d4d4' : '#404145',
+lineHeight: 1.6, boxSizing: 'border-box',
                     } as any}
                     onFocus={e => (e.target as HTMLElement).style.borderColor = selectedAgent.color}
                     onBlur={e => (e.target as HTMLElement).style.borderColor = '#e4e5e7'}

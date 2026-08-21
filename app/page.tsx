@@ -4,380 +4,458 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import Navbar from './components/Navbar';
 
-const categories = [
-  { icon: '💻', name: 'Web Development', count: '2.4k devs' },
-  { icon: '📱', name: 'Mobile Apps', count: '1.8k devs' },
-  { icon: '🤖', name: 'AI & ML', count: '900 devs' },
-  { icon: '🎨', name: 'UI/UX Design', count: '1.2k devs' },
-  { icon: '🔒', name: 'Cybersecurity', count: '600 devs' },
-  { icon: '☁️', name: 'Cloud & DevOps', count: '800 devs' },
-];
-
-const developers = [
-  { name: 'Ali Hassan', skill: 'Full Stack Dev', rate: '$45/hr', rating: '4.9', jobs: 87, tag: 'React · Node · PostgreSQL', level: '🥇' },
-  { name: 'Sara Khan', skill: 'Mobile Developer', rate: '$38/hr', rating: '5.0', jobs: 64, tag: 'Flutter · Firebase · iOS', level: '🥈' },
-  { name: 'Usman Malik', skill: 'AI Engineer', rate: '$65/hr', rating: '4.8', jobs: 42, tag: 'Python · TensorFlow · LLMs', level: '🥇' },
-];
-
-const faqs = [
-  { q: 'How do I hire a developer?', a: 'Browse developer profiles or post a job. Developers will send proposals and you can chat, review portfolios, and hire directly.' },
-  { q: 'Is DevLpers free to join?', a: 'Yes! Creating an account is 100% free for both developers and buyers. We only charge a small commission on successful projects.' },
-  { q: 'How does payment work?', a: 'We use an escrow system. You deposit funds which are held safely and released to the developer only when you approve the work.' },
-  { q: 'Can I hire developers globally?', a: 'DevLpers is a global marketplace. Developers and buyers from all over the world can join and collaborate.' },
-  { q: 'What if I am not satisfied with the work?', a: 'We have a dispute resolution system. If issues arise, our team steps in to mediate and ensure a fair outcome for both parties.' },
-];
-
-const howItWorks = [
-  { step: '01', icon: '👤', title: 'Create Your Account', desc: 'Sign up as a Developer or Buyer in under 2 minutes.' },
-  { step: '02', icon: '🔍', title: 'Browse or Post', desc: 'Buyers post jobs or browse developer profiles. Developers apply to jobs.' },
-  { step: '03', icon: '🚀', title: 'Work & Get Paid', desc: 'Payment is held in escrow and released when you approve the delivery.' },
-];
-
 export default function Home() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [search, setSearch] = useState('');
+  const [user, setUser] = useState<any>(null);
+  const [stats, setStats] = useState({ developers: 0, jobs: 0, tools: 21, agents: 12 });
+
+  useEffect(() => {
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+
+      const [{ count: devCount }, { count: jobCount }] = await Promise.all([
+        supabase.from('developer_profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'Open'),
+      ]);
+
+      setStats(prev => ({
+        ...prev,
+        developers: devCount || 0,
+        jobs: jobCount || 0,
+      }));
+    };
+    init();
+  }, []);
+
+  const tools = [
+    { icon: '🖼️', name: 'Image Converter', slug: '/image-format-converter' },
+    { icon: '🗜️', name: 'Image Compressor', slug: '/image-compressor' },
+    { icon: '✍️', name: 'Article Generator', slug: '/article-generator' },
+    { icon: '📊', name: 'DA PA Checker', slug: '/da-pa-checker' },
+    { icon: '🔖', name: 'Favicon Generator', slug: '/favicon-generator' },
+    { icon: '🧾', name: 'Invoice Generator', slug: '/invoice-generator' },
+  ];
+
+  const agents = [
+    { icon: '🔍', name: 'Code Reviewer', color: '#1dbf73' },
+    { icon: '🐛', name: 'Bug Fixer', color: '#dc2626' },
+    { icon: '📝', name: 'Proposal Writer', color: '#8b5cf6' },
+    { icon: '✉️', name: 'Email Writer', color: '#3b82f6' },
+    { icon: '📈', name: 'SEO Analyzer', color: '#f59e0b' },
+    { icon: '🗄️', name: 'SQL Helper', color: '#b45309' },
+  ];
+
+  const features = [
+    { icon: '🔒', title: 'Secure Escrow', desc: 'Payment held safely until work is approved by client' },
+    { icon: '⭐', title: 'Verified Developers', desc: 'All developers verified with skill tests and reviews' },
+    { icon: '🤖', title: 'AI-Powered Tools', desc: '21+ free tools and 12 AI agents built for developers' },
+    { icon: '💬', title: 'Real-time Chat', desc: 'Direct messaging between clients and developers' },
+    { icon: '📋', title: 'Contract System', desc: 'Full contract management with milestones and approvals' },
+    { icon: '🌍', title: 'Global Marketplace', desc: 'Connect with developers and clients from 150+ countries' },
+  ];
+
+  const topSkills = ['React', 'Next.js', 'Node.js', 'Python', 'TypeScript', 'Flutter', 'WordPress', 'Laravel', 'AWS', 'MongoDB', 'Vue.js', 'GraphQL'];
 
   return (
-    <main style={{ minHeight: '100vh', background: '#fff' }}>
+    <div style={{ minHeight: '100vh', background: '#fff' }}>
       <Navbar />
+      <div style={{ paddingTop: '64px' }}>
 
-      {/* HERO */}
-      <section style={{
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-        paddingTop: '120px', paddingBottom: '80px',
-        padding: '120px 5% 80px',
-        textAlign: 'center',
-        position: 'relative', overflow: 'hidden',
-      }}>
-        {/* Background circles */}
-        <div style={{
-          position: 'absolute', top: '-100px', right: '-100px',
-          width: '400px', height: '400px', borderRadius: '50%',
-          background: 'rgba(29,191,115,0.1)', pointerEvents: 'none',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: '-50px', left: '-50px',
-          width: '300px', height: '300px', borderRadius: '50%',
-          background: 'rgba(29,191,115,0.08)', pointerEvents: 'none',
-        }} />
+        {/* HERO */}
+        <div style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)', padding: 'clamp(3rem,8vw,6rem) 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+          {/* Background decoration */}
+          <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', borderRadius: '50%', background: 'rgba(29,191,115,0.05)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: '-100px', left: '-100px', width: '300px', height: '300px', borderRadius: '50%', background: 'rgba(139,92,246,0.05)', pointerEvents: 'none' }} />
 
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: '8px',
-          background: 'rgba(29,191,115,0.15)',
-          border: '1px solid rgba(29,191,115,0.3)',
-          borderRadius: '100px', padding: '6px 16px',
-          fontSize: '0.8rem', color: '#1dbf73',
-          marginBottom: '1.5rem',
-        }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#1dbf73', display: 'inline-block' }} />
-          The Global Developer Marketplace
-        </div>
-
-        <h1 style={{
-          fontFamily: 'Inter', fontWeight: 800,
-          fontSize: 'clamp(2rem, 5vw, 4rem)',
-          lineHeight: 1.15, marginBottom: '1.25rem',
-          color: '#ffffff', maxWidth: '800px', margin: '0 auto 1.25rem',
-        }}>
-          Find the Perfect Developer
-          <span style={{ color: '#1dbf73', display: 'block' }}>for Any Project</span>
-        </h1>
-
-        <p style={{
-          color: 'rgba(255,255,255,0.7)', fontSize: 'clamp(1rem, 2vw, 1.15rem)',
-          maxWidth: '560px', lineHeight: 1.7, margin: '0 auto 2.5rem',
-        }}>
-          Connect with verified developers worldwide. Post jobs, submit proposals, and build amazing products together.
-        </p>
-
-        {/* Search Bar */}
-        <div style={{
-          maxWidth: '600px', margin: '0 auto 3rem',
-          display: 'flex', gap: '0', borderRadius: '6px',
-          overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-        }}>
-          <input
-            type="text"
-            placeholder='Try "React Developer" or "Mobile App"'
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{
-              flex: 1, padding: '16px 20px',
-              border: 'none', outline: 'none',
-              fontSize: '1rem', background: '#fff',
-              color: '#404145',
-            }}
-          />
-          <Link href={`/jobs?search=${search}`}>
-            <button style={{
-              padding: '16px 28px',
-              background: '#1dbf73', border: 'none',
-              color: '#fff', fontWeight: 700,
-              fontSize: '1rem', cursor: 'pointer',
-              whiteSpace: 'nowrap',
-            }}>Search</button>
-          </Link>
-        </div>
-
-        {/* Stats */}
-        <div style={{
-          display: 'flex', gap: '3rem', flexWrap: 'wrap',
-          justifyContent: 'center',
-        }}>
-          {[
-            { value: '12K+', label: 'Developers' },
-            { value: '8K+', label: 'Clients' },
-            { value: '95%', label: 'Success Rate' },
-            { value: '$2M+', label: 'Paid Out' },
-          ].map(s => (
-            <div key={s.label} style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.8rem', color: '#1dbf73' }}>{s.value}</div>
-              <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>{s.label}</div>
+          <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'inline-block', background: 'rgba(29,191,115,0.15)', border: '1px solid rgba(29,191,115,0.3)', borderRadius: '100px', padding: '6px 18px', fontSize: '0.82rem', color: '#1dbf73', fontWeight: 700, marginBottom: '1.5rem' }}>
+              🌍 Global Developer Marketplace
             </div>
-          ))}
-        </div>
-      </section>
+            <h1 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(2rem, 5vw, 3.5rem)', color: '#fff', marginBottom: '1.25rem', lineHeight: 1.15 }}>
+              Hire Top Developers<br />
+              <span style={{ color: '#1dbf73' }}>or Get Hired</span> Worldwide
+            </h1>
+            <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 'clamp(0.95rem, 2vw, 1.1rem)', lineHeight: 1.7, marginBottom: '2.5rem', maxWidth: '600px', margin: '0 auto 2.5rem' }}>
+              DevLpers connects businesses with verified developers. Post jobs, hire talent, use AI tools and manage projects — all in one platform.
+            </p>
 
-      {/* CATEGORIES */}
-      <section style={{ padding: '60px 5%', background: '#f5f5f5' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem', color: 'var(--text)', fontWeight: 700 }}>
-          Browse by Category
-        </h2>
-        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '2.5rem' }}>
-          Find the exact skill you need
-        </p>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-          gap: '1rem', maxWidth: '1100px', margin: '0 auto',
-        }}>
-          {categories.map(cat => (
-            <Link key={cat.name} href={`/developers?skill=${cat.name}`} style={{ textDecoration: 'none' }}>
-              <div style={{
-                background: '#fff', border: '1px solid var(--border)',
-                borderRadius: '8px', padding: '1.5rem',
-                cursor: 'pointer', transition: 'all 0.2s',
-                textAlign: 'center',
-                boxShadow: 'var(--shadow)',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'var(--shadow)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-              >
-                <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{cat.icon}</div>
-                <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text)', marginBottom: '0.25rem' }}>{cat.name}</div>
-                <div style={{ color: 'var(--accent)', fontSize: '0.78rem', fontWeight: 500 }}>{cat.count}</div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section id="how-it-works" style={{ padding: '60px 5%', background: '#fff' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem', fontWeight: 700 }}>
-          How It Works
-        </h2>
-        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '3rem' }}>
-          Get started in 3 simple steps
-        </p>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '2rem', maxWidth: '900px', margin: '0 auto',
-        }}>
-          {howItWorks.map((item, i) => (
-            <div key={i} style={{
-              textAlign: 'center', padding: '2rem',
-              background: '#fff', border: '1px solid var(--border)',
-              borderRadius: '8px', position: 'relative',
-              boxShadow: 'var(--shadow)',
-            }}>
-              <div style={{
-                width: '56px', height: '56px', borderRadius: '50%',
-                background: 'rgba(29,191,115,0.1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1.5rem', margin: '0 auto 1rem',
-              }}>{item.icon}</div>
-              <div style={{
-                position: 'absolute', top: '1rem', right: '1rem',
-                fontWeight: 800, fontSize: '2.5rem',
-                color: 'rgba(29,191,115,0.08)',
-              }}>{item.step}</div>
-              <h3 style={{ fontWeight: 700, marginBottom: '0.5rem', fontSize: '1rem' }}>{item.title}</h3>
-              <p style={{ color: 'var(--muted)', fontSize: '0.88rem', lineHeight: 1.6 }}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* TOP DEVELOPERS */}
-      <section style={{ padding: '60px 5%', background: '#f5f5f5' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1100px', margin: '0 auto 2rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 700, marginBottom: '0.25rem' }}>Top Developers</h2>
-            <p style={{ color: 'var(--muted)' }}>Verified, reviewed, and ready to work</p>
-          </div>
-          <Link href="/developers">
-            <button style={{
-              background: 'transparent', border: '1px solid var(--accent)',
-              color: 'var(--accent)', padding: '10px 22px',
-              borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600,
-            }}>View All →</button>
-          </Link>
-        </div>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '1.5rem', maxWidth: '1100px', margin: '0 auto',
-        }}>
-          {developers.map(dev => (
-            <div key={dev.name} style={{
-              background: '#fff', border: '1px solid var(--border)',
-              borderRadius: '8px', padding: '1.5rem',
-              transition: 'all 0.2s', cursor: 'pointer',
-              boxShadow: 'var(--shadow)',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = 'var(--shadow-hover)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = 'var(--shadow)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                <div style={{
-                  width: '52px', height: '52px', borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #1dbf73, #0d6efd)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'Inter', fontWeight: 700, fontSize: '1.2rem', color: '#fff',
-                }}>{dev.name[0]}</div>
-                <div>
-                  <div style={{ fontWeight: 700, color: 'var(--text)' }}>{dev.name}</div>
-                  <div style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>{dev.skill}</div>
-                </div>
-                <div style={{ marginLeft: 'auto', fontSize: '1.2rem' }}>{dev.level}</div>
-              </div>
-
-              <div style={{
-                background: '#f5f5f5', borderRadius: '4px',
-                padding: '6px 12px', fontSize: '0.78rem',
-                color: 'var(--text2)', marginBottom: '1rem', display: 'inline-block',
-              }}>{dev.tag}</div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <span style={{ color: '#1dbf73', fontWeight: 700, fontSize: '1rem' }}>{dev.rate}</span>
-                <span style={{ color: 'var(--muted)', fontSize: '0.82rem' }}>⭐ {dev.rating} · {dev.jobs} jobs</span>
-              </div>
-
-              <Link href="/developers">
-                <button style={{
-                  width: '100%', padding: '10px',
-                  background: 'transparent', border: '1px solid var(--border)',
-                  color: 'var(--text)', borderRadius: '4px',
-                  cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500,
-                  transition: 'all 0.2s',
-                }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#1dbf73'; (e.currentTarget as HTMLElement).style.color = '#fff'; (e.currentTarget as HTMLElement).style.borderColor = '#1dbf73'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = 'var(--text)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
-                >View Profile</button>
+            {/* CTA Buttons */}
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
+              <Link href="/signup" style={{ textDecoration: 'none' }}>
+                <button style={{ background: '#1dbf73', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '8px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 4px 16px rgba(29,191,115,0.4)' }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#19a463'}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = '#1dbf73'}
+                >
+                  Get Started Free →
+                </button>
+              </Link>
+              <Link href="/developers" style={{ textDecoration: 'none' }}>
+                <button style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', padding: '14px 32px', borderRadius: '8px', fontWeight: 600, fontSize: '1rem', cursor: 'pointer' }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.2)'}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'}
+                >
+                  Browse Developers
+                </button>
               </Link>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* FAQ */}
-      <section style={{ padding: '60px 5%', background: '#fff' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 'clamp(1.5rem, 3vw, 2rem)', marginBottom: '0.5rem', fontWeight: 700 }}>
-          Frequently Asked Questions
-        </h2>
-        <p style={{ textAlign: 'center', color: 'var(--muted)', marginBottom: '3rem' }}>Everything you need to know</p>
-        <div style={{ maxWidth: '720px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {faqs.map((faq, i) => (
-            <div key={i} style={{
-              border: '1px solid var(--border)', borderRadius: '8px',
-              overflow: 'hidden', transition: 'border-color 0.2s',
-              background: '#fff',
-            }}>
-              <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{
-                width: '100%', background: 'transparent', border: 'none',
-                padding: '1.25rem 1.5rem',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                cursor: 'pointer', color: 'var(--text)',
-                fontFamily: 'Inter', fontWeight: 600, fontSize: '0.95rem', textAlign: 'left',
-              }}>
-                {faq.q}
-                <span style={{
-                  color: 'var(--accent)', fontSize: '1.2rem',
-                  transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0)',
-                  transition: 'transform 0.2s', display: 'inline-block', flexShrink: 0,
-                }}>+</span>
-              </button>
-              {openFaq === i && (
-                <div style={{ padding: '0 1.5rem 1.25rem', color: 'var(--muted)', lineHeight: 1.7, fontSize: '0.9rem' }}>
-                  {faq.a}
+            {/* Stats */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 'clamp(1.5rem, 4vw, 3rem)', flexWrap: 'wrap' }}>
+              {[
+                { label: 'Developers', value: stats.developers > 0 ? stats.developers + '+' : '500+' },
+                { label: 'Open Jobs', value: stats.jobs > 0 ? stats.jobs + '+' : '100+' },
+                { label: 'Free Tools', value: stats.tools + '+' },
+                { label: 'AI Agents', value: stats.agents + '+' },
+              ].map(s => (
+                <div key={s.label} style={{ textAlign: 'center' }}>
+                  <div style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: '#1dbf73' }}>{s.value}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.82rem' }}>{s.label}</div>
                 </div>
-              )}
+              ))}
             </div>
-          ))}
+          </div>
         </div>
-      </section>
 
-      {/* CTA */}
-      <section style={{
-        padding: '80px 5%',
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)',
-        textAlign: 'center',
-      }}>
-        <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', marginBottom: '1rem', color: '#fff', fontWeight: 800 }}>
-          Ready to Get Started?
-        </h2>
-        <p style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '480px', margin: '0 auto 2.5rem', lineHeight: 1.7 }}>
-          Join thousands of developers and clients already using DevLpers.
-        </p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/signup">
-            <button style={{
-              background: '#1dbf73', color: '#fff', border: 'none',
-              padding: '14px 36px', borderRadius: '4px',
-              fontSize: '1rem', fontWeight: 700, cursor: 'pointer',
-              transition: 'background 0.2s',
-            }}
-              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#19a463'}
-              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = '#1dbf73'}
-            >Join as Developer</button>
-          </Link>
-          <Link href="/post-job">
-            <button style={{
-              background: 'transparent', color: '#fff',
-              border: '2px solid rgba(255,255,255,0.5)', padding: '14px 36px',
-              borderRadius: '4px', fontSize: '1rem', fontWeight: 700, cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#fff'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.5)'; }}
-            >Hire a Developer</button>
-          </Link>
+        {/* TRUSTED BY */}
+        <div style={{ background: '#fafafa', borderBottom: '1px solid #e4e5e7', padding: '1.25rem 5%', textAlign: 'center' }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <p style={{ color: '#95979d', fontSize: '0.82rem', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>Trusted by developers from</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              {['🇵🇰 Pakistan', '🇺🇸 USA', '🇮🇳 India', '🇧🇩 Bangladesh', '🇬🇧 UK', '🇦🇪 UAE'].map(c => (
+                <span key={c} style={{ color: '#62646a', fontSize: '0.88rem', fontWeight: 500 }}>{c}</span>
+              ))}
+            </div>
+          </div>
         </div>
-      </section>
 
-      {/* FOOTER */}
-      <footer style={{
-        background: '#1a1a2e',
-        padding: '2rem 5%',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        flexWrap: 'wrap', gap: '1rem',
-        borderTop: '1px solid rgba(255,255,255,0.1)',
-      }}>
-        <div style={{ fontFamily: 'Inter', fontWeight: 800, color: '#1dbf73', fontSize: '1.2rem' }}>
-          Dev<span style={{ color: '#fff' }}>Lpers</span>
-        </div>
-        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
-          © 2026 DevLpers. All rights reserved.
-        </div>
-        <div style={{ display: 'flex', gap: '1.5rem' }}>
-          {['Privacy', 'Terms', 'Support'].map(l => (
-            <Link key={l} href={l === 'Support' ? '/support' : '#'} style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', fontSize: '0.85rem' }}>{l}</Link>
-          ))}
-        </div>
-      </footer>
+        {/* HOW IT WORKS */}
+        <div style={{ padding: '5rem 5%', maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h2 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: '#1a1a2e', marginBottom: '0.75rem' }}>
+              How DevLpers Works
+            </h2>
+            <p style={{ color: '#62646a', fontSize: '0.95rem' }}>Get started in minutes — no experience required</p>
+          </div>
 
-    </main>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem' }}>
+            {[
+              { step: '01', icon: '📝', title: 'Create Account', desc: 'Sign up free as a developer or client in under 2 minutes', color: '#1dbf73' },
+              { step: '02', icon: '🔍', title: 'Find or Post', desc: 'Browse jobs or post your project with detailed requirements', color: '#3b82f6' },
+              { step: '03', icon: '💬', title: 'Connect & Discuss', desc: 'Chat directly, share files and agree on terms', color: '#8b5cf6' },
+              { step: '04', icon: '💰', title: 'Pay Securely', desc: 'Funds held in escrow until work is completed and approved', color: '#f59e0b' },
+            ].map(s => (
+              <div key={s.step} style={{ textAlign: 'center', padding: '1.5rem' }}>
+                <div style={{ position: 'relative', display: 'inline-block', marginBottom: '1.25rem' }}>
+                  <div style={{ width: '70px', height: '70px', borderRadius: '50%', background: `${s.color}15`, border: `2px solid ${s.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem', margin: '0 auto' }}>
+                    {s.icon}
+                  </div>
+                  <div style={{ position: 'absolute', top: '-8px', right: '-8px', width: '24px', height: '24px', borderRadius: '50%', background: s.color, color: '#fff', fontSize: '0.65rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {s.step}
+                  </div>
+                </div>
+                <h3 style={{ fontWeight: 700, fontSize: '1rem', color: '#1a1a2e', marginBottom: '0.5rem' }}>{s.title}</h3>
+                <p style={{ color: '#62646a', fontSize: '0.85rem', lineHeight: 1.6 }}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* TOP SKILLS */}
+        <div style={{ background: '#fafafa', padding: '3rem 5%' }}>
+          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+            <h2 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.3rem, 2.5vw, 1.75rem)', color: '#1a1a2e', marginBottom: '0.5rem', textAlign: 'center' }}>
+              Browse by Skills
+            </h2>
+            <p style={{ color: '#62646a', fontSize: '0.9rem', textAlign: 'center', marginBottom: '1.75rem' }}>Find developers with exactly the skills you need</p>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {topSkills.map(skill => (
+                <Link key={skill} href={`/developers?skill=${skill}`} style={{ textDecoration: 'none' }}>
+                  <div style={{
+                    background: '#fff', border: '1px solid #e4e5e7',
+                    borderRadius: '8px', padding: '10px 20px',
+                    fontSize: '0.88rem', color: '#404145', fontWeight: 500,
+                    cursor: 'pointer', transition: 'all 0.15s',
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#1dbf73'; e.currentTarget.style.color = '#1dbf73'; e.currentTarget.style.background = '#f0fdf4'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#e4e5e7'; e.currentTarget.style.color = '#404145'; e.currentTarget.style.background = '#fff'; }}
+                  >{skill}</div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* FEATURES */}
+        <div style={{ padding: '5rem 5%', maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h2 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: '#1a1a2e', marginBottom: '0.75rem' }}>
+              Everything You Need
+            </h2>
+            <p style={{ color: '#62646a', fontSize: '0.95rem' }}>Built specifically for developers and tech projects</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+            {features.map(f => (
+              <div key={f.title} style={{ background: '#fafafa', border: '1px solid #e4e5e7', borderRadius: '12px', padding: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                <div style={{ fontSize: '1.75rem', flexShrink: 0 }}>{f.icon}</div>
+                <div>
+                  <h3 style={{ fontWeight: 700, fontSize: '0.95rem', color: '#1a1a2e', marginBottom: '0.4rem' }}>{f.title}</h3>
+                  <p style={{ color: '#62646a', fontSize: '0.83rem', lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* FREE TOOLS SECTION */}
+        <div style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #fff 100%)', padding: '5rem 5%' }}>
+          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <div style={{ display: 'inline-block', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '100px', padding: '4px 14px', fontSize: '0.78rem', color: '#1dbf73', fontWeight: 700, marginBottom: '0.75rem' }}>
+                  🛠️ Free Tools
+                </div>
+                <h2 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: '#1a1a2e', marginBottom: '0.5rem' }}>
+                  21+ Free Developer Tools
+                </h2>
+                <p style={{ color: '#62646a', fontSize: '0.9rem' }}>No signup required · Works in browser · No limits</p>
+              </div>
+              <Link href="/tools" style={{ textDecoration: 'none' }}>
+                <button style={{ background: '#1dbf73', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}>
+                  View All Tools →
+                </button>
+              </Link>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.75rem' }}>
+              {tools.map(tool => (
+                <a key={tool.slug} href={tool.slug} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                  <div style={{
+                    background: '#fff', border: '1px solid #e4e5e7',
+                    borderRadius: '10px', padding: '1.25rem',
+                    textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s',
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#1dbf73'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(29,191,115,0.12)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#e4e5e7'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                  >
+                    <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{tool.icon}</div>
+                    <div style={{ fontWeight: 600, fontSize: '0.8rem', color: '#404145' }}>{tool.name}</div>
+                    <div style={{ color: '#1dbf73', fontSize: '0.72rem', marginTop: '0.25rem', fontWeight: 600 }}>Free →</div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* AI AGENTS SECTION */}
+        <div style={{ background: 'linear-gradient(135deg, #faf5ff 0%, #fff 100%)', padding: '5rem 5%' }}>
+          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <div style={{ display: 'inline-block', background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: '100px', padding: '4px 14px', fontSize: '0.78rem', color: '#8b5cf6', fontWeight: 700, marginBottom: '0.75rem' }}>
+                  🤖 AI Agents
+                </div>
+                <h2 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: '#1a1a2e', marginBottom: '0.5rem' }}>
+                  12 Free AI Agents
+                </h2>
+                <p style={{ color: '#62646a', fontSize: '0.9rem' }}>Powered by Llama 3 · No signup · Instant results</p>
+              </div>
+              <Link href="/ai-agents" style={{ textDecoration: 'none' }}>
+                <button style={{ background: '#8b5cf6', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}>
+                  Try AI Agents →
+                </button>
+              </Link>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.75rem' }}>
+              {agents.map(agent => (
+                <Link key={agent.name} href="/ai-agents" style={{ textDecoration: 'none' }}>
+                  <div style={{
+                    background: '#fff', border: '1px solid #e9d5ff',
+                    borderRadius: '10px', padding: '1.25rem',
+                    textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s',
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#8b5cf6'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(139,92,246,0.12)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#e9d5ff'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                  >
+                    <div style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>{agent.icon}</div>
+                    <div style={{ fontWeight: 600, fontSize: '0.8rem', color: '#404145' }}>{agent.name}</div>
+                    <div style={{ color: '#8b5cf6', fontSize: '0.72rem', marginTop: '0.25rem', fontWeight: 600 }}>Use Free →</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* FOR DEVELOPERS / CLIENTS */}
+        <div style={{ padding: '5rem 5%', maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+
+            {/* For Developers */}
+            <div style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)', borderRadius: '16px', padding: '2.5rem', color: '#fff' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>💻</div>
+              <h3 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.4rem', marginBottom: '0.75rem' }}>For Developers</h3>
+              <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
+                Find remote jobs, showcase your skills and earn money from clients worldwide.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '2rem' }}>
+                {['✓ Browse 100+ open jobs', '✓ Submit proposals for free', '✓ Get paid via Stripe, Crypto, Payoneer', '✓ Build your rating & level up'].map(item => (
+                  <div key={item} style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.85rem' }}>{item}</div>
+                ))}
+              </div>
+              <Link href="/signup" style={{ textDecoration: 'none' }}>
+                <button style={{ background: '#1dbf73', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem', width: '100%' }}>
+                  Start as Developer →
+                </button>
+              </Link>
+            </div>
+
+            {/* For Clients */}
+            <div style={{ background: 'linear-gradient(135deg, #1dbf73 0%, #19a463 100%)', borderRadius: '16px', padding: '2.5rem', color: '#fff' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🏢</div>
+              <h3 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.4rem', marginBottom: '0.75rem' }}>For Clients</h3>
+              <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
+                Post your project and get proposals from verified developers within hours.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '2rem' }}>
+                {['✓ Post jobs for free', '✓ Get proposals within hours', '✓ Pay only when satisfied', '✓ Secure escrow payment'].map(item => (
+                  <div key={item} style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.85rem' }}>{item}</div>
+                ))}
+              </div>
+              <Link href="/post-job" style={{ textDecoration: 'none' }}>
+                <button style={{ background: '#fff', color: '#1dbf73', border: 'none', padding: '12px 24px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem', width: '100%' }}>
+                  Post a Job Free →
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* FINAL CTA */}
+        <div style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)', padding: '5rem 5%', textAlign: 'center' }}>
+          <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+            <h2 style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', color: '#fff', marginBottom: '1rem' }}>
+              Ready to Get Started?
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '1rem', lineHeight: 1.7, marginBottom: '2rem' }}>
+              Join thousands of developers and clients building great things together on DevLpers. It's free to start.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link href="/signup" style={{ textDecoration: 'none' }}>
+                <button style={{ background: '#1dbf73', color: '#fff', border: 'none', padding: '14px 36px', borderRadius: '8px', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 4px 16px rgba(29,191,115,0.4)' }}>
+                  Join Free Today →
+                </button>
+              </Link>
+              <Link href="/ai-agents" style={{ textDecoration: 'none' }}>
+                <button style={{ background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.3)', padding: '14px 36px', borderRadius: '8px', fontWeight: 600, fontSize: '1rem', cursor: 'pointer' }}>
+                  Try AI Agents Free
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* FOOTER */}
+        <footer style={{ background: '#1a1a2e', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '3rem 5%' }}>
+          <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
+
+              {/* Brand */}
+              <div>
+                <div style={{ fontFamily: 'Inter', fontWeight: 800, fontSize: '1.4rem', color: '#fff', marginBottom: '0.75rem' }}>
+                  Dev<span style={{ color: '#1dbf73' }}>Lpers</span>
+                </div>
+                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', lineHeight: 1.7 }}>
+                  Global developer marketplace for freelancers and businesses.
+                </p>
+              </div>
+
+              {/* For Developers */}
+              <div>
+                <h4 style={{ color: '#fff', fontWeight: 600, fontSize: '0.88rem', marginBottom: '1rem' }}>For Developers</h4>
+                {[
+                  { label: 'Browse Jobs', href: '/jobs' },
+                  { label: 'Create Profile', href: '/profile-setup' },
+                  { label: 'Pricing Plans', href: '/pricing' },
+                  { label: 'Dashboard', href: '/dashboard' },
+                ].map(l => (
+                  <Link key={l.label} href={l.href} style={{ textDecoration: 'none', display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', marginBottom: '0.5rem' }}
+                    onMouseEnter={e => (e.target as HTMLElement).style.color = '#1dbf73'}
+                    onMouseLeave={e => (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.5)'}
+                  >{l.label}</Link>
+                ))}
+              </div>
+
+              {/* For Clients */}
+              <div>
+                <h4 style={{ color: '#fff', fontWeight: 600, fontSize: '0.88rem', marginBottom: '1rem' }}>For Clients</h4>
+                {[
+                  { label: 'Post a Job', href: '/post-job' },
+                  { label: 'Browse Developers', href: '/developers' },
+                  { label: 'How it Works', href: '/#how-it-works' },
+                  { label: 'Client Dashboard', href: '/buyer-dashboard' },
+                ].map(l => (
+                  <Link key={l.label} href={l.href} style={{ textDecoration: 'none', display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', marginBottom: '0.5rem' }}
+                    onMouseEnter={e => (e.target as HTMLElement).style.color = '#1dbf73'}
+                    onMouseLeave={e => (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.5)'}
+                  >{l.label}</Link>
+                ))}
+              </div>
+
+              {/* Tools & AI */}
+              <div>
+                <h4 style={{ color: '#fff', fontWeight: 600, fontSize: '0.88rem', marginBottom: '1rem' }}>Free Tools & AI</h4>
+                {[
+                  { label: 'All Tools', href: '/tools' },
+                  { label: 'AI Agents', href: '/ai-agents' },
+                  { label: 'Image Converter', href: '/image-format-converter' },
+                  { label: 'Article Generator', href: '/article-generator' },
+                ].map(l => (
+                  <Link key={l.label} href={l.href} style={{ textDecoration: 'none', display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', marginBottom: '0.5rem' }}
+                    onMouseEnter={e => (e.target as HTMLElement).style.color = '#8b5cf6'}
+                    onMouseLeave={e => (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.5)'}
+                  >{l.label}</Link>
+                ))}
+              </div>
+
+              {/* Support */}
+              <div>
+                <h4 style={{ color: '#fff', fontWeight: 600, fontSize: '0.88rem', marginBottom: '1rem' }}>Support</h4>
+                {[
+                  { label: 'Help Center', href: '/support' },
+                  { label: 'Report Issue', href: '/report' },
+                  { label: 'Contact Us', href: '/support' },
+                  { label: 'Admin Panel', href: '/admin-panel' },
+                ].map(l => (
+                  <Link key={l.label} href={l.href} style={{ textDecoration: 'none', display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', marginBottom: '0.5rem' }}
+                    onMouseEnter={e => (e.target as HTMLElement).style.color = '#1dbf73'}
+                    onMouseLeave={e => (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.5)'}
+                  >{l.label}</Link>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem' }}>
+                © 2026 DevLpers. All rights reserved. Built by Dev Zeeshan.
+              </p>
+              <div style={{ display: 'flex', gap: '1.5rem' }}>
+                {[
+                  { label: 'Privacy', href: '#' },
+                  { label: 'Terms', href: '#' },
+                  { label: 'Sitemap', href: '/tools' },
+                ].map(l => (
+                  <Link key={l.label} href={l.href} style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem', textDecoration: 'none' }}
+                    onMouseEnter={e => (e.target as HTMLElement).style.color = '#1dbf73'}
+                    onMouseLeave={e => (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.4)'}
+                  >{l.label}</Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
   );
 }
